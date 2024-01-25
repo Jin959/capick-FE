@@ -1,5 +1,5 @@
-import { Box, Flex } from "@chakra-ui/react";
-import { NextPage } from "next";
+import {Box, Flex} from "@chakra-ui/react";
+import {NextPage} from "next";
 
 const Home: NextPage = () => {
   return (
