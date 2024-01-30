@@ -5,7 +5,8 @@ import PageFlexContainer from "@/components/container/PageFlexContainer";
 import ArrowBack from "@/../public/icons/google-material-arrow_back.svg"
 import Image from "next/image";
 import {useRouter} from "next/router";
-import styled from "@emotion/styled";
+import Link from "next/link";
+import FormContainer from "@/components/container/FormContainer";
 
 const Login: NextPage = () => {
 
@@ -29,7 +30,7 @@ const Login: NextPage = () => {
         <Heading size="md" textAlign="center">동내 까페 생활의 시작, 까픽</Heading>
         <Text textAlign="center">커피, 공간 리뷰, 까페의 모든 것</Text>
         <Box p="8"></Box>
-        <SubmitForm>
+        <FormContainer>
           <Input
             placeholder="이메일"
             maxLength={320}
@@ -43,18 +44,13 @@ const Login: NextPage = () => {
           />
           <Box p="2"></Box>
           <Button colorScheme="brand">로그인</Button>
-        </SubmitForm>
-        <Button>회원가입</Button>
+        </FormContainer>
+        <Link href="/signup">
+          <Button w="100%">회원가입</Button>
+        </Link>
       </PageFlexContainer>
     </>
   );
 };
 
 export default Login;
-
-const SubmitForm = styled.form`
-  & > * {
-    margin-top: 10px;
-    width: 100%;
-  }
-`;
