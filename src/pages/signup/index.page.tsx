@@ -8,7 +8,7 @@ import Image from "next/image";
 import FormContainer from "@/components/container/FormContainer";
 import MemberService from "@/apis/service/MemberService";
 
-const IndexPage: NextPage = () => {
+const Signup: NextPage = () => {
 
   const router = useRouter();
   const nicknameInput = useRef<HTMLInputElement>(null);
@@ -124,4 +124,4 @@ const IndexPage: NextPage = () => {
   );
 };
 
-export default IndexPage;
+export default Signup;
