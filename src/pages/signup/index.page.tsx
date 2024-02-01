@@ -13,22 +13,29 @@ const Signup: NextPage = () => {
   const router = useRouter();
   const nicknameInput = useRef<HTMLInputElement>(null);
 
-  const [nickname, setNickname] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [member, setMember] = useState({
+    nickname: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   const memberService = useRef(MemberService.create()).current;
 
-  const showNicknameValidationError: boolean = memberService.isNotValidNicknameAndNotEmpty(nickname);
-  const showEmailValidationError: boolean = memberService.isNotValidEmailAndNotEmpty(email);
-  const showPasswordValidationError: boolean = memberService.isNotValidPasswordAndNotEmpty(password);
-  const showPasswordConfirmError: boolean = memberService.isNotPasswordConfirmAndNotEmpty(password, confirmPassword);
-  const disableSubmit: boolean = memberService.isNotValidMember(email, password, nickname, confirmPassword)
+  const showNicknameValidationError: boolean = memberService.isNotValidNicknameAndNotEmpty(member.nickname);
+  const showEmailValidationError: boolean = memberService.isNotValidEmailAndNotEmpty(member.email);
+  const showPasswordValidationError: boolean = memberService.isNotValidPasswordAndNotEmpty(member.password);
+  const showPasswordConfirmError: boolean = memberService.isNotPasswordConfirmAndNotEmpty(member.password, member.confirmPassword);
+  const disableSubmit: boolean = memberService.isNotValidMember(member.email, member.password, member.nickname, member.confirmPassword);
 
   useEffect(() => {
     nicknameInput.current?.focus();
   }, []);
+
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const {name, value} = event.target;
+    setMember({...member, [name]: value});
+  }
 
   const handleOnSubmit = (
     event: (React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>)
@@ -50,11 +57,12 @@ const Signup: NextPage = () => {
         >
           <Heading size="md" textAlign="center">회원가입</Heading>
           <Input
+            name="nickname"
             placeholder="닉네임"
             minLength={1}
             maxLength={20}
             ref={nicknameInput}
-            onChange={(event) => setNickname(event.target.value)}
+            onChange={handleOnChange}
           />
           <Text fontSize="sm">
             서비스에서 사용할 20자리 이하 닉네임을 입력해주세요.
@@ -66,9 +74,10 @@ const Signup: NextPage = () => {
           }
           <Box p="2"></Box>
           <Input
+            name="email"
             placeholder="이메일"
             maxLength={320}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={handleOnChange}
           />
           <Text fontSize="sm">
             로그인에 사용할 이메일을 입력해주세요.
@@ -80,18 +89,20 @@ const Signup: NextPage = () => {
           }
           <Box p="2"></Box>
           <Input
+            name="password"
             placeholder="비밀번호"
             type="password"
             minLength={8}
             maxLength={20}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={handleOnChange}
           />
           <Input
+            name="confirmPassword"
             placeholder="비밀번호 확인"
             type="password"
             minLength={8}
             maxLength={20}
-            onChange={(event) => setConfirmPassword(event.target.value)}
+            onChange={handleOnChange}
           />
           <Text fontSize="sm">
             띄어쓰기 없이 영문/숫자/특수문자 8~20 자리로 작성해주세요.
