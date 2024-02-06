@@ -4,14 +4,17 @@ import {Global} from "@emotion/react";
 import theme from "@/styles/theme";
 import globalStyle from "@/styles/global";
 import Layout from "@/components/Layout";
+import MemberProvider from "@/contexts/member";
 
 export default function App({Component, pageProps}: AppProps) {
   return (
     <ChakraProvider resetCSS={true} theme={theme}>
       <Global styles={globalStyle}/>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <MemberProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </MemberProvider>
     </ChakraProvider>
   );
 }
