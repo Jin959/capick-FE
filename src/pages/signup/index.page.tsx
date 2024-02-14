@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {NextPage} from "next";
 import {Button, Text, Heading, Input, Box} from "@chakra-ui/react";
 import ArrowBack from "@/../public/icons/google-material-arrow_back.svg"
@@ -7,6 +7,7 @@ import PageFlexContainer from "@/components/container/PageFlexContainer";
 import Image from "next/image";
 import FormContainer from "@/components/container/FormContainer";
 import MemberService from "@/apis/service/MemberService";
+import {MemberDispatchContext} from "@/contexts/member";
 
 const Signup: NextPage = () => {
 
@@ -19,6 +20,7 @@ const Signup: NextPage = () => {
     password: "",
     confirmPassword: "",
   });
+  const dispatchMember = useContext(MemberDispatchContext);
 
   const memberService = useRef(MemberService.create()).current;
 
@@ -37,10 +39,26 @@ const Signup: NextPage = () => {
     setMember({...member, [name]: value});
   }
 
-  const handleOnSubmit = (
+  const handleOnSubmit = async (
     event: (React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>)
   ) => {
     event.preventDefault();
+    try {
+      const memberResponse = await memberService.createMember({
+        email: member.email,
+        password: member.password,
+        nickname: member.nickname
+      });
+      dispatchMember({
+        type: "SET_MEMBER",
+        id: memberResponse.id,
+        nickname: memberResponse.nickname
+      });
+      window.alert(`🎉${member.nickname}님 반가워요!\n가입에 성공했습니다!`);
+      router.replace("/");
+    } catch (error) {
+      window.alert(error);
+    }
   }
 
   return (
