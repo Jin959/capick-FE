@@ -17,7 +17,7 @@ interface Props {
 
 export const MemberContext = createContext<State>({
   id: 0,
-  nickname: ""
+  nickname: "Not Available"
 });
 export const MemberDispatchContext = createContext<Dispatch<Action>>(() => {});
 
@@ -37,7 +37,7 @@ const reducer = (state: State, action: Action): State => {
 const MemberProvider = ({children}: Props) => {
   const [state, dispatch] = useReducer(reducer, {
     id: 0,
-    nickname: ""
+    nickname: "Not Available"
   });
 
   return (
