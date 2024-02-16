@@ -8,7 +8,7 @@ interface ApiResponse<T> {
 
 }
 
-export const isApiResponse = (object: object | unknown): object is ApiResponse<object | null> => {
+export const isApiResponse = (object: object | unknown): object is ApiResponse<object | undefined> => {
   return typeof object === "object"
     && object !== null
     && "code" in object
