@@ -7,12 +7,17 @@ import {isApiResponse} from "@/dto/ApiResponse";
 class MemberService {
 
   private readonly apiClient: ApiClient;
+  private readonly nullResponse: MemberResponse;
   private readonly emailRegExp: RegExp;
   private readonly passwordRegExp: RegExp;
   private readonly nicknameRegExp: RegExp;
 
   private constructor() {
     this.apiClient = ApiConfig.apiClient();
+    this.nullResponse = {
+      id: 0,
+      nickname: "Not Available"
+    };
     this.emailRegExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/;
     this.passwordRegExp = /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*()?])(?=\S+$)[0-9a-zA-Z!@#$%^&*()?]{8,20}$/;
     this.nicknameRegExp = /^(?=.*[.\w가-힇ぁ-ゔァ-ヴー々〆〤一-龥])(?=\S+$)[.\w가-힇ぁ-ゔァ-ヴー々〆〤一-龥]{1,20}$/;
@@ -26,11 +31,7 @@ class MemberService {
     try {
       const response = await this.apiClient
         .post<MemberResponse, MemberCreateRequest>("/members/new", memberCreateRequest);
-
-      return response.data ?? {
-        id: 0,
-        nickname: "Not Available"
-      };
+      return response.data ?? this.nullResponse;
     } catch (error) {
       console.error(error);
       if (isApiResponse(error)) {
@@ -44,8 +45,22 @@ class MemberService {
     }
   }
 
-  public getMember = (memberId: string) => {
-    this.apiClient.get(memberId);
+  public getMember = async (memberId: string | number) => {
+    try {
+      const response = await this.apiClient
+        .get<MemberResponse>("/members/" + memberId);
+      return response.data ?? this.nullResponse;
+    } catch (error) {
+      console.error(error);
+      if (isApiResponse(error)) {
+        if (400 <= error.code && error.code < 500) {
+          throw new Error(error.message);
+        } else if (500 <= error.code && error.code < 600) {
+          throw new Error("서버 내부에서 문제가 발생했습니다. 관리자에게 문의해주세요.");
+        }
+      }
+      throw new Error("클라이언트 앱과 외부 연동 문제가 발생했습니다.\n브라우저 또는 디바이스의 네트워크 설정을 확인해주세요.");
+    }
   }
 
   public isNotValidMember = (email: string, password: string, nickname: string, confirmPassword: string) => {
