@@ -1,15 +1,33 @@
-import React, {useContext} from "react";
+import React, {useContext, useEffect, useRef} from "react";
 import {Avatar, Box, Button, Flex, Text} from "@chakra-ui/react";
 import {useRouter} from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/../public/images/capick-logo-en.svg";
-import {MemberContext} from "@/contexts/member";
+import {MemberContext, MemberDispatchContext} from "@/contexts/member";
+import MemberService from "@/apis/service/MemberService";
 
 const Header = () => {
 
   const router = useRouter();
   const member = useContext(MemberContext);
+  const dispatchMember = useContext(MemberDispatchContext);
+  const memberService = useRef(MemberService.create()).current;
+
+  useEffect(() => {
+    if (member.id === 0) return;
+    (async () => {
+      try {
+        const memberResponse = await memberService.getMember(member.id);
+        dispatchMember({
+          type: "SET_PROFILE",
+          profile: memberResponse.profile
+        });
+      } catch (error) {
+        window.alert(error);
+      }
+    })();
+  }, [member.id]);
 
   return (
     <Flex
@@ -38,9 +56,11 @@ const Header = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Text>{member.nickname}</Text>
+          <Text as='b'>
+            {member.nickname}
+          </Text>
           <Box p="2"/>
-          <Avatar/>
+          <Avatar src={member.profile?.imageUrl}/>
         </Flex>
       )}
     </Flex>
