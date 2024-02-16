@@ -3,6 +3,7 @@ import ApiClient from "@/apis/client/ApiClient";
 import MemberCreateRequest from "@/dto/request/MemberCreateRequest";
 import MemberResponse from "@/dto/response/MemberResponse";
 import {isApiResponse} from "@/dto/ApiResponse";
+import ApiErrorHandler from "@/apis/error/ApiErrorHandler";
 
 class MemberService {
 
@@ -35,11 +36,7 @@ class MemberService {
     } catch (error) {
       console.error(error);
       if (isApiResponse(error)) {
-        if (400 <= error.code && error.code < 500) {
-          throw new Error(error.message);
-        } else if (500 <= error.code && error.code < 600) {
-          throw new Error("서버 내부에서 문제가 발생했습니다. 관리자에게 문의해주세요.");
-        }
+        ApiErrorHandler(error);
       }
       throw new Error("클라이언트 앱과 외부 연동 문제가 발생했습니다.\n브라우저 또는 디바이스의 네트워크 설정을 확인해주세요.");
     }
@@ -53,11 +50,7 @@ class MemberService {
     } catch (error) {
       console.error(error);
       if (isApiResponse(error)) {
-        if (400 <= error.code && error.code < 500) {
-          throw new Error(error.message);
-        } else if (500 <= error.code && error.code < 600) {
-          throw new Error("서버 내부에서 문제가 발생했습니다. 관리자에게 문의해주세요.");
-        }
+        ApiErrorHandler(error);
       }
       throw new Error("클라이언트 앱과 외부 연동 문제가 발생했습니다.\n브라우저 또는 디바이스의 네트워크 설정을 확인해주세요.");
     }
