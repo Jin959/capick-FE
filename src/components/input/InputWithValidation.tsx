@@ -57,4 +57,4 @@ const InputWithValidation = (props: Props) => {
   );
 };
 
-export default InputWithValidation;
+export default React.memo(InputWithValidation);

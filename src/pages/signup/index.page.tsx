@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {NextPage} from "next";
 import {Button, Text, Heading, Box} from "@chakra-ui/react";
 import ArrowBack from "@/../public/icons/google-material-arrow_back.svg"
@@ -9,6 +9,7 @@ import FormContainer from "@/components/container/FormContainer";
 import MemberService from "@/apis/service/MemberService";
 import {MemberDispatchContext} from "@/contexts/member";
 import InputWithValidation from "@/components/input/InputWithValidation";
+import memberError from "@/apis/error/memberError";
 
 const Signup: NextPage = () => {
 
@@ -35,10 +36,10 @@ const Signup: NextPage = () => {
     nicknameInput.current?.focus();
   }, []);
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = event.target;
-    setMember({...member, [name]: value});
-  }
+    setMember(member => ({...member, [name]: value}));
+  }, []);
 
   const handleOnSubmit = async (
     event: (React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>)
@@ -86,9 +87,7 @@ const Signup: NextPage = () => {
             inputRef={nicknameInput}
             onChange={handleOnChange}
             validation={showNicknameValidationError}
-            validationErrorMessages={[
-              "특수문자는 마침표(.), 밑줄(_) 만 사용할 수 있습니다."
-            ]}
+            validationErrorMessages={memberError.validation.nickname}
           />
           <Box p="2"></Box>
           <Text fontSize="sm">
@@ -100,9 +99,7 @@ const Signup: NextPage = () => {
             maxLength={320}
             onChange={handleOnChange}
             validation={showEmailValidationError}
-            validationErrorMessages={[
-              "example@gmail.com 처럼 이메일 형식에 맞아야 해요."
-            ]}
+            validationErrorMessages={memberError.validation.email}
           />
           <Box p="2"></Box>
           <Text fontSize="sm">
@@ -116,11 +113,7 @@ const Signup: NextPage = () => {
             maxLength={20}
             onChange={handleOnChange}
             validation={showPasswordValidationError}
-            validationErrorMessages={[
-              "영문/숫자/특수문자를 모두 사용해야 합니다.",
-              "띄어쓰기 없이 영문/숫자/특수문자 8~20 자리로 작성해주세요.",
-              "특수문자는 !, @, #, $, %, ^, &, *, (, ), ? 를 사용할 수 있습니다."
-            ]}
+            validationErrorMessages={memberError.validation.password}
           />
           <InputWithValidation
             name="confirmPassword"
@@ -130,9 +123,7 @@ const Signup: NextPage = () => {
             maxLength={20}
             onChange={handleOnChange}
             validation={showPasswordConfirmError}
-            validationErrorMessages={[
-              "비밀번호가 일치하지 않습니다."
-            ]}
+            validationErrorMessages={memberError.validation.confirmPassword}
           />
           <Button
             colorScheme="brand"
