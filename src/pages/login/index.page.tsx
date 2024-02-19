@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {NextPage} from "next";
 import {Box, Button, Heading, Input, Text} from "@chakra-ui/react";
 import PageFlexContainer from "@/components/container/PageFlexContainer";
@@ -7,14 +7,30 @@ import Image from "next/image";
 import {useRouter} from "next/router";
 import Link from "next/link";
 import FormContainer from "@/components/container/FormContainer";
+import InputWithValidation from "@/components/input/InputWithValidation";
+import MemberService from "@/apis/service/MemberService";
+import memberError from "@/apis/error/memberError";
 
 const Login: NextPage = () => {
 
   const router = useRouter();
   const emailInput = useRef<HTMLInputElement>(null);
 
+  const [loginInfo, setLoginInfo] = useState({
+    email: "",
+    password: ""
+  });
+
+  const memberService = useRef(MemberService.create()).current;
+  const showEmailValidationError: boolean = memberService.isNotValidEmailAndNotEmpty(loginInfo.email);
+
   useEffect(() => {
     emailInput.current?.focus();
+  }, []);
+
+  const handleOnChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const {name, value} = event.target;
+    setLoginInfo(info => ({...info, [name]: value}));
   }, []);
 
   return (
@@ -31,16 +47,22 @@ const Login: NextPage = () => {
         <Text textAlign="center">커피, 공간 리뷰, 까페의 모든 것</Text>
         <Box p="8"></Box>
         <FormContainer>
-          <Input
+          <InputWithValidation
+            name="email"
             placeholder="이메일"
             maxLength={320}
-            ref={emailInput}
+            inputRef={emailInput}
+            onChange={handleOnChange}
+            validation={showEmailValidationError}
+            validationErrorMessages={memberError.validation.email}
           />
           <Input
+            name="password"
             type="password"
             placeholder="비밀번호"
             minLength={8}
             maxLength={20}
+            onChange={handleOnChange}
           />
           <Box p="2"></Box>
           <Button colorScheme="brand">로그인</Button>
