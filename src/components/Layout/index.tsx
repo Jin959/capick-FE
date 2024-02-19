@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {Flex} from "@chakra-ui/react";
+import {Box, Flex} from "@chakra-ui/react";
 import Header from "@/components/Layout/Header";
 
 
@@ -13,6 +13,7 @@ const Layout = ({children}: Props) => {
       direction="column"
     >
       <Header/>
+      <Box paddingTop="20"></Box>
       {children}
     </Flex>
   )

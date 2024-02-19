@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef} from "react";
+import React, {useContext, useEffect} from "react";
 import {Avatar, Box, Button, Flex, Text} from "@chakra-ui/react";
 import {useRouter} from "next/router";
 import Link from "next/link";
@@ -37,6 +37,11 @@ const Header = () => {
       borderColor="border.layout"
       justifyContent="space-between"
       alignItems="center"
+      pos="fixed"
+      w="full"
+      maxWidth="520px"
+      bg="white"
+      zIndex="sticky"
     >
       <Link href="/">
         <Image
