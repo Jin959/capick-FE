@@ -5,14 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/../public/images/capick-logo-en.svg";
 import {MemberContext, MemberDispatchContext} from "@/contexts/member";
-import MemberService from "@/apis/service/MemberService";
+import useMemberService from "@/hooks/service/useMemberService";
 
 const Header = () => {
 
   const router = useRouter();
   const member = useContext(MemberContext);
   const dispatchMember = useContext(MemberDispatchContext);
-  const memberService = useRef(MemberService.create()).current;
+  const memberService = useMemberService();
 
   useEffect(() => {
     if (member.id === 0) return;

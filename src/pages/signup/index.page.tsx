@@ -6,17 +6,17 @@ import {useRouter} from "next/router";
 import PageFlexContainer from "@/components/container/PageFlexContainer";
 import Image from "next/image";
 import FormContainer from "@/components/container/FormContainer";
-import MemberService from "@/apis/service/MemberService";
 import {MemberDispatchContext} from "@/contexts/member";
 import InputWithValidation from "@/components/input/InputWithValidation";
 import memberError from "@/apis/error/memberError";
+import useMemberService from "@/hooks/service/useMemberService";
 
 const Signup: NextPage = () => {
 
   const router = useRouter();
   const nicknameInput = useRef<HTMLInputElement>(null);
 
-  const [member, setMember] = useState({
+  const [signupInfo, setSignupInfo] = useState({
     nickname: "",
     email: "",
     password: "",
@@ -24,13 +24,13 @@ const Signup: NextPage = () => {
   });
   const dispatchMember = useContext(MemberDispatchContext);
 
-  const memberService = useRef(MemberService.create()).current;
+  const memberService = useMemberService();
 
-  const showNicknameValidationError: boolean = memberService.isNotValidNicknameAndNotEmpty(member.nickname);
-  const showEmailValidationError: boolean = memberService.isNotValidEmailAndNotEmpty(member.email);
-  const showPasswordValidationError: boolean = memberService.isNotValidPasswordAndNotEmpty(member.password);
-  const showPasswordConfirmError: boolean = memberService.isNotPasswordConfirmAndNotEmpty(member.password, member.confirmPassword);
-  const disableSubmit: boolean = memberService.isNotValidMember(member.email, member.password, member.nickname, member.confirmPassword);
+  const showNicknameValidationError: boolean = memberService.isNotValidNicknameAndNotEmpty(signupInfo.nickname);
+  const showEmailValidationError: boolean = memberService.isNotValidEmailAndNotEmpty(signupInfo.email);
+  const showPasswordValidationError: boolean = memberService.isNotValidPasswordAndNotEmpty(signupInfo.password);
+  const showPasswordConfirmError: boolean = memberService.isNotPasswordConfirmAndNotEmpty(signupInfo.password, signupInfo.confirmPassword);
+  const disableSubmit: boolean = memberService.isNotValidMember(signupInfo.email, signupInfo.password, signupInfo.nickname, signupInfo.confirmPassword);
 
   useEffect(() => {
     nicknameInput.current?.focus();
@@ -38,7 +38,7 @@ const Signup: NextPage = () => {
 
   const handleOnChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = event.target;
-    setMember(member => ({...member, [name]: value}));
+    setSignupInfo(info => ({...info, [name]: value}));
   }, []);
 
   const handleOnSubmit = async (
@@ -47,16 +47,16 @@ const Signup: NextPage = () => {
     event.preventDefault();
     try {
       const memberResponse = await memberService.createMember({
-        email: member.email,
-        password: member.password,
-        nickname: member.nickname
+        email: signupInfo.email,
+        password: signupInfo.password,
+        nickname: signupInfo.nickname
       });
       dispatchMember({
         type: "SET_MEMBER",
         id: memberResponse.id,
         nickname: memberResponse.nickname
       });
-      window.alert(`🎉${member.nickname}님 반가워요!\n가입에 성공했습니다!`);
+      window.alert(`🎉${memberResponse.nickname}님 반가워요!\n가입에 성공했습니다!`);
       router.replace("/");
     } catch (error) {
       window.alert(error);

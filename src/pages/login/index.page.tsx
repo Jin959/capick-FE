@@ -8,8 +8,8 @@ import {useRouter} from "next/router";
 import Link from "next/link";
 import FormContainer from "@/components/container/FormContainer";
 import InputWithValidation from "@/components/input/InputWithValidation";
-import MemberService from "@/apis/service/MemberService";
 import memberError from "@/apis/error/memberError";
+import useMemberService from "@/hooks/service/useMemberService";
 
 const Login: NextPage = () => {
 
@@ -21,7 +21,7 @@ const Login: NextPage = () => {
     password: ""
   });
 
-  const memberService = useRef(MemberService.create()).current;
+  const memberService = useMemberService();
   const showEmailValidationError: boolean = memberService.isNotValidEmailAndNotEmpty(loginInfo.email);
 
   useEffect(() => {
