@@ -27,7 +27,7 @@ const Header = () => {
         window.alert(error);
       }
     })();
-  }, [member.id]);
+  }, [member.id, memberService, dispatchMember]);
 
   return (
     <Flex
