@@ -39,7 +39,7 @@ const Header = () => {
       alignItems="center"
       pos="fixed"
       w="full"
-      maxWidth="520px"
+      maxWidth="layout.maxWidth"
       bg="white"
       zIndex="sticky"
     >

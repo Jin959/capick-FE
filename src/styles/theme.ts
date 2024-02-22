@@ -21,6 +21,13 @@ const colors = {
   }
 };
 
-const theme = extendTheme({colors});
+const sizes = {
+  layout: {
+    maxWidth: "520px",
+    maxHeight: "100%"
+  }
+}
+
+const theme = extendTheme({colors, sizes});
 
 export default theme;
