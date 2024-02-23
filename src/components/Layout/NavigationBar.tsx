@@ -25,7 +25,7 @@ const NavigationBar = () => {
     },
     {
       id: 3,
-      link: "/",
+      link: "/my",
       name: "마이 까픽",
       icon: MyCapickIcon,
       alt: "MyCapick"
