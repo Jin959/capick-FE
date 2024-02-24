@@ -2,18 +2,15 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {NextPage} from "next";
 import {Box, Button, Heading, Input, Text} from "@chakra-ui/react";
 import PageFlexContainer from "@/components/container/PageFlexContainer";
-import ArrowBack from "@/../public/icons/google-material-arrow_back.svg"
-import Image from "next/image";
-import {useRouter} from "next/router";
 import Link from "next/link";
 import FormContainer from "@/components/container/FormContainer";
 import InputWithValidation from "@/components/input/InputWithValidation";
 import memberError from "@/apis/error/memberError";
 import useMemberService from "@/hooks/service/useMemberService";
+import BackButton from "@/components/button/BackButton";
 
 const Login: NextPage = () => {
 
-  const router = useRouter();
   const emailInput = useRef<HTMLInputElement>(null);
 
   const [loginInfo, setLoginInfo] = useState({
@@ -35,12 +32,7 @@ const Login: NextPage = () => {
 
   return (
     <>
-      <Button
-        m="2" w="fit-content"
-        onClick={() => router.back()}
-      >
-        <Image src={ArrowBack} alt="GoBack"/>
-      </Button>
+      <BackButton/>
       <PageFlexContainer>
         <Box p="2"></Box>
         <Heading size="md" textAlign="center">동내 까페 생활의 시작, 까픽</Heading>

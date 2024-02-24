@@ -1,7 +1,6 @@
 import React, {useCallback, useContext, useState} from 'react';
 import {NextPage} from "next";
 import Image from "next/image";
-import ArrowBack from "@/../public/icons/google-material-arrow_back.svg";
 import UploadIcon from "@/../public/icons/google-material-upload_file_FILL0_wght400_GRAD0_opsz24.svg";
 import {
   Avatar,
@@ -15,16 +14,16 @@ import {
   Textarea,
   UnorderedList
 } from "@chakra-ui/react";
-import {useRouter} from "next/router";
 import PageFlexContainer from "@/components/container/PageFlexContainer";
 import FormContainer from "@/components/container/FormContainer";
 import InputWithValidation from "@/components/input/InputWithValidation";
 import memberError from "@/apis/error/memberError";
 import useMemberService from "@/hooks/service/useMemberService";
 import {MemberContext} from "@/contexts/member";
+import BackButton from "@/components/button/BackButton";
 
 const My: NextPage = () => {
-  const router = useRouter();
+
   const member = useContext(MemberContext);
 
   const [nickname, setNickname] = useState("");
@@ -68,12 +67,7 @@ const My: NextPage = () => {
 
   return (
     <>
-      <Button
-        m="2" w="fit-content"
-        onClick={() => router.back()}
-      >
-        <Image src={ArrowBack} alt="GoBack"/>
-      </Button>
+      <BackButton/>
       <PageFlexContainer>
         <Heading size="md" textAlign="center">
           프로필

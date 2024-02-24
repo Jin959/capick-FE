@@ -1,15 +1,14 @@
 import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {NextPage} from "next";
 import {Button, Text, Heading, Box} from "@chakra-ui/react";
-import ArrowBack from "@/../public/icons/google-material-arrow_back.svg"
 import {useRouter} from "next/router";
 import PageFlexContainer from "@/components/container/PageFlexContainer";
-import Image from "next/image";
 import FormContainer from "@/components/container/FormContainer";
 import {MemberDispatchContext} from "@/contexts/member";
 import InputWithValidation from "@/components/input/InputWithValidation";
 import memberError from "@/apis/error/memberError";
 import useMemberService from "@/hooks/service/useMemberService";
+import BackButton from "@/components/button/BackButton";
 
 const Signup: NextPage = () => {
 
@@ -65,12 +64,7 @@ const Signup: NextPage = () => {
 
   return (
     <>
-      <Button
-        m="2" w="fit-content"
-        onClick={() => router.back()}
-      >
-        <Image src={ArrowBack} alt="GoBack"/>
-      </Button>
+      <BackButton/>
       <PageFlexContainer>
         <FormContainer
           onSubmit={handleOnSubmit}
