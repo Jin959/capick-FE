@@ -2,13 +2,13 @@ import React, {useCallback, useContext, useEffect, useRef, useState} from 'react
 import {NextPage} from "next";
 import {Button, Text, Heading, Box} from "@chakra-ui/react";
 import {useRouter} from "next/router";
-import PageFlexContainer from "@/components/container/PageFlexContainer";
-import FormContainer from "@/components/container/FormContainer";
+import PageFlexContainer from "@/components/common/container/PageFlexContainer";
+import FormContainer from "@/components/common/container/FormContainer";
 import {MemberDispatchContext} from "@/contexts/member";
-import InputWithValidation from "@/components/input/InputWithValidation";
+import InputWithValidation from "@/components/common/input/InputWithValidation";
 import memberError from "@/apis/error/memberError";
 import useMemberService from "@/hooks/service/useMemberService";
-import BackButton from "@/components/button/BackButton";
+import BackButton from "@/components/common/button/BackButton";
 
 const Signup: NextPage = () => {
 

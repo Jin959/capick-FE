@@ -1,7 +1,7 @@
 import {ReactNode} from "react";
 import {Box, Flex} from "@chakra-ui/react";
-import Header from "@/components/Layout/Header";
-import NavigationBar from "@/components/Layout/NavigationBar";
+import Header from "./Header";
+import NavigationBar from "./NavigationBar";
 
 
 type Props = {
