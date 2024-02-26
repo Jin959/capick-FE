@@ -20,6 +20,7 @@ const PasswordForm = ({memberService}: Props) => {
   const showPasswordValidationError: boolean = memberService.isNotValidPasswordAndNotEmpty(password.password);
   const showNewPasswordValidationError: boolean = memberService.isNotValidPasswordAndNotEmpty(password.newPassword);
   const showPasswordConfirmError: boolean = memberService.isNotPasswordConfirmAndNotEmpty(password.newPassword, password.confirmPassword);
+  const disableSubmit: boolean = memberService.isNotValidPasswordChange(password.password, password.newPassword, password.confirmPassword);
 
   const handleOnChangePassword = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = event.target;
@@ -75,11 +76,7 @@ const PasswordForm = ({memberService}: Props) => {
       <Button
         colorScheme="brand"
         type="submit"
-        isDisabled={(
-          showPasswordValidationError
-          || showNewPasswordValidationError
-          || showPasswordConfirmError
-        ) && true}
+        isDisabled={disableSubmit && true}
       >
         비밀번호 변경
       </Button>

@@ -13,6 +13,7 @@ const NicknameForm = ({memberService}: Props) => {
 
   const [nickname, setNickname] = useState("");
   const showNicknameValidationError: boolean = memberService.isNotValidNicknameAndNotEmpty(nickname);
+  const disableSubmit: boolean = memberService.isNotValidNickname(nickname);
 
   const handleOnChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setNickname(nickname => event.target.value);
@@ -44,7 +45,7 @@ const NicknameForm = ({memberService}: Props) => {
       <Button
         colorScheme="brand"
         type="submit"
-        isDisabled={showNicknameValidationError && true}
+        isDisabled={disableSubmit && true}
       >
         닉네임 변경
       </Button>

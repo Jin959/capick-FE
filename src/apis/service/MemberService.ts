@@ -57,27 +57,47 @@ class MemberService {
   }
 
   public isNotValidMember = (email: string, password: string, nickname: string, confirmPassword: string) => {
-    return email.length === 0 || password.length === 0 || nickname.length === 0
-      || this.isNotValidEmailAndNotEmpty(email) || this.isNotValidPasswordAndNotEmpty(password)
-      || this.isNotValidNicknameAndNotEmpty(nickname) || this.isNotPasswordConfirmAndNotEmpty(password, confirmPassword);
+    return this.isNotValidEmail(email) || this.isNotValidPassword(password)
+      || this.isNotValidNickname(nickname) || this.isNotPasswordConfirm(password, confirmPassword);
+  }
+
+  public isNotValidPasswordChange = (password: string, newPassword: string, confirmPassword: string) => {
+    return password.length === 0
+      || this.isNotValidPassword(newPassword)
+      || this.isNotPasswordConfirm(newPassword, confirmPassword);
   }
 
   public isNotValidEmailAndNotEmpty = (email: string) => {
-    return !this.emailRegExp.test(email) && email.length > 0;
+    return this.isNotValidEmail(email) && email.length > 0;
+  }
+
+  public isNotValidEmail(email: string) {
+    return !this.emailRegExp.test(email);
   }
 
   public isNotValidPasswordAndNotEmpty = (password: string) => {
-    return !this.passwordRegExp.test(password) && password.length > 0;
+    return this.isNotValidPassword(password) && password.length > 0;
+  }
+
+  public isNotValidPassword(password: string) {
+    return !this.passwordRegExp.test(password);
   }
 
   public isNotValidNicknameAndNotEmpty = (nickname: string) => {
-    return !this.nicknameRegExp.test(nickname) && nickname.length > 0;
+    return this.isNotValidNickname(nickname) && nickname.length > 0;
+  }
+
+  public isNotValidNickname(nickname: string) {
+    return !this.nicknameRegExp.test(nickname);
   }
 
   public isNotPasswordConfirmAndNotEmpty = (password: string, confirmPassword: string) => {
-    return password !== confirmPassword && password.length > 0
+    return this.isNotPasswordConfirm(password, confirmPassword) && password.length > 0
   }
 
+  public isNotPasswordConfirm(password: string, confirmPassword: string) {
+    return password !== confirmPassword;
+  }
 }
 
 export default MemberService;
