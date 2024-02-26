@@ -1,9 +1,11 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {Button, Text} from "@chakra-ui/react";
 import InputWithValidation from "@/components/common/input/InputWithValidation";
 import memberError from "@/apis/error/memberError";
 import FormContainer from "@/components/common/container/FormContainer";
 import MemberService from "@/apis/service/MemberService";
+import {MemberContext, MemberDispatchContext} from "@/contexts/member";
+import {useRouter} from "next/router";
 
 interface Props {
   memberService: MemberService;
@@ -11,18 +13,36 @@ interface Props {
 
 const NicknameForm = ({memberService}: Props) => {
 
+  const router = useRouter();
   const [nickname, setNickname] = useState("");
   const showNicknameValidationError: boolean = memberService.isNotValidNicknameAndNotEmpty(nickname);
   const disableSubmit: boolean = memberService.isNotValidNickname(nickname);
+  const member = useContext(MemberContext);
+  const dispatchMember = useContext(MemberDispatchContext);
 
   const handleOnChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setNickname(nickname => event.target.value);
+    setNickname(() => event.target.value);
   }, []);
 
-  const handleOnSubmit = (
+  const handleOnSubmit = async (
     event: (React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>)
   ) => {
     event.preventDefault();
+    try {
+      const memberResponse = await memberService.updateMemberNickname({
+        id: member.id,
+        nickname: nickname
+      });
+      dispatchMember({
+        type: "SET_MEMBER",
+        id: memberResponse.id,
+        nickname: memberResponse.nickname
+      });
+      window.alert(`닉네임 변경에 성공했습니다!`);
+      router.reload();
+    } catch (error) {
+      window.alert(error);
+    }
   }
 
 

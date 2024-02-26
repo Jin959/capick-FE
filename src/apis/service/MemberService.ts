@@ -1,9 +1,10 @@
 import ApiConfig from "@/apis/ApiConfig";
 import ApiClient from "@/apis/client/ApiClient";
 import MemberCreateRequest from "@/dto/request/MemberCreateRequest";
-import MemberResponse from "@/dto/response/MemberResponse";
 import {isApiResponse} from "@/dto/ApiResponse";
 import ApiErrorHandler from "@/apis/error/ApiErrorHandler";
+import MemberResponse from "@/dto/response/MemberResponse";
+import MemberNicknameRequest from "@/dto/request/MemberNicknameRequest";
 
 class MemberService {
 
@@ -46,6 +47,20 @@ class MemberService {
     try {
       const response = await this.apiClient
         .get<MemberResponse>("/members/" + memberId);
+      return response.data ?? this.nullResponse;
+    } catch (error) {
+      console.error(error);
+      if (isApiResponse(error)) {
+        ApiErrorHandler(error);
+      }
+      throw new Error("클라이언트 앱과 외부 연동 문제가 발생했습니다.\n브라우저 또는 디바이스의 네트워크 설정을 확인해주세요.");
+    }
+  }
+
+  public updateMemberNickname = async (memberNicknameRequest: MemberNicknameRequest) => {
+    try {
+      const response = await this.apiClient
+        .patch<MemberResponse, MemberNicknameRequest>("/members/me/nickname", memberNicknameRequest);
       return response.data ?? this.nullResponse;
     } catch (error) {
       console.error(error);
