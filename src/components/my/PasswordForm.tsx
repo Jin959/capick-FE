@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from 'react';
-import {Button, Text} from "@chakra-ui/react";
+import {Button, Input, Text} from "@chakra-ui/react";
 import InputWithValidation from "@/components/common/input/InputWithValidation";
 import memberError from "@/apis/error/memberError";
 import FormContainer from "@/components/common/container/FormContainer";
@@ -17,7 +17,6 @@ const PasswordForm = ({memberService}: Props) => {
     confirmPassword: ""
   });
 
-  const showPasswordValidationError: boolean = memberService.isNotValidPasswordAndNotEmpty(password.password);
   const showNewPasswordValidationError: boolean = memberService.isNotValidPasswordAndNotEmpty(password.newPassword);
   const showPasswordConfirmError: boolean = memberService.isNotPasswordConfirmAndNotEmpty(password.newPassword, password.confirmPassword);
   const disableSubmit: boolean = memberService.isNotValidPasswordChange(password.password, password.newPassword, password.confirmPassword);
@@ -40,15 +39,13 @@ const PasswordForm = ({memberService}: Props) => {
       <Text fontSize="sm">
         현재 비밀번호
       </Text>
-      <InputWithValidation
+      <Input
         name="password"
         type="password"
-        placeholder="영문/숫자/특수문자 포함 8~20 자리"
+        placeholder="사용 중인 비밀번호"
         minLength={8}
         maxLength={20}
         onChange={handleOnChangePassword}
-        validation={showPasswordValidationError}
-        validationErrorMessages={memberError.validation.password}
       />
       <Text fontSize="sm">
         새 비밀번호
