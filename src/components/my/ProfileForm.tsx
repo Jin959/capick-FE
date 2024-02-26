@@ -14,7 +14,7 @@ const ProfileForm = ({memberService}: Props) => {
 
   const member = useContext(MemberContext);
 
-  const onHandleSubmit = (
+  const handleOnSubmit = (
     event: (React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>)
   ) => {
     event.preventDefault();
@@ -23,7 +23,7 @@ const ProfileForm = ({memberService}: Props) => {
 
   return (
     <FormContainer
-      onSubmit={onHandleSubmit}
+      onSubmit={handleOnSubmit}
     >
       <Flex
         justifyContent="space-around"

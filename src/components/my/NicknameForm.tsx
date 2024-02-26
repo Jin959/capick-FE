@@ -19,7 +19,7 @@ const NicknameForm = ({memberService}: Props) => {
     setNickname(nickname => event.target.value);
   }, []);
 
-  const onHandleSubmit = (
+  const handleOnSubmit = (
     event: (React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>)
   ) => {
     event.preventDefault();
@@ -28,7 +28,7 @@ const NicknameForm = ({memberService}: Props) => {
 
   return (
     <FormContainer
-      onSubmit={onHandleSubmit}
+      onSubmit={handleOnSubmit}
     >
       <Text fontSize="sm">
         변경할 닉네임

@@ -21,12 +21,12 @@ const PasswordForm = ({memberService}: Props) => {
   const showPasswordConfirmError: boolean = memberService.isNotPasswordConfirmAndNotEmpty(password.newPassword, password.confirmPassword);
   const disableSubmit: boolean = memberService.isNotValidPasswordChange(password.password, password.newPassword, password.confirmPassword);
 
-  const handleOnChangePassword = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = event.target;
     setPassword(info => ({...info, [name]: value}));
   }, []);
 
-  const onHandleSubmitPassword = (
+  const handleOnSubmit = (
     event: (React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>)
   ) => {
     event.preventDefault();
@@ -34,7 +34,7 @@ const PasswordForm = ({memberService}: Props) => {
 
   return (
     <FormContainer
-      onSubmit={onHandleSubmitPassword}
+      onSubmit={handleOnSubmit}
     >
       <Text fontSize="sm">
         현재 비밀번호
@@ -45,7 +45,7 @@ const PasswordForm = ({memberService}: Props) => {
         placeholder="사용 중인 비밀번호"
         minLength={8}
         maxLength={20}
-        onChange={handleOnChangePassword}
+        onChange={handleOnChange}
       />
       <Text fontSize="sm">
         새 비밀번호
@@ -56,7 +56,7 @@ const PasswordForm = ({memberService}: Props) => {
         placeholder="영문/숫자/특수문자 포함 8~20 자리"
         minLength={8}
         maxLength={20}
-        onChange={handleOnChangePassword}
+        onChange={handleOnChange}
         validation={showNewPasswordValidationError}
         validationErrorMessages={memberError.validation.password}
       />
@@ -66,7 +66,7 @@ const PasswordForm = ({memberService}: Props) => {
         placeholder="비밀번호 확인"
         minLength={8}
         maxLength={20}
-        onChange={handleOnChangePassword}
+        onChange={handleOnChange}
         validation={showPasswordConfirmError}
         validationErrorMessages={memberError.validation.confirmPassword}
       />
