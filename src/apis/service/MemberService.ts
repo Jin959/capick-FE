@@ -1,9 +1,12 @@
 import ApiConfig from "@/apis/ApiConfig";
 import ApiClient from "@/apis/client/ApiClient";
-import MemberCreateRequest from "@/dto/request/MemberCreateRequest";
-import MemberResponse from "@/dto/response/MemberResponse";
-import {isApiResponse} from "@/dto/ApiResponse";
+import {isApiResponse} from "@/apis/dto/ApiResponse";
 import ApiErrorHandler from "@/apis/error/ApiErrorHandler";
+import commonError from "@/apis/error/commonError";
+import MemberCreateRequest from "@/apis/dto/request/MemberCreateRequest";
+import MemberResponse from "@/apis/dto/response/MemberResponse";
+import MemberNicknameRequest from "@/apis/dto/request/MemberNicknameRequest";
+import MemberPasswordRequest from "@/apis/dto/request/MemberPasswordRequest";
 
 class MemberService {
 
@@ -38,7 +41,7 @@ class MemberService {
       if (isApiResponse(error)) {
         ApiErrorHandler(error);
       }
-      throw new Error("클라이언트 앱과 외부 연동 문제가 발생했습니다.\n브라우저 또는 디바이스의 네트워크 설정을 확인해주세요.");
+      throw new Error(commonError.connection);
     }
   }
 
@@ -52,32 +55,86 @@ class MemberService {
       if (isApiResponse(error)) {
         ApiErrorHandler(error);
       }
-      throw new Error("클라이언트 앱과 외부 연동 문제가 발생했습니다.\n브라우저 또는 디바이스의 네트워크 설정을 확인해주세요.");
+      throw new Error(commonError.connection);
+    }
+  }
+
+  public updateMemberNickname = async (memberNicknameRequest: MemberNicknameRequest) => {
+    try {
+      const response = await this.apiClient
+        .patch<MemberResponse, MemberNicknameRequest>("/members/me/nickname", memberNicknameRequest);
+      return response.data ?? this.nullResponse;
+    } catch (error) {
+      console.error(error);
+      if (isApiResponse(error)) {
+        ApiErrorHandler(error);
+      }
+      throw new Error(commonError.connection);
+    }
+  }
+
+  public updateMemberPassword = async (memberPasswordRequest: MemberPasswordRequest) => {
+    this.ifPasswordUnchangedThrow(memberPasswordRequest.password, memberPasswordRequest.newPassword);
+    try {
+      await this.apiClient
+        .patch<void, MemberPasswordRequest>("/members/me/password", memberPasswordRequest);
+    } catch (error) {
+      console.error(error);
+      if (isApiResponse(error)) {
+        ApiErrorHandler(error);
+      }
+      throw new Error(commonError.connection);
     }
   }
 
   public isNotValidMember = (email: string, password: string, nickname: string, confirmPassword: string) => {
-    return email.length === 0 || password.length === 0 || nickname.length === 0
-      || this.isNotValidEmailAndNotEmpty(email) || this.isNotValidPasswordAndNotEmpty(password)
-      || this.isNotValidNicknameAndNotEmpty(nickname) || this.isNotPasswordConfirmAndNotEmpty(password, confirmPassword);
+    return this.isNotValidEmail(email) || this.isNotValidPassword(password)
+      || this.isNotValidNickname(nickname) || this.isNotPasswordConfirm(password, confirmPassword);
+  }
+
+  public isNotValidPasswordChange = (password: string, newPassword: string, confirmPassword: string) => {
+    return password.length === 0
+      || this.isNotValidPassword(newPassword)
+      || this.isNotPasswordConfirm(newPassword, confirmPassword);
   }
 
   public isNotValidEmailAndNotEmpty = (email: string) => {
-    return !this.emailRegExp.test(email) && email.length > 0;
+    return this.isNotValidEmail(email) && email.length > 0;
+  }
+
+  public isNotValidEmail(email: string) {
+    return !this.emailRegExp.test(email);
   }
 
   public isNotValidPasswordAndNotEmpty = (password: string) => {
-    return !this.passwordRegExp.test(password) && password.length > 0;
+    return this.isNotValidPassword(password) && password.length > 0;
+  }
+
+  public isNotValidPassword(password: string) {
+    return !this.passwordRegExp.test(password);
   }
 
   public isNotValidNicknameAndNotEmpty = (nickname: string) => {
-    return !this.nicknameRegExp.test(nickname) && nickname.length > 0;
+    return this.isNotValidNickname(nickname) && nickname.length > 0;
+  }
+
+  public isNotValidNickname(nickname: string) {
+    return !this.nicknameRegExp.test(nickname);
   }
 
   public isNotPasswordConfirmAndNotEmpty = (password: string, confirmPassword: string) => {
-    return password !== confirmPassword && password.length > 0
+    return this.isNotPasswordConfirm(password, confirmPassword) && password.length > 0
   }
 
+  public isNotPasswordConfirm(password: string, confirmPassword: string) {
+    return password !== confirmPassword;
+  }
+
+  private ifPasswordUnchangedThrow(password: string, newPassword: string) {
+    if (password === newPassword) {
+      throw new Error("기존 비밀번호와 새 비밀번호는 같을 수 없습니다. 새로운 비밀번호를 입력해주세요");
+    }
+  }
 }
 
 export default MemberService;

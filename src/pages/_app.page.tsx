@@ -3,7 +3,7 @@ import type {AppProps} from "next/app";
 import {Global} from "@emotion/react";
 import theme from "@/styles/theme";
 import globalStyle from "@/styles/global";
-import Layout from "@/components/Layout";
+import Layout from "@/components/common/Layout";
 import MemberProvider from "@/contexts/member";
 
 export default function App({Component, pageProps}: AppProps) {
