@@ -5,6 +5,7 @@ import {isApiResponse} from "@/dto/ApiResponse";
 import ApiErrorHandler from "@/apis/error/ApiErrorHandler";
 import MemberResponse from "@/dto/response/MemberResponse";
 import MemberNicknameRequest from "@/dto/request/MemberNicknameRequest";
+import MemberPasswordRequest from "@/dto/request/MemberPasswordRequest";
 
 class MemberService {
 
@@ -71,6 +72,20 @@ class MemberService {
     }
   }
 
+  public updateMemberPassword = async (memberPasswordRequest: MemberPasswordRequest) => {
+    this.ifPasswordUnchangedThrow(memberPasswordRequest.password, memberPasswordRequest.newPassword);
+    try {
+      await this.apiClient
+        .patch<void, MemberPasswordRequest>("/members/me/password", memberPasswordRequest);
+    } catch (error) {
+      console.error(error);
+      if (isApiResponse(error)) {
+        ApiErrorHandler(error);
+      }
+      throw new Error("클라이언트 앱과 외부 연동 문제가 발생했습니다.\n브라우저 또는 디바이스의 네트워크 설정을 확인해주세요.");
+    }
+  }
+
   public isNotValidMember = (email: string, password: string, nickname: string, confirmPassword: string) => {
     return this.isNotValidEmail(email) || this.isNotValidPassword(password)
       || this.isNotValidNickname(nickname) || this.isNotPasswordConfirm(password, confirmPassword);
@@ -112,6 +127,12 @@ class MemberService {
 
   public isNotPasswordConfirm(password: string, confirmPassword: string) {
     return password !== confirmPassword;
+  }
+
+  private ifPasswordUnchangedThrow(password: string, newPassword: string) {
+    if (password === newPassword) {
+      throw new Error("기존 비밀번호와 새 비밀번호는 같을 수 없습니다. 새로운 비밀번호를 입력해주세요");
+    }
   }
 }
 
