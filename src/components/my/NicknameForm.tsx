@@ -5,7 +5,6 @@ import memberError from "@/apis/error/memberError";
 import FormContainer from "@/components/common/container/FormContainer";
 import MemberService from "@/apis/service/MemberService";
 import {MemberContext, MemberDispatchContext} from "@/contexts/member";
-import {useRouter} from "next/router";
 
 interface Props {
   memberService: MemberService;
@@ -13,7 +12,6 @@ interface Props {
 
 const NicknameForm = ({memberService}: Props) => {
 
-  const router = useRouter();
   const [nickname, setNickname] = useState("");
   const showNicknameValidationError: boolean = memberService.isNotValidNicknameAndNotEmpty(nickname);
   const disableSubmit: boolean = memberService.isNotValidNickname(nickname);
@@ -39,7 +37,7 @@ const NicknameForm = ({memberService}: Props) => {
         nickname: memberResponse.nickname
       });
       window.alert(`닉네임 변경에 성공했습니다!`);
-      router.reload();
+      setNickname("");
     } catch (error) {
       window.alert(error);
     }
@@ -59,6 +57,7 @@ const NicknameForm = ({memberService}: Props) => {
         minLength={1}
         maxLength={20}
         onChange={handleOnChange}
+        value={nickname}
         validation={showNicknameValidationError}
         validationErrorMessages={memberError.validation.nickname}
       />

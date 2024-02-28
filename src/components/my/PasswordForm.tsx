@@ -4,7 +4,6 @@ import InputWithValidation from "@/components/common/input/InputWithValidation";
 import memberError from "@/apis/error/memberError";
 import FormContainer from "@/components/common/container/FormContainer";
 import MemberService from "@/apis/service/MemberService";
-import {useRouter} from "next/router";
 import {MemberContext} from "@/contexts/member";
 
 interface Props {
@@ -12,8 +11,6 @@ interface Props {
 }
 
 const PasswordForm = ({memberService}: Props) => {
-
-  const router = useRouter();
 
   const [password, setPassword] = useState({
     password: "",
@@ -42,7 +39,11 @@ const PasswordForm = ({memberService}: Props) => {
         newPassword: password.newPassword
       });
       window.alert(`비밀번호 변경에 성공했습니다!`);
-      router.reload();
+      setPassword({
+        password: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
     } catch (error) {
       window.alert(error);
     }
@@ -62,6 +63,7 @@ const PasswordForm = ({memberService}: Props) => {
         minLength={8}
         maxLength={20}
         onChange={handleOnChange}
+        value={password.password}
       />
       <Text fontSize="sm">
         새 비밀번호
@@ -73,6 +75,7 @@ const PasswordForm = ({memberService}: Props) => {
         minLength={8}
         maxLength={20}
         onChange={handleOnChange}
+        value={password.newPassword}
         validation={showNewPasswordValidationError}
         validationErrorMessages={memberError.validation.password}
       />
@@ -83,6 +86,7 @@ const PasswordForm = ({memberService}: Props) => {
         minLength={8}
         maxLength={20}
         onChange={handleOnChange}
+        value={password.confirmPassword}
         validation={showPasswordConfirmError}
         validationErrorMessages={memberError.validation.confirmPassword}
       />

@@ -8,6 +8,7 @@ interface Props {
   minLength?: number;
   maxLength?: number;
   inputRef?: React.RefObject<HTMLInputElement>;
+  value?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   validation: boolean;
   validationErrorMessages: Array<string>;
@@ -41,6 +42,7 @@ const InputWithValidation = (props: Props) => {
         minLength={props.minLength}
         maxLength={props.maxLength}
         ref={props.inputRef}
+        value={props.value}
         onChange={props.onChange}
       />
       {props.validation &&
