@@ -1,4 +1,4 @@
-import ApiResponse from "@/dto/ApiResponse";
+import ApiResponse from "@/apis/dto/ApiResponse";
 
 const ApiErrorHandler = (error: ApiResponse<object | undefined>) => {
   if (400 <= error.code && error.code < 500) {

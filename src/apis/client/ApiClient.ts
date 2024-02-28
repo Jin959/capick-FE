@@ -1,4 +1,4 @@
-import ApiResponse from "@/dto/ApiResponse";
+import ApiResponse from "@/apis/dto/ApiResponse";
 
 interface ApiClient {
 
