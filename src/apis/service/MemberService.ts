@@ -2,6 +2,7 @@ import ApiConfig from "@/apis/ApiConfig";
 import ApiClient from "@/apis/client/ApiClient";
 import {isApiResponse} from "@/apis/dto/ApiResponse";
 import ApiErrorHandler from "@/apis/error/ApiErrorHandler";
+import commonError from "@/apis/error/commonError";
 import MemberCreateRequest from "@/apis/dto/request/MemberCreateRequest";
 import MemberResponse from "@/apis/dto/response/MemberResponse";
 import MemberNicknameRequest from "@/apis/dto/request/MemberNicknameRequest";
@@ -40,7 +41,7 @@ class MemberService {
       if (isApiResponse(error)) {
         ApiErrorHandler(error);
       }
-      throw new Error("클라이언트 앱과 외부 연동 문제가 발생했습니다.\n브라우저 또는 디바이스의 네트워크 설정을 확인해주세요.");
+      throw new Error(commonError.connection);
     }
   }
 
@@ -54,7 +55,7 @@ class MemberService {
       if (isApiResponse(error)) {
         ApiErrorHandler(error);
       }
-      throw new Error("클라이언트 앱과 외부 연동 문제가 발생했습니다.\n브라우저 또는 디바이스의 네트워크 설정을 확인해주세요.");
+      throw new Error(commonError.connection);
     }
   }
 
@@ -68,7 +69,7 @@ class MemberService {
       if (isApiResponse(error)) {
         ApiErrorHandler(error);
       }
-      throw new Error("클라이언트 앱과 외부 연동 문제가 발생했습니다.\n브라우저 또는 디바이스의 네트워크 설정을 확인해주세요.");
+      throw new Error(commonError.connection);
     }
   }
 
@@ -82,7 +83,7 @@ class MemberService {
       if (isApiResponse(error)) {
         ApiErrorHandler(error);
       }
-      throw new Error("클라이언트 앱과 외부 연동 문제가 발생했습니다.\n브라우저 또는 디바이스의 네트워크 설정을 확인해주세요.");
+      throw new Error(commonError.connection);
     }
   }
 
