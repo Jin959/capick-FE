@@ -57,16 +57,18 @@ const Header = () => {
           로그인
         </Button>
       ) : (
-        <Flex
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Text as='b'>
-            {member.nickname}
-          </Text>
-          <Box p="2"/>
-          <Avatar src={member.profile?.imageUrl}/>
-        </Flex>
+        <Link href="my">
+          <Flex
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Text as='b'>
+              {member.nickname}
+            </Text>
+            <Box p="2"/>
+            <Avatar src={member.profile?.imageUrl}/>
+          </Flex>
+        </Link>
       )}
     </Flex>
   );
