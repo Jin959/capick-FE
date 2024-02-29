@@ -7,6 +7,7 @@ import MemberCreateRequest from "@/apis/dto/request/MemberCreateRequest";
 import MemberResponse from "@/apis/dto/response/MemberResponse";
 import MemberNicknameRequest from "@/apis/dto/request/MemberNicknameRequest";
 import MemberPasswordRequest from "@/apis/dto/request/MemberPasswordRequest";
+import MemberDeleteRequest from "@/apis/dto/request/MemberDeleteRequest";
 
 class MemberService {
 
@@ -87,6 +88,20 @@ class MemberService {
     }
   }
 
+  public deleteMember = async (memberDeleteRequest: MemberDeleteRequest) => {
+    this.ifNotAgreeWarningThrow(memberDeleteRequest.agreement);
+    try {
+      await this.apiClient
+        .delete<void>(`/members/${memberDeleteRequest.id}`);
+    } catch (error) {
+      console.error(error);
+      if (isApiResponse(error)) {
+        ApiErrorHandler(error);
+      }
+      throw new Error(commonError.connection);
+    }
+  }
+
   public isNotValidMember = (email: string, password: string, nickname: string, confirmPassword: string) => {
     return this.isNotValidEmail(email) || this.isNotValidPassword(password)
       || this.isNotValidNickname(nickname) || this.isNotPasswordConfirm(password, confirmPassword);
@@ -133,6 +148,12 @@ class MemberService {
   private ifPasswordUnchangedThrow(password: string, newPassword: string) {
     if (password === newPassword) {
       throw new Error("기존 비밀번호와 새 비밀번호는 같을 수 없습니다. 새로운 비밀번호를 입력해주세요");
+    }
+  }
+
+  private ifNotAgreeWarningThrow(agreement: boolean) {
+    if (!agreement) {
+      throw new Error("탈퇴 주의 사항을 확인하고 동의해주세요.");
     }
   }
 }

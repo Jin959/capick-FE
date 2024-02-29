@@ -1,7 +1,9 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import MemberService from "@/apis/service/MemberService";
 import {Button, Checkbox, ListItem, UnorderedList} from "@chakra-ui/react";
 import BoxContainer from "@/components/common/container/BoxContainer";
+import {MemberContext} from "@/contexts/member";
+import {useRouter} from "next/router";
 
 interface Props {
   memberService: MemberService;
@@ -10,12 +12,25 @@ interface Props {
 const CloseAccountBox = ({memberService}: Props) => {
 
   const [agreement, setAgreement] = useState(false);
+  const member = useContext(MemberContext);
+  const router = useRouter();
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAgreement(event.target.checked);
   };
 
-  const handleOnClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClick = async () => {
+    try {
+      await memberService.deleteMember({
+        id: member.id,
+        agreement: agreement
+      });
+      window.alert("그동안 이용해주셔서 감사합니다. 탈퇴처리 되었습니다.");
+      router.replace("/")
+        .then(() => router.reload());
+    } catch (error) {
+      window.alert(error);
+    }
   };
 
   return (
