@@ -1,7 +1,7 @@
 import ApiConfig from "@/apis/ApiConfig";
 import ApiClient from "@/apis/client/ApiClient";
 import {isApiResponse} from "@/apis/dto/ApiResponse";
-import ApiErrorHandler from "@/apis/error/ApiErrorHandler";
+import {handleOnApiError} from "@/apis/error/errorHandler";
 import commonError from "@/apis/error/commonError";
 import MemberCreateRequest from "@/apis/dto/request/MemberCreateRequest";
 import MemberResponse from "@/apis/dto/response/MemberResponse";
@@ -40,7 +40,7 @@ class MemberService {
     } catch (error) {
       console.error(error);
       if (isApiResponse(error)) {
-        ApiErrorHandler(error);
+        handleOnApiError(error);
       }
       throw new Error(commonError.connection);
     }
@@ -54,7 +54,7 @@ class MemberService {
     } catch (error) {
       console.error(error);
       if (isApiResponse(error)) {
-        ApiErrorHandler(error);
+        handleOnApiError(error);
       }
       throw new Error(commonError.connection);
     }
@@ -68,7 +68,7 @@ class MemberService {
     } catch (error) {
       console.error(error);
       if (isApiResponse(error)) {
-        ApiErrorHandler(error);
+        handleOnApiError(error);
       }
       throw new Error(commonError.connection);
     }
@@ -82,7 +82,7 @@ class MemberService {
     } catch (error) {
       console.error(error);
       if (isApiResponse(error)) {
-        ApiErrorHandler(error);
+        handleOnApiError(error);
       }
       throw new Error(commonError.connection);
     }
@@ -96,7 +96,7 @@ class MemberService {
     } catch (error) {
       console.error(error);
       if (isApiResponse(error)) {
-        ApiErrorHandler(error);
+        handleOnApiError(error);
       }
       throw new Error(commonError.connection);
     }
