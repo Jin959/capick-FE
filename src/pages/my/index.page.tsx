@@ -1,12 +1,13 @@
 import React from 'react';
 import {NextPage} from "next";
-import {Box, Button, Heading, ListItem, UnorderedList} from "@chakra-ui/react";
+import {Box, Button, Heading} from "@chakra-ui/react";
 import PageFlexContainer from "@/components/common/container/PageFlexContainer";
 import BackButton from "@/components/common/button/BackButton";
 import ProfileForm from "@/components/my/ProfileForm";
 import NicknameForm from "@/components/my/NicknameForm";
 import PasswordForm from "@/components/my/PasswordForm";
 import useMemberService from "@/hooks/service/useMemberService";
+import CloseAccountBox from "@/components/my/CloseAccountBox";
 
 const My: NextPage = () => {
 
@@ -52,17 +53,9 @@ const My: NextPage = () => {
         <Heading size="md" textAlign="center">
           회원탈퇴
         </Heading>
-        <UnorderedList
-          color="red"
-        >
-          <ListItem>회원 탈퇴 이후 계정을 복구할 수 없습니다.</ListItem>
-          <ListItem>회원 탈퇴를 하게 되면 더이상 리뷰, 댓글과 같이 작성한 글을 수정 및 삭제 할 수 없습니다.</ListItem>
-        </UnorderedList>
-        <Button
-          colorScheme="red"
-        >
-          회원탈퇴
-        </Button>
+        <CloseAccountBox
+          memberService={memberService}
+        />
       </PageFlexContainer>
     </>
   );
