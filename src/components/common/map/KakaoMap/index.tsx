@@ -1,11 +1,8 @@
 import {useEffect, useRef, useState} from 'react';
 import {Box} from "@chakra-ui/react";
-
-declare global {
-  interface Window {
-    kakao: any;
-  }
-}
+import {KakaoMap, MapOption} from "@/types/kakao/Maps";
+import {Status} from "@/types/kakao/Services";
+import KakaoMapSearchResult from "@/types/kakao/dto/KakaoMapSearchResult";
 
 interface Position {
   latitude: number;
@@ -22,9 +19,9 @@ const KakaoMap = () => {
   const [currentPosition, setCurrentPosition] = useState<Position>({
     latitude: 37.571648599,
     longitude: 126.976372775
-  })
-  const [map, setMap] = useState<any>({})
-  const [nearbyCafes, setNearbyCafes] = useState<Array<object>>([]);
+  });
+  const [map, setMap] = useState<KakaoMap | null>(null);
+  const [nearbyCafes, setNearbyCafes] = useState<Array<KakaoMapSearchResult>>([]);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -44,49 +41,53 @@ const KakaoMap = () => {
 
   useEffect(() => {
     window.kakao.maps.load(() => {
-      const {kakao} = window;
-      const mapOption = {
-        center: new kakao.maps.LatLng(currentPosition.latitude, currentPosition.longitude),
-        level: KAKAO_MAP_DEFAULT_LEVEL
-      };
-      const map = new kakao.maps.Map(mapRef.current, mapOption);
-      setMap(map);
+      if (mapRef.current !== null) {
+        const {kakao} = window;
+        const mapOption: MapOption = {
+          center: new kakao.maps.LatLng(currentPosition.latitude, currentPosition.longitude),
+          level: KAKAO_MAP_DEFAULT_LEVEL
+        };
+        const map = new kakao.maps.Map(mapRef.current, mapOption);
+        setMap(map);
 
-      map.setMinLevel(KAKAO_MAP_MIN_LEVEL);
-      map.setMaxLevel(KAKAO_MAP_MAX_LEVEL);
+        map.setMinLevel(KAKAO_MAP_MIN_LEVEL);
+        map.setMaxLevel(KAKAO_MAP_MAX_LEVEL);
 
-      map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.TOPRIGHT);
+        map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.TOPRIGHT);
 
-      const places = new kakao.maps.services.Places(map);
-      const callback = (result: any, status: any) => {
-        if (status === kakao.maps.services.Status.OK) {
-          setNearbyCafes(result);
-        }
-      };
-      places.categorySearch("CE7", callback, {
-        useMapCenter: true,
-        radius: 1000
-      });
+        const places = new kakao.maps.services.Places(map);
+        const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
+          if (status === kakao.maps.services.Status.OK) {
+            setNearbyCafes(result);
+          }
+        };
+        places.categorySearch("CE7", callback, {
+          useMapCenter: true,
+          radius: 1000
+        });
+      }
     });
   }, [currentPosition]);
 
   useEffect(() => {
-    window.kakao.maps.load(() => {
-      const {kakao} = window;
-      nearbyCafes.map((cafe: any) => {
-        const marker = new kakao.maps.Marker({
-          map: map,
-          position: new kakao.maps.LatLng(cafe.y, cafe.x),
-          title: cafe.place_name
-        });
-        const infoWindow = new kakao.maps.InfoWindow({
-          content: `<div style="padding: 3px; width: max-content;">
-                      ${cafe.place_name}
-                    </div>`
-        });
-        infoWindow.open(map, marker);
+      window.kakao.maps.load(() => {
+        if (map !== null) {
+          const {kakao} = window;
+          nearbyCafes.map((cafe: KakaoMapSearchResult) => {
+            const marker = new kakao.maps.Marker({
+              map: map,
+              position: new kakao.maps.LatLng(cafe.y, cafe.x),
+              title: cafe.place_name
+            });
+            const infoWindow = new kakao.maps.InfoWindow({
+              content: `<div style="padding: 3px; width: max-content;">
+                        ${cafe.place_name}
+                      </div>`
+            });
+            infoWindow.open(map, marker);
+          });
+        }
       });
-    });
   }, [nearbyCafes, map]);
 
   return (
