@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
 import {Box} from "@chakra-ui/react";
-import {KakaoMap, MapOption} from "@/types/kakao/Maps";
+import {InfoWindow, KakaoMap, MapOption, Marker} from "@/types/kakao/Maps";
 import {Status} from "@/types/kakao/Services";
 import KakaoMapSearchResult from "@/types/kakao/dto/KakaoMapSearchResult";
 
@@ -11,7 +11,43 @@ interface Position {
 
 const KAKAO_MAP_MIN_LEVEL = 1;
 const KAKAO_MAP_MAX_LEVEL = 8;
-const KAKAO_MAP_DEFAULT_LEVEL = 4;
+const KAKAO_MAP_DEFAULT_LEVEL = 5;
+
+const paintCafeMarkers = (map: KakaoMap, nearbyCafes: Array<KakaoMapSearchResult>): {
+  markers: Array<Marker>, infoWindows: Array<InfoWindow>
+} => {
+  const {kakao} = window;
+  const markers: Array<Marker> = [];
+  const infoWindows: Array<InfoWindow> = [];
+  nearbyCafes.map((cafe: KakaoMapSearchResult) => {
+    const marker = new kakao.maps.Marker({
+      map: map,
+      position: new kakao.maps.LatLng(cafe.y, cafe.x),
+      title: cafe.place_name
+    });
+    markers.push(marker);
+    const infoWindow = new kakao.maps.InfoWindow({
+      content: `<div style="padding: 3px; width: max-content;">
+                        ${cafe.place_name}
+                      </div>`
+    });
+    infoWindow.open(map, marker);
+    infoWindows.push(infoWindow);
+  });
+  return {markers, infoWindows};
+};
+
+const eraseCafeMarkers = (markers: Array<Marker>) => {
+  markers.map((marker: Marker) => {
+    marker.setMap(null);
+  });
+};
+
+const eraseCafeInfoWindows = (infoWindows: Array<InfoWindow>) => {
+  infoWindows.map((infoWindow: InfoWindow) => {
+    infoWindow.close();
+  });
+};
 
 const KakaoMap = () => {
 
@@ -22,6 +58,8 @@ const KakaoMap = () => {
   });
   const [map, setMap] = useState<KakaoMap | null>(null);
   const [nearbyCafes, setNearbyCafes] = useState<Array<KakaoMapSearchResult>>([]);
+  const markersRef = useRef<Array<Marker>>([]);
+  const infoWindowsRef = useRef<Array<InfoWindow>>([]);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -55,6 +93,18 @@ const KakaoMap = () => {
 
         map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.TOPRIGHT);
 
+        kakao.maps.event.addListener(map, 'idle', () => {
+          const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
+            if (status === kakao.maps.services.Status.OK) {
+              setNearbyCafes(result);
+            }
+          };
+          places.categorySearch("CE7", callback, {
+            useMapCenter: true,
+            radius: 1000
+          });
+        });
+
         const places = new kakao.maps.services.Places(map);
         const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
           if (status === kakao.maps.services.Status.OK) {
@@ -70,24 +120,15 @@ const KakaoMap = () => {
   }, [currentPosition]);
 
   useEffect(() => {
-      window.kakao.maps.load(() => {
-        if (map !== null) {
-          const {kakao} = window;
-          nearbyCafes.map((cafe: KakaoMapSearchResult) => {
-            const marker = new kakao.maps.Marker({
-              map: map,
-              position: new kakao.maps.LatLng(cafe.y, cafe.x),
-              title: cafe.place_name
-            });
-            const infoWindow = new kakao.maps.InfoWindow({
-              content: `<div style="padding: 3px; width: max-content;">
-                        ${cafe.place_name}
-                      </div>`
-            });
-            infoWindow.open(map, marker);
-          });
-        }
-      });
+    window.kakao.maps.load(() => {
+      if (map !== null) {
+        eraseCafeMarkers(markersRef.current);
+        eraseCafeInfoWindows(infoWindowsRef.current);
+        const labels = paintCafeMarkers(map, nearbyCafes);
+        markersRef.current = labels.markers;
+        infoWindowsRef.current = labels.infoWindows;
+      }
+    });
   }, [nearbyCafes, map]);
 
   return (
