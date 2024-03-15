@@ -1,4 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
+import {NextRouter, useRouter} from "next/router";
 import {Box} from "@chakra-ui/react";
 import {InfoWindow, KakaoMap, MapOption, Marker} from "@/types/kakao/Maps";
 import {Status} from "@/types/kakao/Services";
@@ -13,7 +14,7 @@ const KAKAO_MAP_MIN_LEVEL = 1;
 const KAKAO_MAP_MAX_LEVEL = 8;
 const KAKAO_MAP_DEFAULT_LEVEL = 5;
 
-const paintCafeMarkers = (map: KakaoMap, nearbyCafes: Array<KakaoMapSearchResult>): {
+const paintCafeMarkers = (map: KakaoMap, nearbyCafes: Array<KakaoMapSearchResult>, router: NextRouter): {
   markers: Array<Marker>, infoWindows: Array<InfoWindow>
 } => {
   const {kakao} = window;
@@ -26,6 +27,23 @@ const paintCafeMarkers = (map: KakaoMap, nearbyCafes: Array<KakaoMapSearchResult
       title: cafe.place_name
     });
     markers.push(marker);
+    kakao.maps.event.addListener(marker, 'click', () => router.push(
+      {
+        pathname: `/cafes/${cafe.place_name}/${cafe.id}`,
+        query: {
+          kakaoPlaceId: cafe.id,
+          name: cafe.place_name,
+          phone: cafe.phone,
+          address: cafe.address_name,
+          roadAddress: cafe.road_address_name,
+          longitude: cafe.x,
+          latitude: cafe.y,
+          detailPageUrl: cafe.place_url,
+          distance: cafe.distance
+        },
+      },
+      `/cafes/${cafe.place_name}/${cafe.id}`
+    ));
     const infoWindow = new kakao.maps.InfoWindow({
       content: `<div style="padding: 3px; width: max-content;">
                         ${cafe.place_name}
@@ -60,6 +78,7 @@ const KakaoMap = () => {
   const [nearbyCafes, setNearbyCafes] = useState<Array<KakaoMapSearchResult>>([]);
   const markersRef = useRef<Array<Marker>>([]);
   const infoWindowsRef = useRef<Array<InfoWindow>>([]);
+  const router = useRouter();
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -124,12 +143,12 @@ const KakaoMap = () => {
       if (map !== null) {
         eraseCafeMarkers(markersRef.current);
         eraseCafeInfoWindows(infoWindowsRef.current);
-        const labels = paintCafeMarkers(map, nearbyCafes);
+        const labels = paintCafeMarkers(map, nearbyCafes, router);
         markersRef.current = labels.markers;
         infoWindowsRef.current = labels.infoWindows;
       }
     });
-  }, [nearbyCafes, map]);
+  }, [nearbyCafes, map, router]);
 
   return (
     <>
