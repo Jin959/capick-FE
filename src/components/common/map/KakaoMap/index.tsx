@@ -112,15 +112,14 @@ const KakaoMap = () => {
 
         map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.TOPRIGHT);
 
-        kakao.maps.event.addListener(map, 'idle', () => {
+        kakao.maps.event.addListener(map, 'dragend', () => {
           const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
             if (status === kakao.maps.services.Status.OK) {
               setNearbyCafes(result);
             }
           };
           places.categorySearch("CE7", callback, {
-            useMapCenter: true,
-            radius: 1000
+            useMapBounds: true
           });
         });
 
