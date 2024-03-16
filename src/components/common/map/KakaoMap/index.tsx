@@ -3,12 +3,9 @@ import {NextRouter, useRouter} from "next/router";
 import {Box} from "@chakra-ui/react";
 import {InfoWindow, KakaoMap, MapOption, Marker} from "@/types/kakao/Maps";
 import {Status} from "@/types/kakao/Services";
+import useMapService from "@/hooks/service/useMapService";
 import KakaoMapSearchResult from "@/types/kakao/dto/KakaoMapSearchResult";
-
-interface Position {
-  latitude: number;
-  longitude: number;
-}
+import Position from "@/apis/dto/response/Position";
 
 const KAKAO_MAP_MIN_LEVEL = 1;
 const KAKAO_MAP_MAX_LEVEL = 8;
@@ -79,22 +76,17 @@ const KakaoMap = () => {
   const markersRef = useRef<Array<Marker>>([]);
   const infoWindowsRef = useRef<Array<InfoWindow>>([]);
   const router = useRouter();
+  const mapService = useMapService();
 
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position: GeolocationPosition) => {
-          setCurrentPosition({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          });
-        },
-        () => {
-          window.alert("기기 및 브라우저 위치 접근 권한을 켜주세요!");
-        }
-      );
-    }
-  }, []);
+    mapService.getCurrentPosition()
+      .then((position) => {
+        setCurrentPosition({
+          latitude: position.latitude,
+          longitude: position.longitude
+      });
+    });
+  }, [mapService]);
 
   useEffect(() => {
     window.kakao.maps.load(() => {
