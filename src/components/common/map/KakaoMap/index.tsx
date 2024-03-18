@@ -84,8 +84,9 @@ const KakaoMap = () => {
         setCurrentPosition({
           latitude: position.latitude,
           longitude: position.longitude
-      });
-    });
+        });
+      })
+      .catch(error => window.alert(error));
   }, [mapService]);
 
   useEffect(() => {
