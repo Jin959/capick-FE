@@ -7,14 +7,21 @@ import {Status} from "@/types/kakao/Services";
 
 class MapService {
 
-  private readonly KAKAO_MAP_MIN_LEVEL: MapLevel;
-  private readonly KAKAO_MAP_MAX_LEVEL: MapLevel;
-  private readonly KAKAO_MAP_DEFAULT_LEVEL: MapLevel;
+  private static readonly KAKAO_MAP_MIN_LEVEL: MapLevel = 1;
+  private static readonly KAKAO_MAP_MAX_LEVEL: MapLevel = 8;
+  private static readonly KAKAO_MAP_DEFAULT_LEVEL: MapLevel = 5;
+
+  private currentPosition: Position;
+  private map: KakaoMap | null;
+  private nearbyCafes: Array<KakaoMapSearchResult>;
 
   private constructor() {
-    this.KAKAO_MAP_MIN_LEVEL = 1;
-    this.KAKAO_MAP_MAX_LEVEL = 8;
-    this.KAKAO_MAP_DEFAULT_LEVEL = 5;
+    this.currentPosition = {
+      latitude: 37.571648599,
+      longitude: 126.976372775
+    };
+    this.map = null;
+    this.nearbyCafes = [];
   }
 
   public static create = (): MapService => {
@@ -27,10 +34,11 @@ class MapService {
         if ("geolocation" in navigator) {
           navigator.geolocation.getCurrentPosition(
             (position: GeolocationPosition) => {
-              resolve({
+              this.currentPosition = {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude
-              })
+              };
+              resolve(this.currentPosition);
             },
             (error: GeolocationPositionError) => {
               if (error.code === error.PERMISSION_DENIED) {
@@ -51,24 +59,29 @@ class MapService {
     });
   }
 
-  public getKakaoMap = (mapDivElement: HTMLDivElement, currentPosition: Position): Promise<KakaoMap> => {
+  public getKakaoMap = (mapDivElement: HTMLDivElement): Promise<KakaoMap> => {
     return new Promise((resolve, reject) => {
       try {
+        if (this.map !== null) {
+          resolve(this.map);
+        }
+
         window.kakao.maps.load(() => {
           const {kakao} = window;
 
           const mapOption: MapOption = {
-            center: new kakao.maps.LatLng(currentPosition.latitude, currentPosition.longitude),
-            level: this.KAKAO_MAP_DEFAULT_LEVEL
+            center: new kakao.maps.LatLng(this.currentPosition.latitude, this.currentPosition.longitude),
+            level: MapService.KAKAO_MAP_DEFAULT_LEVEL
           };
 
-          const map = new kakao.maps.Map(mapDivElement, mapOption);
-          map.setMinLevel(this.KAKAO_MAP_MIN_LEVEL);
+          const newMap = new kakao.maps.Map(mapDivElement, mapOption);
+          newMap.setMinLevel(MapService.KAKAO_MAP_MIN_LEVEL);
 
-          map.setMaxLevel(this.KAKAO_MAP_MAX_LEVEL);
-          map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.TOPRIGHT);
+          newMap.setMaxLevel(MapService.KAKAO_MAP_MAX_LEVEL);
+          newMap.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.TOPRIGHT);
 
-          resolve(map);
+          this.map = newMap;
+          resolve(newMap);
         });
       } catch (error) {
         reject(new Error(mapError.kakaoMap.loading));
@@ -76,23 +89,26 @@ class MapService {
     });
   }
 
-  public getNearbyCafesOnKakaoMap = (map: KakaoMap): Promise<Array<KakaoMapSearchResult>> => {
+  public getNearbyCafesOnKakaoMap = (): Promise<Array<KakaoMapSearchResult>> => {
     return new Promise((resolve, reject) => {
       try {
         window.kakao.maps.load(() => {
-          const {kakao} = window;
-          const places = new kakao.maps.services.Places(map);
-          const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
-            if (status === kakao.maps.services.Status.OK) {
-              resolve(result);
-            } else if (status === kakao.maps.services.Status.ERROR) {
-              reject(new Error(mapError.kakaoMap.search));
-            }
-          };
-          places.categorySearch("CE7", callback, {
-            useMapCenter: true,
-            radius: 1000
-          });
+          if (this.map !== null) {
+            const {kakao} = window;
+            const places = new kakao.maps.services.Places(this.map);
+            const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
+              if (status === kakao.maps.services.Status.OK) {
+                this.nearbyCafes = result;
+                resolve(result);
+              } else if (status === kakao.maps.services.Status.ERROR) {
+                reject(new Error(mapError.kakaoMap.search));
+              }
+            };
+            places.categorySearch("CE7", callback, {
+              useMapCenter: true,
+              radius: 1000
+            });
+          }
         });
       } catch (error) {
         reject(new Error(mapError.kakaoMap.cafes));

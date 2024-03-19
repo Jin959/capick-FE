@@ -5,7 +5,6 @@ import {InfoWindow, KakaoMap, Marker} from "@/types/kakao/Maps";
 import {Status} from "@/types/kakao/Services";
 import useMapService from "@/hooks/service/useMapService";
 import KakaoMapSearchResult from "@/types/kakao/dto/KakaoMapSearchResult";
-import Position from "@/apis/dto/response/Position";
 
 const paintCafeMarkers = (map: KakaoMap, nearbyCafes: Array<KakaoMapSearchResult>, router: NextRouter): {
   markers: Array<Marker>, infoWindows: Array<InfoWindow>
@@ -63,10 +62,7 @@ const eraseCafeInfoWindows = (infoWindows: Array<InfoWindow>) => {
 const KakaoMap = () => {
 
   const mapRef = useRef<HTMLDivElement>(null);
-  const [currentPosition, setCurrentPosition] = useState<Position>({
-    latitude: 37.571648599,
-    longitude: 126.976372775
-  });
+  // TODO: map, nearbyCafes, markersRef, infoWindowsRef 와 같은 것이 굳이 해당 뷰에서 가져야할 책임이 아닐 수 있다. 확인 후 MapService 에 책임을 위임하기
   const [map, setMap] = useState<KakaoMap | null>(null);
   const [nearbyCafes, setNearbyCafes] = useState<Array<KakaoMapSearchResult>>([]);
   const markersRef = useRef<Array<Marker>>([]);
@@ -75,33 +71,23 @@ const KakaoMap = () => {
   const mapService = useMapService();
 
   useEffect(() => {
-    mapService.getCurrentPosition()
-      .then((position) => {
-        setCurrentPosition({
-          latitude: position.latitude,
-          longitude: position.longitude
-        });
-      })
-      .catch(error => window.alert(error));
+    (async () => {
+      await mapService.getCurrentPosition()
+        .catch(error => window.alert(error));
+      try {
+        if (mapRef.current !== null) {
+          await mapService.getKakaoMap(mapRef.current);
+          await mapService.getNearbyCafesOnKakaoMap();
+        }
+      } catch (error) {
+        window.alert(error);
+      }
+    })();
   }, [mapService]);
 
-  useEffect(() => {
-    if (mapRef.current !== null) {
-      mapService.getKakaoMap(mapRef.current, currentPosition)
-        .then((map) => {
-          setMap(map);
-        })
-        .catch(error => window.alert(error));
-    }
-  }, [currentPosition]);
-
+  // TODO: 지도 객체에 이벤트 리스너를 다는 행위인 해당 Effect 함수를 서비스 객체로 위임하려면 setNearbyCafes 를 파라미터로 추가 하는 문제가 있음.
   useEffect(() => {
     if (map !== null) {
-      mapService.getNearbyCafesOnKakaoMap(map)
-        .then((cafes) => {
-          setNearbyCafes(cafes);
-        })
-        .catch(error => window.alert(error));
       window.kakao.maps.load(() => {
         const {kakao} = window;
         const places = new kakao.maps.services.Places(map);
