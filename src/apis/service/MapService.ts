@@ -84,7 +84,7 @@ class MapService {
           resolve(newMap);
         });
       } catch (error) {
-        reject(new Error(mapError.kakaoMap.loading));
+        reject(new Error(mapError.kakaoMap.loadingMap));
       }
     });
   }
@@ -101,17 +101,19 @@ class MapService {
                 this.nearbyCafes = result;
                 resolve(result);
               } else if (status === kakao.maps.services.Status.ERROR) {
-                reject(new Error(mapError.kakaoMap.search));
+                reject(new Error(mapError.kakaoMap.searchPlace));
               }
             };
             places.categorySearch("CE7", callback, {
               useMapCenter: true,
               radius: 1000
             });
+          } else {
+            reject(new Error(mapError.kakaoMap.noMap));
           }
         });
       } catch (error) {
-        reject(new Error(mapError.kakaoMap.cafes));
+        reject(new Error(mapError.kakaoMap.loadingCafes));
       }
     });
   }
