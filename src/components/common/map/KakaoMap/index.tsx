@@ -2,7 +2,6 @@ import {useEffect, useRef, useState} from 'react';
 import {NextRouter, useRouter} from "next/router";
 import {Box} from "@chakra-ui/react";
 import {InfoWindow, KakaoMap, Marker} from "@/types/kakao/Maps";
-import {Status} from "@/types/kakao/Services";
 import useMapService from "@/hooks/service/useMapService";
 import KakaoMapSearchResult from "@/types/kakao/dto/KakaoMapSearchResult";
 
@@ -78,33 +77,13 @@ const KakaoMap = () => {
         if (mapRef.current !== null) {
           await mapService.getKakaoMap(mapRef.current);
           await mapService.getNearbyCafesOnKakaoMap();
+          await mapService.addKakaoMapListenerToGetCafesOn("dragend");
         }
       } catch (error) {
         window.alert(error);
       }
     })();
   }, [mapService]);
-
-  // TODO: 지도 객체에 이벤트 리스너를 다는 행위인 해당 Effect 함수를 서비스 객체로 위임하려면 setNearbyCafes 를 파라미터로 추가 하는 문제가 있음.
-  useEffect(() => {
-    if (map !== null) {
-      window.kakao.maps.load(() => {
-        const {kakao} = window;
-        const places = new kakao.maps.services.Places(map);
-
-        kakao.maps.event.addListener(map, 'dragend', () => {
-          const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
-            if (status === kakao.maps.services.Status.OK) {
-              setNearbyCafes(result);
-            }
-          };
-          places.categorySearch("CE7", callback, {
-            useMapBounds: true
-          });
-        });
-      });
-    }
-  }, [map]);
 
   useEffect(() => {
     window.kakao.maps.load(() => {

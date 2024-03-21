@@ -1,7 +1,7 @@
 import Position from "@/apis/dto/response/Position";
 import mapError from "@/apis/error/mapError";
 import commonError from "@/apis/error/commonError";
-import {KakaoMap, MapLevel, MapOption} from "@/types/kakao/Maps";
+import {KakaoMap, MapEvent, MapLevel, MapOption} from "@/types/kakao/Maps";
 import KakaoMapSearchResult from "@/types/kakao/dto/KakaoMapSearchResult";
 import {Status} from "@/types/kakao/Services";
 
@@ -114,6 +114,40 @@ class MapService {
         });
       } catch (error) {
         reject(new Error(mapError.kakaoMap.loadingCafes));
+      }
+    });
+  }
+
+  public addKakaoMapListenerToGetCafesOn = (eventType: MapEvent) => {
+    return new Promise((resolve, reject) => {
+      try {
+        window.kakao.maps.load(() => {
+          if (this.map !== null) {
+            const {kakao} = window;
+            const places = new kakao.maps.services.Places(this.map);
+
+            kakao.maps.event.addListener(this.map, eventType, () => {
+              places.categorySearch("CE7", this.handleOnDragendKakaoMap, {
+                useMapBounds: true
+              });
+            });
+          } else {
+            reject(new Error(mapError.kakaoMap.noMap));
+          }
+        });
+      } catch (error) {
+        reject(new Error(mapError.kakaoMap.loadingEvents));
+      }
+    });
+  }
+
+  private handleOnDragendKakaoMap = (result: Array<KakaoMapSearchResult>, status: Status) => {
+    window.kakao.maps.load(() => {
+      const {kakao} = window;
+      if (status === kakao.maps.services.Status.OK) {
+        this.nearbyCafes = result;
+      } else if (status === kakao.maps.services.Status.ERROR) {
+        window.alert(mapError.kakaoMap.searchPlace);
       }
     });
   }

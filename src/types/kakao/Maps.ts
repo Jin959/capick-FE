@@ -103,9 +103,17 @@ export interface Point {
 }
 
 export interface Event {
-  addListener: (target: EventTarget, type: string, handler: EventHandler) => void;
-  removeListener: (target: EventTarget, type: string, handler: EventHandler) => void;
+  addListener: (target: EventTarget, type: MapEvent | MarkerEvent, handler: EventHandler) => void;
+  removeListener: (target: EventTarget, type: MapEvent | MarkerEvent, handler: EventHandler) => void;
 }
+
+export type MapEvent = "center_changed" | "zoom_start" | "zoom_changed"
+  | "bounds_changed" | "click" | "dblclick"
+  | "rightclick" | "mousemove" | "dragstart"
+  | "drag" | "dragend" | "idle"
+  | "tilesloaded" | "maptypeid_changed";
+
+export type MarkerEvent = "click" | "mouseover" | "mouseout" | "rightclick" | "dragstart" | "dragend";
 
 type EventTarget = KakaoMap | Marker;
 
