@@ -75,9 +75,9 @@ const KakaoMap = () => {
         .catch(error => window.alert(error));
       try {
         if (mapRef.current !== null) {
-          await mapService.getKakaoMap(mapRef.current);
-          await mapService.getNearbyCafesOnKakaoMap();
-          await mapService.addKakaoMapListenerToGetCafesOn("dragend");
+          await mapService.getMap(mapRef.current);
+          await mapService.getNearbyCafes();
+          await mapService.addMapListenerToGetCafesOn("dragend");
         }
       } catch (error) {
         window.alert(error);

@@ -1,6 +1,5 @@
 import Position from "@/apis/dto/response/Position";
 import mapError from "@/apis/error/mapError";
-import commonError from "@/apis/error/commonError";
 import {KakaoMap, MapEvent, MapLevel, MapOption} from "@/types/kakao/Maps";
 import KakaoMapSearchResult from "@/types/kakao/dto/KakaoMapSearchResult";
 import {Status} from "@/types/kakao/Services";
@@ -28,44 +27,36 @@ class MapService {
     return new MapService();
   }
 
-  public getCurrentPosition = (): Promise<Position> => {
+  public getCurrentPosition = () => {
     return new Promise((resolve, reject) => {
-      try {
-        if ("geolocation" in navigator) {
-          navigator.geolocation.getCurrentPosition(
-            (position: GeolocationPosition) => {
-              this.currentPosition = {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude
-              };
-              resolve(this.currentPosition);
-            },
-            (error: GeolocationPositionError) => {
-              if (error.code === error.PERMISSION_DENIED) {
-                reject(new Error(mapError.geolocation.permission));
-              } else if (error.code === error.POSITION_UNAVAILABLE) {
-                reject(new Error(mapError.geolocation.positionUnavailable))
-              } else if (error.code === error.TIMEOUT) {
-                reject(new Error(mapError.geolocation.timeout));
-              }
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position: GeolocationPosition) => {
+            this.currentPosition = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            };
+            resolve(this.currentPosition);
+          },
+          (error: GeolocationPositionError) => {
+            if (error.code === error.PERMISSION_DENIED) {
+              reject(mapError.geolocation.permission);
+            } else if (error.code === error.POSITION_UNAVAILABLE) {
+              reject(mapError.geolocation.positionUnavailable);
+            } else if (error.code === error.TIMEOUT) {
+              reject(mapError.geolocation.timeout);
             }
-          );
-        } else {
-          reject(new Error(mapError.geolocation.compatibility));
-        }
-      } catch (error) {
-        reject(new Error(commonError.internalClient));
+          }
+        );
+      } else {
+        reject(mapError.geolocation.compatibility);
       }
     });
   }
 
-  public getKakaoMap = (mapDivElement: HTMLDivElement): Promise<KakaoMap> => {
-    return new Promise((resolve, reject) => {
-      try {
-        if (this.map !== null) {
-          resolve(this.map);
-        }
-
+  public getMap = async (mapDivElement: HTMLDivElement) => {
+    try {
+      if (this.map === null) {
         window.kakao.maps.load(() => {
           const {kakao} = window;
 
@@ -81,75 +72,59 @@ class MapService {
           newMap.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.TOPRIGHT);
 
           this.map = newMap;
-          resolve(newMap);
         });
-      } catch (error) {
-        reject(new Error(mapError.kakaoMap.loadingMap));
       }
-    });
+      return this.map;
+    } catch (error) {
+      throw new Error(mapError.kakaoMap.loadingMap);
+    }
   }
 
-  public getNearbyCafesOnKakaoMap = (): Promise<Array<KakaoMapSearchResult>> => {
+  public getNearbyCafes = () => {
     return new Promise((resolve, reject) => {
-      try {
-        window.kakao.maps.load(() => {
-          if (this.map !== null) {
-            const {kakao} = window;
-            const places = new kakao.maps.services.Places(this.map);
-            const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
-              if (status === kakao.maps.services.Status.OK) {
-                this.nearbyCafes = result;
-                resolve(result);
-              } else if (status === kakao.maps.services.Status.ERROR) {
-                reject(new Error(mapError.kakaoMap.searchPlace));
-              }
-            };
-            places.categorySearch("CE7", callback, {
-              useMapCenter: true,
-              radius: 1000
-            });
-          } else {
-            reject(new Error(mapError.kakaoMap.noMap));
-          }
-        });
-      } catch (error) {
-        reject(new Error(mapError.kakaoMap.loadingCafes));
-      }
+      window.kakao.maps.load(() => {
+        if (this.map !== null) {
+          const {kakao} = window;
+          const places = new kakao.maps.services.Places(this.map);
+          places.categorySearch("CE7", this.fetchNearbyCafes, {
+            useMapCenter: true,
+            radius: 1000
+          });
+          resolve(this.nearbyCafes);
+        } else {
+          reject(mapError.kakaoMap.noMap);
+        }
+      });
     });
   }
 
-  public addKakaoMapListenerToGetCafesOn = (eventType: MapEvent) => {
+  public addMapListenerToGetCafesOn = (eventType: MapEvent) => {
     return new Promise((resolve, reject) => {
-      try {
-        window.kakao.maps.load(() => {
-          if (this.map !== null) {
-            const {kakao} = window;
-            const places = new kakao.maps.services.Places(this.map);
+      window.kakao.maps.load(() => {
+        if (this.map !== null) {
+          const {kakao} = window;
+          const places = new kakao.maps.services.Places(this.map);
 
-            kakao.maps.event.addListener(this.map, eventType, () => {
-              places.categorySearch("CE7", this.handleOnDragendKakaoMap, {
-                useMapBounds: true
-              });
+          kakao.maps.event.addListener(this.map, eventType, () => {
+            places.categorySearch("CE7", this.fetchNearbyCafes, {
+              useMapBounds: true
             });
-          } else {
-            reject(new Error(mapError.kakaoMap.noMap));
-          }
-        });
-      } catch (error) {
-        reject(new Error(mapError.kakaoMap.loadingEvents));
-      }
+          });
+          resolve("SUCCESS");
+        } else {
+          reject(mapError.kakaoMap.noMap);
+        }
+      });
     });
   }
 
-  private handleOnDragendKakaoMap = (result: Array<KakaoMapSearchResult>, status: Status) => {
-    window.kakao.maps.load(() => {
-      const {kakao} = window;
-      if (status === kakao.maps.services.Status.OK) {
-        this.nearbyCafes = result;
-      } else if (status === kakao.maps.services.Status.ERROR) {
-        window.alert(mapError.kakaoMap.searchPlace);
-      }
-    });
+  private fetchNearbyCafes = (result: Array<KakaoMapSearchResult>, status: Status) => {
+    const {kakao} = window;
+    if (status === kakao.maps.services.Status.OK) {
+      this.nearbyCafes = result;
+    } else if (status === kakao.maps.services.Status.ERROR) {
+      window.alert(mapError.kakaoMap.searchPlace);
+    }
   }
 
 }
