@@ -91,11 +91,19 @@ class MapService {
         if (this.map !== null) {
           const {kakao} = window;
           const places = new kakao.maps.services.Places(this.map);
-          places.categorySearch("CE7", this.fetchNearbyCafes, {
+
+          const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
+            if (status === kakao.maps.services.Status.OK) {
+              this.nearbyCafes = result;
+              resolve(result);
+            } else if (status === kakao.maps.services.Status.ERROR) {
+              reject(new Error(mapError.kakaoMap.searchPlace));
+            }
+          };
+          places.categorySearch("CE7", callback, {
             useMapCenter: true,
             radius: 1000
           });
-          resolve(this.nearbyCafes);
         } else {
           reject(mapError.kakaoMap.noMap);
         }
