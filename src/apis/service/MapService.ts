@@ -1,8 +1,9 @@
 import Position from "@/apis/dto/response/Position";
 import mapError from "@/apis/error/mapError";
-import {KakaoMap, MapEvent, MapLevel, MapOption} from "@/types/kakao/Maps";
+import {InfoWindow, KakaoMap, MapEvent, MapLevel, MapOption, Marker} from "@/types/kakao/Maps";
 import KakaoMapSearchResult from "@/types/kakao/dto/KakaoMapSearchResult";
 import {Status} from "@/types/kakao/Services";
+import {NextRouter} from "next/router";
 
 class MapService {
 
@@ -13,6 +14,8 @@ class MapService {
   private currentPosition: Position;
   private map: KakaoMap | null;
   private nearbyCafes: Array<KakaoMapSearchResult>;
+  private markers: Array<Marker>;
+  private infoWindows: Array<InfoWindow>;
 
   private constructor() {
     this.currentPosition = {
@@ -21,6 +24,8 @@ class MapService {
     };
     this.map = null;
     this.nearbyCafes = [];
+    this.markers = [];
+    this.infoWindows = [];
   }
 
   public static create = (): MapService => {
@@ -118,6 +123,53 @@ class MapService {
     });
   }
 
+  public createCafeMarkers = (router: NextRouter) => {
+    return new Promise((resolve, reject) => {
+      window.kakao.maps.load(() => {
+        const {kakao} = window;
+        this.nearbyCafes.map((cafe: KakaoMapSearchResult) => {
+          if (this.map !== null) {
+            const marker = new kakao.maps.Marker({
+              map: this.map,
+              position: new kakao.maps.LatLng(cafe.y, cafe.x),
+              title: cafe.place_name
+            });
+            this.markers.push(marker);
+
+            kakao.maps.event.addListener(marker, 'click', () => router.push(
+              {
+                pathname: `/cafes/${cafe.place_name}/${cafe.id}`,
+                query: {
+                  kakaoPlaceId: cafe.id,
+                  name: cafe.place_name,
+                  phone: cafe.phone,
+                  address: cafe.address_name,
+                  roadAddress: cafe.road_address_name,
+                  longitude: cafe.x,
+                  latitude: cafe.y,
+                  detailPageUrl: cafe.place_url,
+                  distance: cafe.distance
+                },
+              },
+              `/cafes/${cafe.place_name}/${cafe.id}`
+            ));
+
+            const infoWindow = new kakao.maps.InfoWindow({
+              content: `<div style="padding: 3px; width: max-content;">
+                        ${cafe.place_name}
+                      </div>`
+            });
+            infoWindow.open(this.map, marker);
+            this.infoWindows.push(infoWindow);
+          } else {
+            reject(mapError.kakaoMap.noMap);
+          }
+        });
+        resolve("SUCCESS");
+      });
+    });
+  }
+
   private fetchNearbyCafes = (result: Array<KakaoMapSearchResult>, status: Status) => {
     const {kakao} = window;
     if (status === kakao.maps.services.Status.OK) {
@@ -125,6 +177,18 @@ class MapService {
     } else if (status === kakao.maps.services.Status.ERROR) {
       window.alert(mapError.kakaoMap.searchPlace);
     }
+  }
+
+  private deleteCafeMarkers = () => {
+    this.markers.map((marker: Marker) => {
+      marker.setMap(null);
+    });
+  }
+
+  private deleteCafeInfoWindows = () => {
+    this.infoWindows.map((infoWindow: InfoWindow) => {
+      infoWindow.close();
+    });
   }
 
 }
