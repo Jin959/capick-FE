@@ -85,7 +85,7 @@ class MapService {
     }
   }
 
-  public getNearbyCafes = () => {
+  public getNearbyCafesWithMarker = (router: NextRouter) => {
     return new Promise((resolve, reject) => {
       window.kakao.maps.load(() => {
         if (this.map !== null) {
@@ -95,11 +95,14 @@ class MapService {
           const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
             if (status === kakao.maps.services.Status.OK) {
               this.nearbyCafes = result;
+              this.createCafeMarkersAndInfoWindows(router)
+                .catch(error => window.alert(error));
               resolve(result);
             } else if (status === kakao.maps.services.Status.ERROR) {
               reject(new Error(mapError.kakaoMap.searchPlace));
             }
-          };
+          }
+
           places.categorySearch("CE7", callback, {
             useMapCenter: true,
             radius: 1000
@@ -121,11 +124,21 @@ class MapService {
           kakao.maps.event.addListener(this.map, eventType, () => {
             this.deleteCafeMarkers();
             this.deleteCafeInfoWindows();
-            places.categorySearch("CE7", this.fetchNearbyCafes, {
+
+            const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
+              const {kakao} = window;
+              if (status === kakao.maps.services.Status.OK) {
+                this.nearbyCafes = result;
+                this.createCafeMarkersAndInfoWindows(router)
+                  .catch(error => window.alert(error));
+              } else if (status === kakao.maps.services.Status.ERROR) {
+                window.alert(mapError.kakaoMap.searchPlace);
+              }
+            }
+
+            places.categorySearch("CE7", callback, {
               useMapBounds: true
             });
-            this.createCafeMarkers(router)
-              .catch(error => window.alert(error));
           });
           resolve("SUCCESS");
         } else {
@@ -135,60 +148,49 @@ class MapService {
     });
   }
 
-  public createCafeMarkers = (router: NextRouter) => {
+  private createCafeMarkersAndInfoWindows = (router: NextRouter) => {
     return new Promise((resolve, reject) => {
-      window.kakao.maps.load(() => {
-        const {kakao} = window;
-        this.nearbyCafes.map((cafe: KakaoMapSearchResult) => {
-          if (this.map !== null) {
-            const marker = new kakao.maps.Marker({
-              map: this.map,
-              position: new kakao.maps.LatLng(cafe.y, cafe.x),
-              title: cafe.place_name
-            });
-            this.markers.push(marker);
+      const {kakao} = window;
+      this.nearbyCafes.map((cafe: KakaoMapSearchResult) => {
+        if (this.map !== null) {
+          const marker = new kakao.maps.Marker({
+            map: this.map,
+            position: new kakao.maps.LatLng(cafe.y, cafe.x),
+            title: cafe.place_name
+          });
+          this.markers.push(marker);
 
-            kakao.maps.event.addListener(marker, 'click', () => router.push(
-              {
-                pathname: `/cafes/${cafe.place_name}/${cafe.id}`,
-                query: {
-                  kakaoPlaceId: cafe.id,
-                  name: cafe.place_name,
-                  phone: cafe.phone,
-                  address: cafe.address_name,
-                  roadAddress: cafe.road_address_name,
-                  longitude: cafe.x,
-                  latitude: cafe.y,
-                  detailPageUrl: cafe.place_url,
-                  distance: cafe.distance
-                },
+          kakao.maps.event.addListener(marker, 'click', () => router.push(
+            {
+              pathname: `/cafes/${cafe.place_name}/${cafe.id}`,
+              query: {
+                kakaoPlaceId: cafe.id,
+                name: cafe.place_name,
+                phone: cafe.phone,
+                address: cafe.address_name,
+                roadAddress: cafe.road_address_name,
+                longitude: cafe.x,
+                latitude: cafe.y,
+                detailPageUrl: cafe.place_url,
+                distance: cafe.distance
               },
-              `/cafes/${cafe.place_name}/${cafe.id}`
-            ));
+            },
+            `/cafes/${cafe.place_name}/${cafe.id}`
+          ));
 
-            const infoWindow = new kakao.maps.InfoWindow({
-              content: `<div style="padding: 3px; width: max-content;">
+          const infoWindow = new kakao.maps.InfoWindow({
+            content: `<div style="padding: 3px; width: max-content;">
                         ${cafe.place_name}
                       </div>`
-            });
-            infoWindow.open(this.map, marker);
-            this.infoWindows.push(infoWindow);
-          } else {
-            reject(mapError.kakaoMap.noMap);
-          }
-        });
-        resolve("SUCCESS");
+          });
+          infoWindow.open(this.map, marker);
+          this.infoWindows.push(infoWindow);
+        } else {
+          reject(mapError.kakaoMap.noMap);
+        }
       });
+      resolve("SUCCESS");
     });
-  }
-
-  private fetchNearbyCafes = (result: Array<KakaoMapSearchResult>, status: Status) => {
-    const {kakao} = window;
-    if (status === kakao.maps.services.Status.OK) {
-      this.nearbyCafes = result;
-    } else if (status === kakao.maps.services.Status.ERROR) {
-      window.alert(mapError.kakaoMap.searchPlace);
-    }
   }
 
   private deleteCafeMarkers = () => {
