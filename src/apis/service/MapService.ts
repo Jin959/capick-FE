@@ -111,7 +111,7 @@ class MapService {
     });
   }
 
-  public addMapListenerToGetCafesOn = (eventType: MapEvent) => {
+  public addMapListenerToGetCafesOn = (eventType: MapEvent, router: NextRouter) => {
     return new Promise((resolve, reject) => {
       window.kakao.maps.load(() => {
         if (this.map !== null) {
@@ -119,9 +119,13 @@ class MapService {
           const places = new kakao.maps.services.Places(this.map);
 
           kakao.maps.event.addListener(this.map, eventType, () => {
+            this.deleteCafeMarkers();
+            this.deleteCafeInfoWindows();
             places.categorySearch("CE7", this.fetchNearbyCafes, {
               useMapBounds: true
             });
+            this.createCafeMarkers(router)
+              .catch(error => window.alert(error));
           });
           resolve("SUCCESS");
         } else {
@@ -191,12 +195,14 @@ class MapService {
     this.markers.map((marker: Marker) => {
       marker.setMap(null);
     });
+    this.markers = [];
   }
 
   private deleteCafeInfoWindows = () => {
     this.infoWindows.map((infoWindow: InfoWindow) => {
       infoWindow.close();
     });
+    this.infoWindows = [];
   }
 
 }

@@ -17,7 +17,7 @@ const KakaoMap = () => {
         if (mapRef.current !== null) {
           await mapService.getMap(mapRef.current);
           await mapService.getNearbyCafes();
-          await mapService.addMapListenerToGetCafesOn("dragend");
+          await mapService.addMapListenerToGetCafesOn("dragend", router);
           await mapService.createCafeMarkers(router);
         }
       } catch (error) {
