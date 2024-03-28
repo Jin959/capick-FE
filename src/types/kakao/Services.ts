@@ -1,5 +1,5 @@
 import {LatLng, LatLngBounds, KakaoMap} from "@/types/kakao/Maps";
-import KakaoMapSearchResult from "@/types/kakao/dto/KakaoMapSearchResult";
+import MapKakaoSearchResponse from "@/apis/dto/response/MapKakaoSearchResponse";
 
 interface Services {
   Places: Places;
@@ -17,7 +17,7 @@ export interface Places {
   categorySearch: (code: string, callback: SearchCallback, options: SearchOption) => void;
 }
 
-export type SearchCallback = (result: Array<KakaoMapSearchResult>, status: Status, pagination: Pagination) => void;
+export type SearchCallback = (result: Array<MapKakaoSearchResponse>, status: Status, pagination: Pagination) => void;
 
 export interface SearchOption {
   category_group_code?: string;

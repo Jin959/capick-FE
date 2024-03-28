@@ -1,4 +1,4 @@
-interface KakaoMapSearchResult {
+interface MapKakaoSearchResponse {
   id: number;
   place_name: string;
   category_name: string;
@@ -13,4 +13,4 @@ interface KakaoMapSearchResult {
   distance: string;
 }
 
-export default KakaoMapSearchResult;
+export default MapKakaoSearchResponse;

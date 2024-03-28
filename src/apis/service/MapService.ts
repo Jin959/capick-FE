@@ -1,7 +1,7 @@
 import Position from "@/apis/dto/response/Position";
 import mapError from "@/apis/error/mapError";
 import {InfoWindow, KakaoMap, MapEvent, MapLevel, MapOption, Marker} from "@/types/kakao/Maps";
-import KakaoMapSearchResult from "@/types/kakao/dto/KakaoMapSearchResult";
+import MapKakaoSearchResponse from "@/apis/dto/response/MapKakaoSearchResponse";
 import {Status} from "@/types/kakao/Services";
 import {NextRouter} from "next/router";
 
@@ -13,7 +13,7 @@ class MapService {
 
   private currentPosition: Position;
   private map: KakaoMap | null;
-  private nearbyCafes: Array<KakaoMapSearchResult>;
+  private nearbyCafes: Array<MapKakaoSearchResponse>;
   private markers: Array<Marker>;
   private infoWindows: Array<InfoWindow>;
 
@@ -92,7 +92,7 @@ class MapService {
           const {kakao} = window;
           const places = new kakao.maps.services.Places(this.map);
 
-          const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
+          const callback = (result: Array<MapKakaoSearchResponse>, status: Status) => {
             if (status === kakao.maps.services.Status.OK) {
               this.nearbyCafes = result;
               this.createCafeMarkersAndInfoWindows(router)
@@ -125,7 +125,7 @@ class MapService {
             this.deleteCafeMarkers();
             this.deleteCafeInfoWindows();
 
-            const callback = (result: Array<KakaoMapSearchResult>, status: Status) => {
+            const callback = (result: Array<MapKakaoSearchResponse>, status: Status) => {
               const {kakao} = window;
               if (status === kakao.maps.services.Status.OK) {
                 this.nearbyCafes = result;
@@ -151,7 +151,7 @@ class MapService {
   private createCafeMarkersAndInfoWindows = (router: NextRouter) => {
     return new Promise((resolve, reject) => {
       const {kakao} = window;
-      this.nearbyCafes.map((cafe: KakaoMapSearchResult) => {
+      this.nearbyCafes.map((cafe: MapKakaoSearchResponse) => {
         if (this.map !== null) {
           const marker = new kakao.maps.Marker({
             map: this.map,
