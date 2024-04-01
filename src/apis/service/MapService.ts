@@ -90,7 +90,7 @@ class MapService {
       window.kakao.maps.load(() => {
         if (this.map !== null) {
           const {kakao} = window;
-          this.map.panTo(new kakao.maps.LatLng(this.currentPosition.latitude, this.currentPosition.longitude));
+          this.map.setCenter(new kakao.maps.LatLng(this.currentPosition.latitude, this.currentPosition.longitude));
           resolve("SUCCESS");
         } else {
           reject(mapError.kakaoMap.noMap);
