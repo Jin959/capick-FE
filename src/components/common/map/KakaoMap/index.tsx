@@ -2,6 +2,7 @@ import {useEffect, useRef} from 'react';
 import {useRouter} from "next/router";
 import {Box} from "@chakra-ui/react";
 import useMapService from "@/hooks/service/useMapService";
+import PositionTrackingButton from "@/components/common/map/KakaoMap/PositionTrackingButton";
 
 const KakaoMap = () => {
 
@@ -31,6 +32,9 @@ const KakaoMap = () => {
         w="full"
         h="70vh"
         ref={mapRef}
+      />
+      <PositionTrackingButton
+        mapService={mapService}
       />
     </>
   );

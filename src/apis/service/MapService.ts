@@ -85,6 +85,20 @@ class MapService {
     }
   }
 
+  public panMapToCurrentPosition = () => {
+    return new Promise((resolve, reject) => {
+      window.kakao.maps.load(() => {
+        if (this.map !== null) {
+          const {kakao} = window;
+          this.map.panTo(new kakao.maps.LatLng(this.currentPosition.latitude, this.currentPosition.longitude));
+          resolve("SUCCESS");
+        } else {
+          reject(mapError.kakaoMap.noMap);
+        }
+      });
+    })
+  }
+
   public getNearbyCafesWithMarker = (router: NextRouter) => {
     return new Promise((resolve, reject) => {
       window.kakao.maps.load(() => {
