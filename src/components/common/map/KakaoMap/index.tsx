@@ -31,11 +31,14 @@ const KakaoMap = () => {
       <Box
         w="full"
         h="70vh"
+        zIndex="base"
         ref={mapRef}
-      />
-      <PositionTrackingButton
-        mapService={mapService}
-      />
+      >
+        <PositionTrackingButton
+          zIndex="docked"
+          mapService={mapService}
+        />
+      </Box>
     </>
   );
 };
