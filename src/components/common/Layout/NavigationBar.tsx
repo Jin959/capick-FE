@@ -11,7 +11,7 @@ const NavigationBar = () => {
   const NavigationContents = [
     {
       id: 1,
-      link: "/",
+      link: "/map",
       name: "내 근처",
       icon: LocationIcon,
       alt: "Nearby"
