@@ -180,7 +180,6 @@ class MapService {
               query: {
                 kakaoPlaceId: cafe.id,
                 name: cafe.place_name,
-                phone: cafe.phone,
                 address: cafe.address_name,
                 roadAddress: cafe.road_address_name,
                 longitude: cafe.x,
