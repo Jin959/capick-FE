@@ -11,17 +11,17 @@ import {
 import {Button, Input} from "@chakra-ui/react";
 import reviewConstant from "@/constants/reviewConstant";
 
-interface ChoiceOption {
+interface Option {
   id: number;
-  option: string;
+  content: string;
 }
 
-const createVisitPurposeOptionsWithId = (visitPurposes: Array<string>) => {
+const createOptionsWithId = (options: Array<string>) => {
   let id = 1;
-  return visitPurposes.map(
-    (visitPurpose) => ({
+  return options.map(
+    (data) => ({
       id: id++,
-      option: visitPurpose
+      content: data
     })
   );
 }
@@ -29,8 +29,9 @@ const createVisitPurposeOptionsWithId = (visitPurposes: Array<string>) => {
 const ReviewCreatModal = () => {
 
   const [isOpen, setIsOpen] = useState(false);
+  const [surveyType, setSurveyType] = useState("visitPurpose");
 
-  const visitPurposeOptions: Array<ChoiceOption> = createVisitPurposeOptionsWithId(reviewConstant.survey.visitPurpose);
+  const surveyOptions: Array<Option> = createOptionsWithId(reviewConstant.survey.option[surveyType]);
 
   return (
     <>
@@ -51,7 +52,7 @@ const ReviewCreatModal = () => {
           <ModalHeader
             m="0 auto"
           >
-            뭐하러 갔어요?
+            {reviewConstant.survey.question[surveyType]}
           </ModalHeader>
           <ModalCloseButton/>
           <ModalBody
@@ -61,33 +62,40 @@ const ReviewCreatModal = () => {
             alignItems="center"
           >
             {
-              visitPurposeOptions.map(visitPurposeOption =>
+              surveyOptions.map(option =>
                 <Button
-                  key={visitPurposeOption.id}
+                  key={option.id}
                   m="1"
                   w="90%"
                   colorScheme="subBrand"
                   color="black"
                 >
-                  {visitPurposeOption.option}
+                  {option.content}
                 </Button>)
             }
-            <Input
-              placeholder="직접입력"
-              _placeholder={{opacity: 1, color: "black", fontWeight: "bold", textAlign: "center"}}
-              m="1"
-              w="90%"
-              bg="subBrand.500"
-              variant="filled"
-              focusBorderColor="brand.main"
-            />
+            {reviewConstant.survey.directInputPlaceholder[surveyType] &&
+              <Input
+                placeholder={reviewConstant.survey.directInputPlaceholder[surveyType]}
+                _placeholder={{opacity: 1, color: "black", fontWeight: "bold", textAlign: "center"}}
+                m="1"
+                w="90%"
+                bg="subBrand.500"
+                variant="filled"
+                focusBorderColor="brand.main"
+              />
+            }
           </ModalBody>
           <ModalFooter>
-            <Button>
+            <Button
+              // TODO: 이전 서베이를 가져오는 핸들러 개발 및 비즈니스 로직 연동
+              onClick={() => setSurveyType("visitPurpose")}
+            >
               이전
             </Button>
             <Button
               variant='ghost'
+              // TODO: 다음 서베이를 가져오는 핸들러 개발 및 비즈니스 로직 연동
+              onClick={() => setSurveyType("theme")}
             >
               다음
             </Button>
