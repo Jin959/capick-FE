@@ -9,17 +9,7 @@ import {
   ModalOverlay
 } from "@chakra-ui/modal";
 import {Button, Input} from "@chakra-ui/react";
-
-const visitPurposes = [
-  "가성비 때문에 갔어요",
-  "커피가 맛있어요",
-  "넓어서 갔어요",
-  "수다 떨기 좋아서요",
-  "애완동물을 데려 갈 수 있어서 갔어요",
-  "일하거나 책읽고 공부하려고요",
-  "모니터가 있어요",
-  "회의실이 있어요"
-];
+import reviewConstant from "@/constants/reviewConstant";
 
 interface ChoiceOption {
   id: number;
@@ -40,7 +30,7 @@ const ReviewCreatModal = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const visitPurposeOptions: Array<ChoiceOption> = createVisitPurposeOptionsWithId(visitPurposes);
+  const visitPurposeOptions: Array<ChoiceOption> = createVisitPurposeOptionsWithId(reviewConstant.survey.visitPurpose);
 
   return (
     <>
