@@ -10,28 +10,14 @@ import {
 } from "@chakra-ui/modal";
 import {Button, Input} from "@chakra-ui/react";
 import reviewConstant from "@/constants/reviewConstant";
-
-interface Option {
-  id: number;
-  content: string;
-}
-
-const createOptionsWithId = (options: Array<string>) => {
-  let id = 1;
-  return options.map(
-    (data) => ({
-      id: id++,
-      content: data
-    })
-  );
-}
+import {createDataWithId} from "@/utils/func";
 
 const ReviewCreatModal = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [surveyType, setSurveyType] = useState("visitPurpose");
 
-  const surveyOptions: Array<Option> = createOptionsWithId(reviewConstant.survey.option[surveyType]);
+  const surveyOptions = createDataWithId(reviewConstant.survey.option[surveyType]);
 
   return (
     <>
@@ -70,7 +56,7 @@ const ReviewCreatModal = () => {
                   colorScheme="subBrand"
                   color="black"
                 >
-                  {option.content}
+                  {option.data}
                 </Button>)
             }
             {reviewConstant.survey.directInputPlaceholder[surveyType] &&
