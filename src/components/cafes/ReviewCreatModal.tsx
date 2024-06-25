@@ -11,13 +11,38 @@ import {
 import {Button, Input} from "@chakra-ui/react";
 import reviewConstant from "@/constants/reviewConstant";
 import {createDataWithId} from "@/utils/func";
+import ReviewService from "@/apis/service/ReviewService";
 
-const ReviewCreatModal = () => {
+interface Props {
+  reviewService: ReviewService;
+}
+
+const ReviewCreatModal = ({reviewService}: Props) => {
 
   const [isOpen, setIsOpen] = useState(false);
-  const [surveyType, setSurveyType] = useState("visitPurpose");
+  const [surveyType, setSurveyType] = useState(reviewService.getFirstSurvey);
 
   const surveyOptions = createDataWithId(reviewConstant.survey.option[surveyType]);
+
+  const showContentTextarea: boolean = reviewService.isSurveyEnd(surveyType);
+  const showDirectInputPlaceholder: boolean = reviewService.isNeedDirectInput(surveyType);
+
+  const handleOnCloseModal = () => {
+    setIsOpen(false);
+    setSurveyType(reviewService.getFirstSurvey());
+  }
+
+  const handleOnClickBefore = () => {
+    setSurveyType(reviewService.getBeforeSurveyType(surveyType));
+  };
+
+  const handleOnClickNext = () => {
+    if (!reviewService.isSurveyEnd(surveyType)) {
+      setSurveyType(reviewService.getNextSurveyType(surveyType));
+    } else {
+      // setIsOpen(false);
+    }
+  };
 
   return (
     <>
@@ -29,66 +54,82 @@ const ReviewCreatModal = () => {
       </Button>
       <Modal
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={handleOnCloseModal}
         isCentered
         scrollBehavior="inside"
       >
         <ModalOverlay/>
         <ModalContent>
-          <ModalHeader
-            m="0 auto"
-          >
-            {reviewConstant.survey.question[surveyType]}
-          </ModalHeader>
           <ModalCloseButton/>
-          <ModalBody
+          {showContentTextarea ? (
+            <>
+              <ModalHeader
+                m="0 auto"
+              >
+                한마디
+              </ModalHeader>
+              {/*// TODO: 리뷰 내용 작성 기능 개발하기, 이 부분만 다르게 할지 아예 다른 모달로 분리할지 고민하기*/}
+              <ModalBody>
+              </ModalBody>
+            </>
+          ) : (
+            <>
+              <ModalHeader
+                m="0 auto"
+              >
+                {reviewConstant.survey.question[surveyType]}
+              </ModalHeader>
+              <ModalBody
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-around"
+                alignItems="center"
+              >
+                {
+                  surveyOptions.map(option =>
+                    <Button
+                      key={option.id}
+                      m="1"
+                      w="90%"
+                      colorScheme="subBrand"
+                      color="black"
+                    >
+                      {option.data}
+                    </Button>)
+                }
+                {showDirectInputPlaceholder &&
+                  <Input
+                    placeholder={reviewConstant.survey.directInputPlaceholder[surveyType]}
+                    _placeholder={{opacity: 1, color: "black", fontWeight: "bold", textAlign: "center"}}
+                    m="1"
+                    w="90%"
+                    bg="subBrand.500"
+                    variant="filled"
+                    focusBorderColor="brand.main"
+                  />
+                }
+              </ModalBody>
+            </>
+          )}
+          <ModalFooter
             display="flex"
-            flexDirection="column"
             justifyContent="space-around"
             alignItems="center"
           >
-            {
-              surveyOptions.map(option =>
-                <Button
-                  key={option.id}
-                  m="1"
-                  w="90%"
-                  colorScheme="subBrand"
-                  color="black"
-                >
-                  {option.data}
-                </Button>)
-            }
-            {reviewConstant.survey.directInputPlaceholder[surveyType] &&
-              <Input
-                placeholder={reviewConstant.survey.directInputPlaceholder[surveyType]}
-                _placeholder={{opacity: 1, color: "black", fontWeight: "bold", textAlign: "center"}}
-                m="1"
-                w="90%"
-                bg="subBrand.500"
-                variant="filled"
-                focusBorderColor="brand.main"
-              />
-            }
-          </ModalBody>
-          <ModalFooter>
             <Button
-              // TODO: 이전 서베이를 가져오는 핸들러 개발 및 비즈니스 로직 연동
-              onClick={() => setSurveyType("visitPurpose")}
+              onClick={handleOnClickBefore}
             >
               이전
             </Button>
             <Button
               variant='ghost'
-              // TODO: 다음 서베이를 가져오는 핸들러 개발 및 비즈니스 로직 연동
-              onClick={() => setSurveyType("theme")}
+              onClick={handleOnClickNext}
             >
               다음
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-      {/*// TODO: 리뷰 내용 작성 모달*/}
     </>
   );
 };
