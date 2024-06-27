@@ -18,20 +18,22 @@ interface Props {
   reviewService: ReviewService;
 }
 
+const initialReview = {
+  visitPurpose: "",
+  content: "",
+  menu: "",
+  coffeeIndex: "",
+  priceIndex: "",
+  spaceIndex: "",
+  noiseIndex: "",
+  theme: ""
+};
+
 const ReviewCreatModal = ({reviewService}: Props) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [surveyType, setSurveyType] = useState(reviewService.getFirstSurvey);
-  const [review, setReview] = useState<StringMap<string>>({
-    visitPurpose: "",
-    content: "",
-    menu: "",
-    coffeeIndex: "",
-    priceIndex: "",
-    spaceIndex: "",
-    noiseIndex: "",
-    theme: ""
-  });
+  const [review, setReview] = useState<StringMap<string>>(initialReview);
 
   const surveyOptions = createDataWithId(reviewConstant.survey.option[surveyType]);
 
@@ -41,16 +43,7 @@ const ReviewCreatModal = ({reviewService}: Props) => {
   const handleOnCloseModal = () => {
     setIsOpen(false);
     setSurveyType(reviewService.getFirstSurvey());
-    setReview({
-      visitPurpose: "",
-      content: "",
-      menu: "",
-      coffeeIndex: "",
-      priceIndex: "",
-      spaceIndex: "",
-      noiseIndex: "",
-      theme: ""
-    });
+    setReview(initialReview);
   }
 
   const handleOnClickBefore = () => {
@@ -64,16 +57,7 @@ const ReviewCreatModal = ({reviewService}: Props) => {
   const handleOnClickDone = () => {
     setIsOpen(false);
     setSurveyType(reviewService.getFirstSurvey());
-    setReview({
-      visitPurpose: "",
-      content: "",
-      menu: "",
-      coffeeIndex: "",
-      priceIndex: "",
-      spaceIndex: "",
-      noiseIndex: "",
-      theme: ""
-    });
+    setReview(initialReview);
   }
 
   const handleOnClickSurveyOption = (event: React.MouseEvent<HTMLButtonElement>) => {
