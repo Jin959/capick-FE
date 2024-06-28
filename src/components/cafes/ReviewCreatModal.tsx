@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Modal,
   ModalBody,
@@ -13,9 +13,22 @@ import reviewConstant from "@/constants/reviewConstant";
 import {createDataWithId} from "@/utils/func";
 import ReviewService from "@/apis/service/ReviewService";
 import {StringMap} from "@/types/common";
+import {MemberContext} from "@/contexts/member";
+import {useRouter} from "next/router";
 
 interface Props {
   reviewService: ReviewService;
+  cafe: {
+    name: string;
+    kakaoPlaceId: string;
+    kakaoDetailPageUrl: string;
+    location?: {
+      latitude: number;
+      longitude: number;
+      address: string;
+      roadAddress: string;
+    };
+  };
 }
 
 const initialReview = {
@@ -29,7 +42,9 @@ const initialReview = {
   theme: ""
 };
 
-const ReviewCreatModal = ({reviewService}: Props) => {
+const ReviewCreatModal = ({reviewService, cafe}: Props) => {
+
+  const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
   const [surveyType, setSurveyType] = useState(reviewService.getFirstSurvey);
@@ -39,6 +54,8 @@ const ReviewCreatModal = ({reviewService}: Props) => {
 
   const showContentTextarea: boolean = reviewService.isSurveyEnd(surveyType);
   const showDirectInputPlaceholder: boolean = reviewService.isNeedDirectInput(surveyType);
+
+  const member = useContext(MemberContext);
 
   const handleOnCloseModal = () => {
     setIsOpen(false);
@@ -54,7 +71,36 @@ const ReviewCreatModal = ({reviewService}: Props) => {
     setSurveyType(reviewService.getNextSurveyType(surveyType));
   }
 
-  const handleOnClickDone = () => {
+  const handleOnClickDone = async () => {
+    try {
+      const reviewResponse = await reviewService.createReview({
+        writerId: member.id,
+        cafe: {
+          name: cafe.name,
+          kakaoPlaceId: cafe.kakaoPlaceId,
+          kakaoDetailPageUrl: cafe.kakaoDetailPageUrl,
+          // TODO: 일단 하드코딩으로 개발함. 첫 리뷰이면 DTO 의 cafe.location 프로퍼티가 필수이다. [cafeName] 페이지와 카페 조회 API 와 연동하고 첫 리뷰인지 조건 분기 개발하기
+          location: {
+            latitude: 37.57122962143047,
+            longitude: 126.97629649901215,
+            address: "서울 종로구 세종로 185-2",
+            roadAddress: "서울 종로구 세종대로 167"
+          }
+        },
+        visitPurpose: review.visitPurpose,
+        content: review.content,
+        menu: review.menu,
+        // TODO: review state 를 사용하니 타입 에러 발생, reviewConstatnt 에서 Array<StringMap<string, number>> 식으로 변경할지 생각하고 타입 에러 해결하기
+        coffeeIndex: 1, // review.coffeeIndex,
+        priceIndex: 1, // review.priceIndex,
+        spaceIndex: 1, // review.spaceIndex,
+        noiseIndex: 1, // review.noiseIndex,
+        theme: review.theme
+      });
+      router.push(`/cafes/${cafe.name}/${cafe.kakaoPlaceId}/reviews/${reviewResponse.id}`);
+    } catch (error) {
+      window.alert(error);
+    }
     setIsOpen(false);
     setSurveyType(reviewService.getFirstSurvey());
     setReview(initialReview);
