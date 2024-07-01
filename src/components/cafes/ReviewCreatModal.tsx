@@ -76,6 +76,7 @@ const ReviewCreatModal = ({reviewService, cafe}: Props) => {
     setReview(review => (
       {...review, [surveyType]: (event.target as HTMLButtonElement).innerText}
     ));
+    setSurveyType(reviewService.getNextSurveyType(surveyType));
   }
 
   const handleOnChangeSurveyInput = (event: React.ChangeEvent<HTMLInputElement>) => {
