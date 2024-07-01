@@ -10,7 +10,6 @@ import {
 } from "@chakra-ui/modal";
 import {Button, Input, Text, Textarea} from "@chakra-ui/react";
 import reviewConstant from "@/constants/reviewConstant";
-import {createDataWithId} from "@/utils/func";
 import ReviewService from "@/apis/service/ReviewService";
 import {StringMap} from "@/types/common";
 import {MemberContext} from "@/contexts/member";
@@ -31,7 +30,7 @@ interface Props {
   };
 }
 
-const initialReview = {
+const initialReview: StringMap<string> = {
   visitPurpose: "",
   content: "",
   menu: "",
@@ -48,9 +47,11 @@ const ReviewCreatModal = ({reviewService, cafe}: Props) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [surveyType, setSurveyType] = useState(reviewService.getFirstSurvey);
-  const [review, setReview] = useState<StringMap<string>>(initialReview);
+  const [review, setReview] = useState(initialReview);
 
-  const surveyOptions = createDataWithId(reviewConstant.survey.option[surveyType]);
+  const surveyOptions = reviewService.createSurveyOptionsWithIdFrom(
+    reviewConstant.survey.option[surveyType]
+  );
 
   const showContentTextarea: boolean = reviewService.isSurveyEnd(surveyType);
   const showDirectInputPlaceholder: boolean = reviewService.isNeedDirectInput(surveyType);
@@ -90,12 +91,11 @@ const ReviewCreatModal = ({reviewService, cafe}: Props) => {
         visitPurpose: review.visitPurpose,
         content: review.content,
         menu: review.menu,
-        // TODO: review state 를 사용하니 타입 에러 발생, reviewConstatnt 에서 Array<StringMap<string, number>> 식으로 변경할지 생각하고 타입 에러 해결하기
-        coffeeIndex: 1, // review.coffeeIndex,
-        priceIndex: 1, // review.priceIndex,
-        spaceIndex: 1, // review.spaceIndex,
-        noiseIndex: 1, // review.noiseIndex,
-        theme: review.theme
+        coffeeIndex: (reviewConstant.survey.option["coffeeIndex"] as StringMap<number>)[review.coffeeIndex],
+        priceIndex: (reviewConstant.survey.option["priceIndex"] as StringMap<number>)[review.priceIndex],
+        spaceIndex: (reviewConstant.survey.option["spaceIndex"] as StringMap<number>)[review.spaceIndex],
+        noiseIndex: (reviewConstant.survey.option["noiseIndex"] as StringMap<number>)[review.noiseIndex],
+        theme: (reviewConstant.survey.option["theme"] as StringMap<string>)[review.theme]
       });
       router.push(`/cafes/${cafe.name}/${cafe.kakaoPlaceId}/reviews/${reviewResponse.id}`);
     } catch (error) {
@@ -117,7 +117,7 @@ const ReviewCreatModal = ({reviewService, cafe}: Props) => {
   }
 
   const handleOnChangeContent = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReview(review => ({...review, ["content"]: event.target.value}));
+    setReview(review => ({...review, content: event.target.value}));
   }
 
   return (

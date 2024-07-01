@@ -4,11 +4,11 @@ interface ReviewConstant {
   survey: {
     question: StringMap<string>;
     directInputPlaceholder: StringMap<string>;
-    option: StringMap<Array<string>>;
+    option: StringMap<Array<string> | StringMap<string | number>>;
   };
 }
 
-const reviewConstant: ReviewConstant = {
+const reviewConstant: Readonly<ReviewConstant> = {
   survey: {
     question: {
       visitPurpose: "뭐하러 갔어요?",
@@ -34,14 +34,16 @@ const reviewConstant: ReviewConstant = {
         "모니터가 있어요",
         "회의실이 있어요"
       ],
-      theme: [
-        "없어요. 일반 카페에요.",
-        "애완 동물 카페 (애견, 고양이, 동물)",
-        "취미 카페(보드 게임, 드로잉, 만화)",
-        "스터디 카페",
-        "키즈 카페",
-        "그 외 컨셉 및 테마"
-      ],
+      theme: {
+        "없어요. 일반 카페에요.": "normal",
+        "감성있는 카페, 인스타 각": "vibe",
+        "전망 좋은 카페": "view",
+        "애완 동물 카페 (애견, 고양이, 동물)": "pet",
+        "취미 카페(보드 게임, 드로잉, 만화)": "hobby",
+        "스터디 카페": "study",
+        "키즈 카페": "kids",
+        "그 외 컨셉 및 테마": "etc"
+      } as StringMap<string>,
       menu: [
         "아이스 아메리카노",
         "핫 아메리카노",
@@ -51,34 +53,34 @@ const reviewConstant: ReviewConstant = {
         "핫 카푸치노",
         "에스프레소",
       ],
-      coffeeIndex: [
-        "맛있었어요!",
-        "나쁘지 않아요",
-        "중간은 간다",
-        "별로",
-        "다신 안감"
-      ],
-      priceIndex: [
-        "가성비 굿",
-        "이정도면 싼 편이지?",
-        "싸지도 비싸지도 않아요",
-        "살짝 비싼 느낌?",
-        "다신 안감"
-      ],
-      spaceIndex: [
-        "넓고 좋아요!",
-        "나쁘지 않아요",
-        "일반적입니다.",
-        "살짝 좁아요",
-        "자리가 두 테이블도 없어요"
-      ],
-      noiseIndex: [
-        "왁자지껄",
-        "어느정도 말소리나 소음이 있어요",
-        "조용하지도 시끄럽지도 않아요",
-        "조용한 편",
-        "아무 소리 없는데 나 혼자 있는 듯?"
-      ]
+      coffeeIndex: {
+        "맛있었어요!": 5,
+        "나쁘지 않아요": 4,
+        "중간은 간다": 3,
+        "별로": 2,
+        "다신 안감": 1
+      } as StringMap<number>,
+      priceIndex: {
+        "가성비 굿": 5,
+        "이정도면 싼 편이지?": 4,
+        "싸지도 비싸지도 않아요": 3,
+        "살짝 비싼 느낌?": 2,
+        "다신 안감": 1
+      } as StringMap<number>,
+      spaceIndex: {
+        "넓고 좋아요!": 5,
+        "나쁘지 않아요": 4,
+        "일반적입니다.": 3,
+        "살짝 좁아요": 2,
+        "자리가 두 테이블도 없어요": 1
+      } as StringMap<number>,
+      noiseIndex: {
+        "왁자지껄": 5,
+        "어느정도 말소리나 소음이 있어요": 4,
+        "조용하지도 시끄럽지도 않아요": 3,
+        "조용한 편": 2,
+        "아무 소리 없는데 나 혼자 있는 듯?": 1
+      } as StringMap<number>
     }
   }
 };

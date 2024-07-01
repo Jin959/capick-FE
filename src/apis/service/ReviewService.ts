@@ -5,6 +5,8 @@ import ReviewResponse from "@/apis/dto/response/ReviewResponse";
 import {isApiResponse} from "@/apis/dto/ApiResponse";
 import {handleOnApiError} from "@/apis/error/errorHandler";
 import commonError from "@/apis/error/commonError";
+import {StringMap} from "@/types/common";
+import {createArrayDataWithId, createStringMapDataWithId} from "@/utils/func";
 
 class ReviewService {
 
@@ -74,6 +76,14 @@ class ReviewService {
 
   public isNeedDirectInput = (surveyType: string) => {
     return this.surveyTypesWithDirectInput.indexOf(surveyType) !== -1
+  }
+
+  public createSurveyOptionsWithIdFrom = (data: Array<string> | StringMap<string | number>) => {
+    if (Array.isArray(data)) {
+      return createArrayDataWithId(data);
+    } else {
+      return createStringMapDataWithId(data, "key");
+    }
   }
 
 }
