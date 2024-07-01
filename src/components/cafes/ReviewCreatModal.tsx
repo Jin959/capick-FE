@@ -72,6 +72,20 @@ const ReviewCreatModal = ({reviewService, cafe}: Props) => {
     setSurveyType(reviewService.getNextSurveyType(surveyType));
   }
 
+  const handleOnClickSurveyOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setReview(review => (
+      {...review, [surveyType]: (event.target as HTMLButtonElement).innerText}
+    ));
+  }
+
+  const handleOnChangeSurveyInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setReview(review => ({...review, [surveyType]: event.target.value}));
+  }
+
+  const handleOnChangeContent = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setReview(review => ({...review, content: event.target.value}));
+  }
+
   const handleOnClickDone = async () => {
     try {
       const reviewResponse = await reviewService.createReview({
@@ -104,20 +118,6 @@ const ReviewCreatModal = ({reviewService, cafe}: Props) => {
     setIsOpen(false);
     setSurveyType(reviewService.getFirstSurvey());
     setReview(initialReview);
-  }
-
-  const handleOnClickSurveyOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setReview(review => (
-      {...review, [surveyType]: (event.target as HTMLButtonElement).innerText}
-    ));
-  }
-
-  const handleOnChangeSurveyInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setReview(review => ({...review, [surveyType]: event.target.value}));
-  }
-
-  const handleOnChangeContent = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReview(review => ({...review, content: event.target.value}));
   }
 
   return (
