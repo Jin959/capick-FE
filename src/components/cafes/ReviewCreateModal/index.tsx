@@ -1,19 +1,13 @@
 import React, {useContext, useState} from 'react';
-import {
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay
-} from "@chakra-ui/modal";
-import {Button, Input, Text, Textarea} from "@chakra-ui/react";
+import {Modal, ModalOverlay} from "@chakra-ui/modal";
+import {Button} from "@chakra-ui/react";
 import reviewConstant from "@/constants/reviewConstant";
 import ReviewService from "@/apis/service/ReviewService";
 import {StringMap} from "@/types/common";
 import {MemberContext} from "@/contexts/member";
 import {useRouter} from "next/router";
+import ReviewSurvey from "@/components/cafes/ReviewCreateModal/ReviewSurvey";
+import ReviewContent from "@/components/cafes/ReviewCreateModal/ReviewContent";
 
 interface Props {
   reviewService: ReviewService;
@@ -41,7 +35,7 @@ const initialReview: StringMap<string> = {
   theme: ""
 };
 
-const ReviewCreatModal = ({reviewService, cafe}: Props) => {
+const ReviewCreateModal = ({reviewService, cafe}: Props) => {
 
   const router = useRouter();
 
@@ -49,12 +43,7 @@ const ReviewCreatModal = ({reviewService, cafe}: Props) => {
   const [surveyType, setSurveyType] = useState(reviewService.getFirstSurvey);
   const [review, setReview] = useState(initialReview);
 
-  const surveyOptions = reviewService.createSurveyOptionsWithIdFrom(
-    reviewConstant.survey.option[surveyType]
-  );
-
-  const showContentTextarea: boolean = reviewService.isSurveyEnd(surveyType);
-  const showDirectInputPlaceholder: boolean = reviewService.isNeedDirectInput(surveyType);
+  const showReviewContent: boolean = reviewService.isSurveyEnd(surveyType);
 
   const member = useContext(MemberContext);
 
@@ -136,111 +125,28 @@ const ReviewCreatModal = ({reviewService, cafe}: Props) => {
         scrollBehavior="inside"
       >
         <ModalOverlay/>
-        {showContentTextarea ? (
-          <ModalContent>
-            <ModalCloseButton/>
-            <ModalHeader
-              m="0 auto"
-            >
-              한마디
-            </ModalHeader>
-            <ModalBody>
-              <Textarea
-                placeholder="리뷰 내용 입력"
-                minH="250"
-                resize="none"
-                maxLength={300}
-                value={review.content}
-                onChange={handleOnChangeContent}
-              />
-            </ModalBody>
-            <ModalFooter
-              display="flex"
-              justifyContent="space-around"
-              alignItems="center"
-            >
-              <Button
-                onClick={handleOnClickBefore}
-              >
-                이전
-              </Button>
-              <Button
-                variant='ghost'
-                onClick={handleOnClickDone}
-              >
-                완료
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        ) : (
-          <ModalContent>
-            <ModalCloseButton/>
-            <ModalHeader
-              m="0 auto"
-            >
-              {reviewConstant.survey.question[surveyType]}
-            </ModalHeader>
-            <ModalBody
-              display="flex"
-              flexDirection="column"
-              justifyContent="space-around"
-              alignItems="center"
-            >
-              <Text
-                fontWeight="bold"
-              >
-                {review[surveyType]}
-              </Text>
-              {
-                surveyOptions.map(option =>
-                  <Button
-                    key={option.id}
-                    m="1"
-                    w="90%"
-                    colorScheme="subBrand"
-                    color="black"
-                    onClick={handleOnClickSurveyOption}
-                  >
-                    {option.data}
-                  </Button>)
-              }
-              {showDirectInputPlaceholder &&
-                <Input
-                  name={reviewConstant.survey.directInputPlaceholder[surveyType]}
-                  placeholder={reviewConstant.survey.directInputPlaceholder[surveyType]}
-                  _placeholder={{opacity: 1, color: "black", fontWeight: "bold", textAlign: "center"}}
-                  m="1"
-                  w="90%"
-                  bg="subBrand.500"
-                  variant="filled"
-                  focusBorderColor="brand.main"
-                  maxLength={20}
-                  onChange={handleOnChangeSurveyInput}
-                />
-              }
-            </ModalBody>
-            <ModalFooter
-              display="flex"
-              justifyContent="space-around"
-              alignItems="center"
-            >
-              <Button
-                onClick={handleOnClickBefore}
-              >
-                이전
-              </Button>
-              <Button
-                variant='ghost'
-                onClick={handleOnClickNext}
-              >
-                다음
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        )}
+        {showReviewContent ?
+          <ReviewContent
+            reviewService={reviewService}
+            review={review}
+            onClickBefore={handleOnClickBefore}
+            onClickDone={handleOnClickDone}
+            onChangeContent={handleOnChangeContent}
+          />
+          :
+          <ReviewSurvey
+            reviewService={reviewService}
+            surveyType={surveyType}
+            review={review}
+            onClickBefore={handleOnClickBefore}
+            onClickNext={handleOnClickNext}
+            onClickSurveyOption={handleOnClickSurveyOption}
+            onChangeSurveyInput={handleOnChangeSurveyInput}
+          />
+        }
       </Modal>
     </>
   );
 };
 
-export default ReviewCreatModal;
+export default ReviewCreateModal;

@@ -5,7 +5,7 @@ import BackButton from "@/components/common/button/BackButton";
 import PageFlexContainer from "@/components/common/container/PageFlexContainer";
 import {Button, Card, Heading, ListItem, Stack, UnorderedList} from "@chakra-ui/react";
 import BoxContainer from "@/components/common/container/BoxContainer";
-import ReviewCreatModal from "@/components/cafes/ReviewCreatModal";
+import ReviewCreateModal from "@/components/cafes/ReviewCreateModal";
 import useReviewService from "@/hooks/service/useReivewService";
 
 const CafeDetail: NextPage = () => {
@@ -48,7 +48,7 @@ const CafeDetail: NextPage = () => {
             상세 정보 및 길찾기
           </Button>
         </BoxContainer>
-        <ReviewCreatModal
+        <ReviewCreateModal
           reviewService={reviewService}
           cafe={cafe}
         />
