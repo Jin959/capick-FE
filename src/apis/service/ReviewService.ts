@@ -66,7 +66,7 @@ class ReviewService {
     else return this.surveyTypes[beforeIndex];
   }
 
-  public getFirstSurvey = () => {
+  public getFirstSurveyType = () => {
     return this.surveyTypes[0];
   }
 

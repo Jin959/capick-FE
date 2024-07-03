@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Modal, ModalOverlay} from "@chakra-ui/modal";
 import {Button} from "@chakra-ui/react";
 import reviewConstant from "@/constants/reviewConstant";
@@ -8,6 +8,7 @@ import {MemberContext} from "@/contexts/member";
 import {useRouter} from "next/router";
 import ReviewSurvey from "@/components/cafes/ReviewCreateModal/ReviewSurvey";
 import ReviewContent from "@/components/cafes/ReviewCreateModal/ReviewContent";
+import {ReviewContext, ReviewDispatchContext} from "@/contexts/review";
 
 interface Props {
   reviewService: ReviewService;
@@ -24,56 +25,27 @@ interface Props {
   };
 }
 
-const initialReview: StringMap<string> = {
-  visitPurpose: "",
-  content: "",
-  menu: "",
-  coffeeIndex: "",
-  priceIndex: "",
-  spaceIndex: "",
-  noiseIndex: "",
-  theme: ""
-};
-
 const ReviewCreateModal = ({reviewService, cafe}: Props) => {
 
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [surveyType, setSurveyType] = useState(reviewService.getFirstSurvey);
-  const [review, setReview] = useState(initialReview);
-
-  const showReviewContent: boolean = reviewService.isSurveyEnd(surveyType);
 
   const member = useContext(MemberContext);
+  const review = useContext(ReviewContext);
+  const dispatchReview = useContext(ReviewDispatchContext);
+
+  const showReviewContent: boolean = reviewService.isSurveyEnd(review.surveyType);
 
   const handleOnCloseModal = () => {
     setIsOpen(false);
-    setSurveyType(reviewService.getFirstSurvey());
-    setReview(initialReview);
-  }
-
-  const handleOnClickBefore = () => {
-    setSurveyType(reviewService.getBeforeSurveyType(surveyType));
-  }
-
-  const handleOnClickNext = () => {
-    setSurveyType(reviewService.getNextSurveyType(surveyType));
-  }
-
-  const handleOnClickSurveyOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setReview(review => (
-      {...review, [surveyType]: (event.target as HTMLButtonElement).innerText}
-    ));
-    setSurveyType(reviewService.getNextSurveyType(surveyType));
-  }
-
-  const handleOnChangeSurveyInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setReview(review => ({...review, [surveyType]: event.target.value}));
-  }
-
-  const handleOnChangeContent = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReview(review => ({...review, content: event.target.value}));
+    dispatchReview({
+      type: "INIT_REVIEW"
+    });
+    dispatchReview({
+      type: "SET_SURVEY_TYPE",
+      surveyType: reviewService.getFirstSurveyType()
+    });
   }
 
   const handleOnClickDone = async () => {
@@ -106,9 +78,21 @@ const ReviewCreateModal = ({reviewService, cafe}: Props) => {
       window.alert(error);
     }
     setIsOpen(false);
-    setSurveyType(reviewService.getFirstSurvey());
-    setReview(initialReview);
+    dispatchReview({
+      type: "INIT_REVIEW"
+    });
+    dispatchReview({
+      type: "SET_SURVEY_TYPE",
+      surveyType: reviewService.getFirstSurveyType()
+    });
   }
+
+  useEffect(() => {
+    dispatchReview({
+      type: "SET_SURVEY_TYPE",
+      surveyType: reviewService.getFirstSurveyType()
+    });
+  }, [reviewService, dispatchReview]);
 
   return (
     <>
@@ -128,20 +112,10 @@ const ReviewCreateModal = ({reviewService, cafe}: Props) => {
         {showReviewContent ?
           <ReviewContent
             reviewService={reviewService}
-            review={review}
-            onClickBefore={handleOnClickBefore}
             onClickDone={handleOnClickDone}
-            onChangeContent={handleOnChangeContent}
           />
-          :
-          <ReviewSurvey
+          : <ReviewSurvey
             reviewService={reviewService}
-            surveyType={surveyType}
-            review={review}
-            onClickBefore={handleOnClickBefore}
-            onClickNext={handleOnClickNext}
-            onClickSurveyOption={handleOnClickSurveyOption}
-            onChangeSurveyInput={handleOnChangeSurveyInput}
           />
         }
       </Modal>

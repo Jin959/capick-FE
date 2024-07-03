@@ -1,18 +1,32 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader} from "@chakra-ui/modal";
 import {Button, Textarea} from "@chakra-ui/react";
 import ReviewService from "@/apis/service/ReviewService";
-import {StringMap} from "@/types/common";
+import {ReviewContext, ReviewDispatchContext} from "@/contexts/review";
 
 interface Props {
   reviewService: ReviewService;
-  review: StringMap<string>;
-  onClickBefore: () => void;
   onClickDone: () => void;
-  onChangeContent: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-const ReviewContent = (props: Props) => {
+const ReviewContent = ({reviewService, onClickDone}: Props) => {
+
+  const review = useContext(ReviewContext);
+  const dispatchReview = useContext(ReviewDispatchContext);
+
+  const handleOnClickBefore = () => {
+    dispatchReview({
+      type: "SET_SURVEY_TYPE",
+      surveyType: reviewService.getBeforeSurveyType(review.surveyType)
+    });
+  }
+
+  const handleOnChangeContent = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    dispatchReview({
+      type: "SET_CONTENT",
+      content: event.target.value
+    });
+  }
 
   return (
     <>
@@ -29,8 +43,8 @@ const ReviewContent = (props: Props) => {
             minH="250"
             resize="none"
             maxLength={300}
-            value={props.review.content}
-            onChange={props.onChangeContent}
+            value={review.content}
+            onChange={handleOnChangeContent}
           />
         </ModalBody>
         <ModalFooter
@@ -39,13 +53,13 @@ const ReviewContent = (props: Props) => {
           alignItems="center"
         >
           <Button
-            onClick={props.onClickBefore}
+            onClick={handleOnClickBefore}
           >
             이전
           </Button>
           <Button
             variant='ghost'
-            onClick={props.onClickDone}
+            onClick={onClickDone}
           >
             완료
           </Button>
