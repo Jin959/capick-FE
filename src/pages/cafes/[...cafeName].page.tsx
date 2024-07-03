@@ -7,6 +7,7 @@ import {Button, Card, Heading, ListItem, Stack, UnorderedList} from "@chakra-ui/
 import BoxContainer from "@/components/common/container/BoxContainer";
 import ReviewCreateModal from "@/components/cafes/ReviewCreateModal";
 import useReviewService from "@/hooks/service/useReivewService";
+import ReviewProvider from "@/contexts/review";
 
 const CafeDetail: NextPage = () => {
   const router = useRouter();
@@ -48,10 +49,12 @@ const CafeDetail: NextPage = () => {
             상세 정보 및 길찾기
           </Button>
         </BoxContainer>
-        <ReviewCreateModal
-          reviewService={reviewService}
-          cafe={cafe}
-        />
+        <ReviewProvider>
+          <ReviewCreateModal
+            reviewService={reviewService}
+            cafe={cafe}
+          />
+        </ReviewProvider>
         <Stack spacing='4'>
           {/* TODO: 리뷰 목록 렌더링 리스트로 개발하기*/}
           <Card
