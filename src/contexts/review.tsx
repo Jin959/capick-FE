@@ -32,7 +32,7 @@ interface Props {
 }
 
 const initialState: State = {
-  surveyType: "",
+  surveyType: "Not Available",
   visitPurpose: "",
   content: "",
   menu: "",
