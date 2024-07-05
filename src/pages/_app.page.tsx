@@ -4,8 +4,11 @@ import {Global} from "@emotion/react";
 import theme from "@/styles/theme";
 import globalStyle from "@/styles/global";
 import Layout from "@/components/common/Layout";
-import MemberProvider from "@/contexts/member";
 import SeoHead from "@/components/common/SeoHead";
+import GlobalProvider from "@/contexts/GlobalProvider";
+import MemberProvider from "@/contexts/member";
+import ModalProvider from "@/contexts/modal";
+import CafeProvider from "@/contexts/cafe";
 
 export default function App({Component, pageProps}: AppProps) {
   return (
@@ -13,11 +16,11 @@ export default function App({Component, pageProps}: AppProps) {
       <SeoHead/>
       <ChakraProvider resetCSS={true} theme={theme}>
         <Global styles={globalStyle}/>
-        <MemberProvider>
+        <GlobalProvider contexts={[MemberProvider, ModalProvider, CafeProvider]}>
           <Layout>
             <Component {...pageProps} />
           </Layout>
-        </MemberProvider>
+        </GlobalProvider>
       </ChakraProvider>
     </>
   );
