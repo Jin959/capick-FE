@@ -48,7 +48,7 @@ const ReviewSurvey = ({reviewService}: Props) => {
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatchReview({
       type: "SET_SURVEY_OPTION",
-      surveyType: review.surveyType,
+      surveyType: event.target.name,
       option: event.target.value
     });
   }
@@ -88,7 +88,7 @@ const ReviewSurvey = ({reviewService}: Props) => {
           }
           {showDirectInputPlaceholder &&
             <Input
-              name={reviewConstant.survey.directInputPlaceholder[review.surveyType]}
+              name={review.surveyType}
               placeholder={reviewConstant.survey.directInputPlaceholder[review.surveyType]}
               _placeholder={{opacity: 1, color: "black", fontWeight: "bold", textAlign: "center"}}
               m="1"
