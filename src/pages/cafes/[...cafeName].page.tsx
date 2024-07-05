@@ -9,7 +9,11 @@ import ReviewCreateModal from "@/components/cafes/ReviewCreateModal";
 import useReviewService from "@/hooks/service/useReivewService";
 import ReviewProvider from "@/contexts/review";
 
-const CafeDetail: NextPage = () => {
+type NextPageWithCafeContext = NextPage & {
+  requireCafeContext: boolean;
+}
+
+const CafeDetail: NextPageWithCafeContext = () => {
   const router = useRouter();
   const [cafeName, kakaoPlaceId] = (router.query.cafeName ?? []) as Array<string>;
   // TODO: 첫리뷰 작성 시 DTO 의 cafe.location 프로퍼티가 필수이다. 리뷰가 하나도 없고 인코그니토 로 접속해서 카페정보가 없을때 첫 리뷰를 작성하는 시나리오를 위해 지도에서 마커를 클릭하도록 지도 페이지로 강제이동 시킬지 생각해보기
@@ -68,5 +72,7 @@ const CafeDetail: NextPage = () => {
     </>
   );
 };
+
+CafeDetail.requireCafeContext = true;
 
 export default CafeDetail;

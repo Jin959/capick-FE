@@ -9,14 +9,29 @@ import GlobalProvider from "@/contexts/GlobalProvider";
 import MemberProvider from "@/contexts/member";
 import ModalProvider from "@/contexts/modal";
 import CafeProvider from "@/contexts/cafe";
+import {NextComponentType, NextPage} from "next";
 
-export default function App({Component, pageProps}: AppProps) {
+interface CustomAppProps extends AppProps {
+  Component: NextComponentType & NextPageWithCafeContext
+}
+
+type NextPageWithCafeContext = NextPage & {
+  requireCafeContext: boolean;
+}
+
+export default function App({Component, pageProps}: CustomAppProps) {
+
+  const contexts = [MemberProvider, ModalProvider];
+  if (Component.requireCafeContext) {
+    contexts.push(CafeProvider);
+  }
+
   return (
     <>
       <SeoHead/>
       <ChakraProvider resetCSS={true} theme={theme}>
         <Global styles={globalStyle}/>
-        <GlobalProvider contexts={[MemberProvider, ModalProvider, CafeProvider]}>
+        <GlobalProvider contexts={contexts}>
           <Layout>
             <Component {...pageProps} />
           </Layout>
