@@ -21,8 +21,8 @@ const initialState: State = {
   reviewCreateModal: false
 }
 
-const ModalContext = createContext<State>(initialState);
-const ModalDispatchContext = createContext<Dispatch<Action>>(() => {});
+export const ModalContext = createContext<State>(initialState);
+export const ModalDispatchContext = createContext<Dispatch<Action>>(() => {});
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
