@@ -1,6 +1,6 @@
 import React from 'react';
 import {Input, Text} from "@chakra-ui/react";
-import {createArrayDataWithId} from "@/utils/func";
+import {createDataWithId} from "@/utils/func";
 
 interface Props {
   name?: string;
@@ -17,7 +17,7 @@ interface Props {
 
 const InputWithValidation = (props: Props) => {
 
-  const validationErrors = createArrayDataWithId(props.validationErrorMessages);
+  const validationErrors = createDataWithId(props.validationErrorMessages);
 
   return (
     <>

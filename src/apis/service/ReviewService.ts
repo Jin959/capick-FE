@@ -6,7 +6,7 @@ import {isApiResponse} from "@/apis/dto/ApiResponse";
 import {handleOnApiError} from "@/apis/error/errorHandler";
 import commonError from "@/apis/error/commonError";
 import {StringMap} from "@/types/common";
-import {createArrayDataWithId, createStringMapDataWithId} from "@/utils/func";
+import {createDataWithId} from "@/utils/func";
 
 class ReviewService {
 
@@ -80,9 +80,9 @@ class ReviewService {
 
   public createSurveyOptionsWithIdFrom = (data: Array<string> | StringMap<string | number>) => {
     if (Array.isArray(data)) {
-      return createArrayDataWithId(data);
+      return createDataWithId(data);
     } else {
-      return createStringMapDataWithId(data, "key");
+      return createDataWithId(data, "key");
     }
   }
 
