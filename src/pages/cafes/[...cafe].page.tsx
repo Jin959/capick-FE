@@ -3,12 +3,12 @@ import {NextPage} from "next";
 import {useRouter} from "next/router";
 import BackButton from "@/components/common/button/BackButton";
 import PageFlexContainer from "@/components/common/container/PageFlexContainer";
-import {Button, Card, Heading, ListItem, Stack, UnorderedList} from "@chakra-ui/react";
-import BoxContainer from "@/components/common/container/BoxContainer";
+import {Card, Heading, Stack} from "@chakra-ui/react";
 import ReviewCreateModal from "@/components/cafes/ReviewCreateModal";
 import useReviewService from "@/hooks/service/useReivewService";
 import ReviewProvider from "@/contexts/review";
-import {CafeContext, CafeDispatchContext} from "@/contexts/cafe";
+import {CafeDispatchContext} from "@/contexts/cafe";
+import CafeDetail from "@/components/cafes/CafeDetail";
 
 type NextPageWithCafeContext = NextPage & {
   requireCafeContext: boolean;
@@ -18,10 +18,10 @@ const CafePage: NextPageWithCafeContext = () => {
 
   const router = useRouter();
 
-  const cafe = useContext(CafeContext);
+  const [cafeName, kakaoPlaceId] = (router.query.cafe ?? []) as Array<string>;
+
   const dispatchCafe = useContext(CafeDispatchContext);
 
-  const [cafeName, kakaoPlaceId] = (router.query.cafe ?? []) as Array<string>;
   const reviewService = useReviewService();
 
   useEffect(() => {
@@ -51,18 +51,7 @@ const CafePage: NextPageWithCafeContext = () => {
         <Heading size="md" textAlign="center">
           {cafeName}
         </Heading>
-        <BoxContainer>
-          <UnorderedList>
-            <ListItem>주소 : {cafe.location?.address}</ListItem>
-            <ListItem>도로명 : {cafe.location?.roadAddress}</ListItem>
-          </UnorderedList>
-          <Button
-            colorScheme="brand"
-            onClick={() => router.push(cafe.kakaoDetailPageUrl)}
-          >
-            상세 정보 및 길찾기
-          </Button>
-        </BoxContainer>
+        <CafeDetail/>
         <ReviewProvider>
           <ReviewCreateModal
             reviewService={reviewService}
