@@ -7,18 +7,28 @@ import {handleOnApiError} from "@/apis/error/errorHandler";
 import commonError from "@/apis/error/commonError";
 import {StringMap} from "@/types/common";
 import {createDataWithId} from "@/utils/func";
+import FirebaseStorageClient from "@/apis/client/FirebaseStorageClient";
 
 class ReviewService {
 
   private static readonly SURVEY_END: string = "end";
 
   private readonly apiClient: ApiClient;
+  private readonly storageClient: FirebaseStorageClient;
   private readonly nullResponse: ReviewResponse;
   private readonly surveyTypes: Array<string>;
   private readonly surveyTypesWithDirectInput: Array<string>;
 
   private constructor() {
     this.apiClient = ApiConfig.apiClient();
+    this.storageClient = FirebaseStorageClient.of({
+      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+    });
     this.nullResponse = {
       id: 0,
       writer: {
