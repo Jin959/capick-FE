@@ -1,6 +1,7 @@
 import {FirebaseApp, initializeApp} from "firebase/app";
-import {FirebaseStorage, getStorage, ref} from "firebase/storage";
+import {FirebaseStorage, getDownloadURL, getStorage, ref, uploadBytes} from "firebase/storage";
 import {FirebaseOptions} from "@firebase/app";
+import {v4 as uuid} from "uuid";
 
 class FirebaseStorageClient {
 
@@ -13,6 +14,20 @@ class FirebaseStorageClient {
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
     return new FirebaseStorageClient(app, storage);
+  }
+
+  public create = async (file: File, path: string, fileType: "images" | "videos", fileName?: string): Promise<string> => {
+    let fileNameWithUuid;
+    if (!fileName) {
+      fileNameWithUuid = uuid();
+    } else {
+      fileNameWithUuid = `${fileName}_${uuid()}`;
+    }
+
+    const storageRef = ref(this.storage, `${fileType}/${path}/${fileNameWithUuid}`);
+
+    return uploadBytes(storageRef, file)
+      .then(snapshot => getDownloadURL(snapshot.ref));
   }
 
 }
