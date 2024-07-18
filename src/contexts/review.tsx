@@ -1,7 +1,7 @@
 import {createContext, Dispatch, ReactElement, useReducer} from "react";
 import {StringMap} from "@/types/common";
 
-interface State extends StringMap<string> {
+interface State extends StringMap<string | Array<File>> {
   surveyType: string;
   visitPurpose: string;
   content: string;
@@ -11,6 +11,7 @@ interface State extends StringMap<string> {
   spaceIndex: string;
   noiseIndex: string;
   theme: string;
+  images: Array<File>;
 }
 
 type Action = {
@@ -25,6 +26,9 @@ type Action = {
 } | {
   type: "SET_CONTENT";
   content: string;
+} | {
+  type: "SET_IMAGES";
+  images: Array<File>;
 }
 
 interface Props {
@@ -40,7 +44,8 @@ const initialState: State = {
   priceIndex: "",
   spaceIndex: "",
   noiseIndex: "",
-  theme: ""
+  theme: "",
+  images: []
 }
 
 export const ReviewContext = createContext<State>(initialState);
@@ -65,6 +70,11 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         content: action.content
+      }
+    case "SET_IMAGES":
+      return {
+        ...state,
+        images: action.images
       }
     default:
       throw new Error("존재하지 않는 액션입니다.");

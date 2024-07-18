@@ -71,7 +71,7 @@ const ReviewSurvey = ({reviewService}: Props) => {
           <Text
             fontWeight="bold"
           >
-            {review[review.surveyType]}
+            {review[review.surveyType] as string}
           </Text>
           {
             surveyOptions.map(option =>
