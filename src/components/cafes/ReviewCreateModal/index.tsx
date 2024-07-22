@@ -33,9 +33,6 @@ const ReviewCreateModal = ({reviewService}: Props) => {
       modal: "reviewCreateModal"
     });
     dispatchReview({
-      type: "INIT_REVIEW"
-    });
-    dispatchReview({
       type: "SET_SURVEY_TYPE",
       surveyType: reviewService.getFirstSurveyType()
     });
