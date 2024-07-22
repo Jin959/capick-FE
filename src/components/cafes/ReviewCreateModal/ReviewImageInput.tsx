@@ -52,6 +52,7 @@ const ReviewImageInput = () => {
           type="file"
           multiple={true}
           accept="image/*"
+          capture="environment"
           ref={imageInputRef}
           onChange={handleOnChange}
           display="none"
