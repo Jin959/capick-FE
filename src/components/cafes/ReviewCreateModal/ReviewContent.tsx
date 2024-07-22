@@ -63,22 +63,24 @@ const ReviewContent = ({reviewService}: Props) => {
         spaceIndex: (reviewConstant.survey.option["spaceIndex"] as StringMap<number>)[review.spaceIndex],
         noiseIndex: (reviewConstant.survey.option["noiseIndex"] as StringMap<number>)[review.noiseIndex],
         theme: (reviewConstant.survey.option["theme"] as StringMap<string>)[review.theme]
+      }, review.images);
+
+      dispatchModal({
+        type: "CLOSE_MODAL",
+        modal: "reviewCreateModal"
       });
+      dispatchReview({
+        type: "INIT_REVIEW"
+      });
+      dispatchReview({
+        type: "SET_SURVEY_TYPE",
+        surveyType: reviewService.getFirstSurveyType()
+      });
+
       router.push(`/cafes/${cafe.name}/${cafe.kakaoPlaceId}/reviews/${reviewResponse.id}`);
     } catch (error) {
       window.alert(error);
     }
-    dispatchModal({
-      type: "CLOSE_MODAL",
-      modal: "reviewCreateModal"
-    });
-    dispatchReview({
-      type: "INIT_REVIEW"
-    });
-    dispatchReview({
-      type: "SET_SURVEY_TYPE",
-      surveyType: reviewService.getFirstSurveyType()
-    });
   }
 
   return (
@@ -95,7 +97,7 @@ const ReviewContent = ({reviewService}: Props) => {
           <Box p="2"/>
           <Textarea
             placeholder="리뷰 내용 입력"
-            minH="100"
+            minH="6rem"
             resize="none"
             maxLength={300}
             value={review.content}

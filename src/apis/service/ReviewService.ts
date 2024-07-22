@@ -6,8 +6,9 @@ import {isApiResponse} from "@/apis/dto/ApiResponse";
 import {handleOnApiError} from "@/apis/error/errorHandler";
 import commonError from "@/apis/error/commonError";
 import {StringMap} from "@/types/common";
-import {createDataWithId} from "@/utils/func";
+import {createDataWithId, isImageFileExtension} from "@/utils/func";
 import FirebaseStorageClient from "@/apis/client/FirebaseStorageClient";
+import reviewError from "@/apis/error/reviewError";
 
 class ReviewService {
 
@@ -49,7 +50,12 @@ class ReviewService {
     return new ReviewService();
   }
 
-  public createReview = async (reviewCreateRequest: ReviewCreateRequest) => {
+  public createReview = async (reviewCreateRequest: ReviewCreateRequest, images: Array<File>) => {
+    if (images.length !== 0) {
+      const fileName = `${reviewCreateRequest.cafe.kakaoPlaceId}_${reviewCreateRequest.writerId}`;
+      const path = reviewCreateRequest.cafe.name.split(' ').join('_');
+      reviewCreateRequest.imageUrls = await this.uploadImagesAndGetUrls(images, path, fileName);
+    }
     try {
       const response = await this.apiClient
         .post<ReviewResponse, ReviewCreateRequest>("/reviews/new", reviewCreateRequest);
@@ -96,6 +102,33 @@ class ReviewService {
     }
   }
 
+  private async uploadImagesAndGetUrls(images: Array<File>, path: string, fileName: string) {
+    this.ifNumberOfImagesExceededThrow(images);
+    this.ifImagesExtensionIsNotValidThrow(images);
+
+    try {
+      return Promise.all(images.map(
+        image => this.storageClient.create(image, path, "images", fileName)
+      ));
+    } catch (error) {
+      console.error(error);
+      throw new Error(commonError.storageClient);
+    }
+  }
+
+  private ifImagesExtensionIsNotValidThrow(images: Array<File>) {
+    for (let image of images) {
+      if (!isImageFileExtension(image)) {
+        throw new Error(reviewError.image.invalidImageExtension);
+      }
+    }
+  }
+
+  private ifNumberOfImagesExceededThrow(images: Array<File>) {
+    if (images.length > 3) {
+      throw new Error(reviewError.image.numberOfImageExceeded);
+    }
+  }
 }
 
 export default ReviewService;
