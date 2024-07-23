@@ -8,6 +8,7 @@ import MemberResponse from "@/apis/dto/response/MemberResponse";
 import MemberNicknameRequest from "@/apis/dto/request/MemberNicknameRequest";
 import MemberPasswordRequest from "@/apis/dto/request/MemberPasswordRequest";
 import MemberDeleteRequest from "@/apis/dto/request/MemberDeleteRequest";
+import memberError from "@/apis/error/memberError";
 
 class MemberService {
 
@@ -147,13 +148,13 @@ class MemberService {
 
   private ifPasswordUnchangedThrow(password: string, newPassword: string) {
     if (password === newPassword) {
-      throw new Error("기존 비밀번호와 새 비밀번호는 같을 수 없습니다. 새로운 비밀번호를 입력해주세요");
+      throw new Error(memberError.password.duplicate);
     }
   }
 
   private ifNotAgreeWarningThrow(agreement: boolean) {
     if (!agreement) {
-      throw new Error("탈퇴 주의 사항을 확인하고 동의해주세요.");
+      throw new Error(memberError.deleteAccount.notAgreed);
     }
   }
 }

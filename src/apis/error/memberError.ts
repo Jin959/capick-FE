@@ -14,6 +14,12 @@ const memberError = {
     confirmPassword: [
       "비밀번호가 일치하지 않습니다."
     ]
+  },
+  password: {
+    duplicate: "기존 비밀번호와 새 비밀번호는 같을 수 없습니다. 새로운 비밀번호를 입력해주세요"
+  },
+  deleteAccount: {
+    notAgreed: "탈퇴 주의 사항을 확인하고 동의해주세요."
   }
 };
 
