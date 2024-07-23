@@ -5,7 +5,7 @@ import ReviewResponse from "@/apis/dto/response/ReviewResponse";
 import {isApiResponse} from "@/apis/dto/ApiResponse";
 import {handleOnApiError} from "@/apis/error/errorHandler";
 import commonError from "@/apis/error/commonError";
-import {StringMap} from "@/types/common";
+import {FileNameWithUrl, StringMap} from "@/types/common";
 import {createDataWithId, isImageFileExtension} from "@/utils/func";
 import FirebaseStorageClient from "@/apis/client/FirebaseStorageClient";
 import reviewError from "@/apis/error/reviewError";
@@ -51,17 +51,24 @@ class ReviewService {
   }
 
   public createReview = async (reviewCreateRequest: ReviewCreateRequest, images: Array<File>) => {
+    const fileName = `${reviewCreateRequest.cafe.kakaoPlaceId}_${reviewCreateRequest.writerId}`;
+    const path = reviewCreateRequest.cafe.name.split(' ').join('_');
+    let fileNameWithUrls: Array<FileNameWithUrl> = [];
     if (images.length !== 0) {
-      const fileName = `${reviewCreateRequest.cafe.kakaoPlaceId}_${reviewCreateRequest.writerId}`;
-      const path = reviewCreateRequest.cafe.name.split(' ').join('_');
-      reviewCreateRequest.imageUrls = await this.uploadImagesAndGetUrls(images, path, fileName);
+      fileNameWithUrls = await this.uploadImagesAndGetUrls(images, path, fileName);
     }
     try {
+      reviewCreateRequest.imageUrls = fileNameWithUrls.map(
+        fileNameWithUrls =>fileNameWithUrls.url
+      );
       const response = await this.apiClient
         .post<ReviewResponse, ReviewCreateRequest>("/reviews/new", reviewCreateRequest);
       return response.data ?? this.nullResponse;
     } catch (error) {
       console.error(error);
+      // TODO: 파일 업로드 URL을 자체 백엔드 서버에 전송해야해서 업로드 후 API 요청을 했다 만약 에러가 생기면 롤백해야해서 여기에서 수행했는데 다른 좋은 방법이 있는지 고민해보기
+      await this.rollbackUploadImages(
+        fileNameWithUrls.map(fileNameWithUrls => fileNameWithUrls.name), path);
       if (isApiResponse(error)) {
         handleOnApiError(error);
       }
@@ -109,6 +116,17 @@ class ReviewService {
     try {
       return Promise.all(images.map(
         image => this.storageClient.create(image, path, "images", fileName)
+      ));
+    } catch (error) {
+      console.error(error);
+      throw new Error(commonError.storageClient);
+    }
+  }
+
+  private async rollbackUploadImages(fileNames: Array<string>, path: string) {
+    try {
+      await Promise.all(fileNames.map(
+        filename => this.storageClient.delete(filename, path, "images")
       ));
     } catch (error) {
       console.error(error);

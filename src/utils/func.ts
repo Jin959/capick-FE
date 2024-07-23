@@ -37,7 +37,6 @@ export function createDataWithId (data: any, dataFrom?: any): any {
 }
 
 export const isImageFileExtension = (image: File): boolean => {
-  console.dir(image.type)
   const imageExtensions = [
     "image/jpg", "image/jpeg", "image/bmp", "image/gif", "image/png", "image/mpeg"
   ];
