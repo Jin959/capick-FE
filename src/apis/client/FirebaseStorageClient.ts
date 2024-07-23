@@ -1,7 +1,8 @@
 import {FirebaseApp, initializeApp} from "firebase/app";
-import {FirebaseStorage, getDownloadURL, getStorage, ref, uploadBytes} from "firebase/storage";
+import {deleteObject, FirebaseStorage, getDownloadURL, getStorage, ref, uploadBytes} from "firebase/storage";
 import {FirebaseOptions} from "@firebase/app";
 import {v4 as uuid} from "uuid";
+import {FileNameWithUrl} from "@/types/common";
 
 class FirebaseStorageClient {
 
@@ -16,8 +17,8 @@ class FirebaseStorageClient {
     return new FirebaseStorageClient(app, storage);
   }
 
-  public create = async (file: File, path: string, fileType: "images" | "videos", fileName?: string): Promise<string> => {
-    let fileNameWithUuid;
+  public create = async (file: File, path: string, fileType: "images" | "videos", fileName?: string): Promise<FileNameWithUrl> => {
+    let fileNameWithUuid = "";
     if (!fileName) {
       fileNameWithUuid = uuid();
     } else {
@@ -25,9 +26,17 @@ class FirebaseStorageClient {
     }
 
     const storageRef = ref(this.storage, `${fileType}/${path}/${fileNameWithUuid}`);
-
-    return uploadBytes(storageRef, file)
+    const downloadUrl = await uploadBytes(storageRef, file)
       .then(snapshot => getDownloadURL(snapshot.ref));
+
+    return {
+      name: fileNameWithUuid,
+      url: downloadUrl
+    }
+  }
+
+  public delete = async (fileName: string, path: string, fileType: "images" | "videos"): Promise<void> => {
+    await deleteObject(ref(this.storage, `${fileType}/${path}/${fileName}`));
   }
 
 }
