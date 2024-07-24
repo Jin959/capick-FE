@@ -3,8 +3,9 @@ import {deleteObject, FirebaseStorage, getDownloadURL, getStorage, ref, uploadBy
 import {FirebaseOptions} from "@firebase/app";
 import {v4 as uuid} from "uuid";
 import {FileNameWithUrl} from "@/types/common";
+import StorageClient from "@/apis/client/StorageClient";
 
-class FirebaseStorageClient {
+class FirebaseStorageClient implements StorageClient {
 
   private constructor(
     private readonly firebaseApp: FirebaseApp,
