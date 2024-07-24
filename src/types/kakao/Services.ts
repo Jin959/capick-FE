@@ -1,5 +1,5 @@
 import {LatLng, LatLngBounds, KakaoMap} from "@/types/kakao/Maps";
-import MapKakaoSearchResponse from "@/apis/dto/response/MapKakaoSearchResponse";
+import MapKakaoSearchResponse from "@/apis/dto/service/response/MapKakaoSearchResponse";
 
 interface Services {
   Places: Places;

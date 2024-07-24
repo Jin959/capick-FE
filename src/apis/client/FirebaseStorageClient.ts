@@ -2,8 +2,10 @@ import {FirebaseApp, initializeApp} from "firebase/app";
 import {deleteObject, FirebaseStorage, getDownloadURL, getStorage, ref, uploadBytes} from "firebase/storage";
 import {FirebaseOptions} from "@firebase/app";
 import {v4 as uuid} from "uuid";
-import {FileNameWithUrl} from "@/types/common";
+import StorageResponse from "@/apis/dto/client/response/StorageResponse";
 import StorageClient from "@/apis/client/StorageClient";
+import StorageCreateRequest from "@/apis/dto/client/request/StorageCreateRequest";
+import StorageDeleteRequest from "@/apis/dto/client/request/StorageDeleteRequest";
 
 class FirebaseStorageClient implements StorageClient {
 
@@ -18,16 +20,18 @@ class FirebaseStorageClient implements StorageClient {
     return new FirebaseStorageClient(app, storage);
   }
 
-  public create = async (file: File, path: string, fileType: "images" | "videos", fileName?: string): Promise<FileNameWithUrl> => {
+  public create = async (storageCreateRequest: StorageCreateRequest): Promise<StorageResponse> => {
     let fileNameWithUuid = "";
-    if (!fileName) {
+    if (!storageCreateRequest.fileName) {
       fileNameWithUuid = uuid();
     } else {
-      fileNameWithUuid = `${fileName}_${uuid()}`;
+      fileNameWithUuid = `${storageCreateRequest.fileName}_${uuid()}`;
     }
 
-    const storageRef = ref(this.storage, `${fileType}/${path}/${fileNameWithUuid}`);
-    const downloadUrl = await uploadBytes(storageRef, file)
+    const storageRef = ref(this.storage,
+      `${storageCreateRequest.fileType}/${storageCreateRequest.path}/${fileNameWithUuid}`
+    );
+    const downloadUrl = await uploadBytes(storageRef, storageCreateRequest.file)
       .then(snapshot => getDownloadURL(snapshot.ref));
 
     return {
@@ -36,8 +40,10 @@ class FirebaseStorageClient implements StorageClient {
     }
   }
 
-  public delete = async (fileName: string, path: string, fileType: "images" | "videos"): Promise<void> => {
-    await deleteObject(ref(this.storage, `${fileType}/${path}/${fileName}`));
+  public delete = async (storageDeleteRequest: StorageDeleteRequest): Promise<void> => {
+    await deleteObject(ref(this.storage,
+      `${storageDeleteRequest.fileType}/${storageDeleteRequest.path}/${storageDeleteRequest.fileName}`
+    ));
   }
 
 }

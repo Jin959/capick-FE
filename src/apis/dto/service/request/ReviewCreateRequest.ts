@@ -1,4 +1,4 @@
-import CafeCreateRequest from "@/apis/dto/request/CafeCreateRequest";
+import CafeCreateRequest from "@/apis/dto/service/request/CafeCreateRequest";
 
 interface ReviewCreateRequest {
   writerId: number;

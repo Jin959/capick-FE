@@ -7,8 +7,3 @@ export interface DataWithId<T> {
   id: number;
   data: T;
 }
-
-export interface FileNameWithUrl {
-  name: string;
-  url: string;
-}

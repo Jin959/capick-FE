@@ -1,4 +1,4 @@
-import MemberResponse from "@/apis/dto/response/MemberResponse";
+import MemberResponse from "@/apis/dto/service/response/MemberResponse";
 
 interface ReviewResponse {
   id: number;

@@ -1,4 +1,4 @@
-import Location from "@/apis/dto/Location";
+import Location from "@/apis/dto/service/Location";
 
 interface CafeCreateRequest {
   name: string;

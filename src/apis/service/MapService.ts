@@ -1,7 +1,7 @@
-import Position from "@/apis/dto/response/Position";
+import Position from "@/apis/dto/service/response/Position";
 import mapError from "@/apis/error/mapError";
 import {InfoWindow, KakaoMap, MapEvent, MapLevel, MapOption, Marker} from "@/types/kakao/Maps";
-import MapKakaoSearchResponse from "@/apis/dto/response/MapKakaoSearchResponse";
+import MapKakaoSearchResponse from "@/apis/dto/service/response/MapKakaoSearchResponse";
 import {Status} from "@/types/kakao/Services";
 import {NextRouter} from "next/router";
 

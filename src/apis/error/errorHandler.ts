@@ -1,4 +1,4 @@
-import ApiResponse from "@/apis/dto/ApiResponse";
+import ApiResponse from "@/apis/dto/client/response/ApiResponse";
 import commonError from "@/apis/error/commonError";
 
 export const handleOnApiError = (error: ApiResponse<object | undefined>) => {

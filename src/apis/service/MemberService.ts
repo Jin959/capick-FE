@@ -1,13 +1,13 @@
 import ApiConfig from "@/apis/ApiConfig";
 import ApiClient from "@/apis/client/ApiClient";
-import {isApiResponse} from "@/apis/dto/ApiResponse";
+import {isApiResponse} from "@/apis/dto/client/response/ApiResponse";
 import {handleOnApiError} from "@/apis/error/errorHandler";
 import commonError from "@/apis/error/commonError";
-import MemberCreateRequest from "@/apis/dto/request/MemberCreateRequest";
-import MemberResponse from "@/apis/dto/response/MemberResponse";
-import MemberNicknameRequest from "@/apis/dto/request/MemberNicknameRequest";
-import MemberPasswordRequest from "@/apis/dto/request/MemberPasswordRequest";
-import MemberDeleteRequest from "@/apis/dto/request/MemberDeleteRequest";
+import MemberCreateRequest from "@/apis/dto/service/request/MemberCreateRequest";
+import MemberResponse from "@/apis/dto/service/response/MemberResponse";
+import MemberNicknameRequest from "@/apis/dto/service/request/MemberNicknameRequest";
+import MemberPasswordRequest from "@/apis/dto/service/request/MemberPasswordRequest";
+import MemberDeleteRequest from "@/apis/dto/service/request/MemberDeleteRequest";
 import memberError from "@/apis/error/memberError";
 
 class MemberService {

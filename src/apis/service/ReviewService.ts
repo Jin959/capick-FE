@@ -1,14 +1,15 @@
 import ApiClient from "@/apis/client/ApiClient";
 import ApiConfig from "@/apis/ApiConfig";
-import ReviewCreateRequest from "@/apis/dto/request/ReviewCreateRequest";
-import ReviewResponse from "@/apis/dto/response/ReviewResponse";
-import {isApiResponse} from "@/apis/dto/ApiResponse";
+import ReviewCreateRequest from "@/apis/dto/service/request/ReviewCreateRequest";
+import ReviewResponse from "@/apis/dto/service/response/ReviewResponse";
+import {isApiResponse} from "@/apis/dto/client/response/ApiResponse";
 import {handleOnApiError} from "@/apis/error/errorHandler";
 import commonError from "@/apis/error/commonError";
-import {FileNameWithUrl, StringMap} from "@/types/common";
+import {StringMap} from "@/types/common";
 import {createDataWithId, isImageFileExtension} from "@/utils/func";
 import reviewError from "@/apis/error/reviewError";
 import StorageClient from "@/apis/client/StorageClient";
+import StorageResponse from "@/apis/dto/client/response/StorageResponse";
 
 class ReviewService {
 
@@ -46,13 +47,13 @@ class ReviewService {
   public createReview = async (reviewCreateRequest: ReviewCreateRequest, images: Array<File>) => {
     const fileName = `${reviewCreateRequest.cafe.kakaoPlaceId}_${reviewCreateRequest.writerId}`;
     const path = reviewCreateRequest.cafe.name.split(' ').join('_');
-    let fileNameWithUrls: Array<FileNameWithUrl> = [];
+    let storageResponses: Array<StorageResponse> = [];
     if (images.length !== 0) {
-      fileNameWithUrls = await this.uploadImagesAndGetUrls(images, path, fileName);
+      storageResponses = await this.uploadImagesAndGetUrls(images, path, fileName);
     }
     try {
-      reviewCreateRequest.imageUrls = fileNameWithUrls.map(
-        fileNameWithUrls =>fileNameWithUrls.url
+      reviewCreateRequest.imageUrls = storageResponses.map(
+        storageResponse => storageResponse.url
       );
       const response = await this.apiClient
         .post<ReviewResponse, ReviewCreateRequest>("/reviews/new", reviewCreateRequest);
@@ -61,7 +62,7 @@ class ReviewService {
       console.error(error);
       // TODO: 파일 업로드 URL을 자체 백엔드 서버에 전송해야해서 업로드 후 API 요청을 했다 만약 에러가 생기면 롤백해야해서 여기에서 수행했는데 다른 좋은 방법이 있는지 고민해보기
       await this.rollbackUploadImages(
-        fileNameWithUrls.map(fileNameWithUrls => fileNameWithUrls.name), path);
+        storageResponses.map(storageResponse => storageResponse.name), path);
       if (isApiResponse(error)) {
         handleOnApiError(error);
       }
@@ -108,7 +109,12 @@ class ReviewService {
 
     try {
       return Promise.all(images.map(
-        image => this.storageClient.create(image, path, "images", fileName)
+        image => this.storageClient.create({
+          file: image,
+          path: path,
+          fileType: "images",
+          fileName: fileName
+        })
       ));
     } catch (error) {
       console.error(error);
@@ -119,7 +125,11 @@ class ReviewService {
   private async rollbackUploadImages(fileNames: Array<string>, path: string) {
     try {
       await Promise.all(fileNames.map(
-        filename => this.storageClient.delete(filename, path, "images")
+        fileName => this.storageClient.delete({
+          fileName: fileName,
+          path: path,
+          fileType: "images"
+        })
       ));
     } catch (error) {
       console.error(error);

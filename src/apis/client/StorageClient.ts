@@ -1,10 +1,12 @@
-import {FileNameWithUrl} from "@/types/common";
+import StorageResponse from "@/apis/dto/client/response/StorageResponse";
+import StorageCreateRequest from "@/apis/dto/client/request/StorageCreateRequest";
+import StorageDeleteRequest from "@/apis/dto/client/request/StorageDeleteRequest";
 
 interface StorageClient {
 
-  create(file: File, path: string, fileType: "images" | "videos", fileName?: string): Promise<FileNameWithUrl>;
+  create(storageCreateRequest: StorageCreateRequest): Promise<StorageResponse>;
 
-  delete(fileName: string, path: string, fileType: "images" | "videos"): Promise<void>;
+  delete(storageDeleteRequest: StorageDeleteRequest): Promise<void>;
 
 }
 
