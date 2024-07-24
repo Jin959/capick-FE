@@ -5,7 +5,7 @@ import ReviewResponse from "@/apis/dto/service/response/ReviewResponse";
 import {isApiResponse} from "@/apis/dto/client/response/ApiResponse";
 import {handleOnApiError} from "@/apis/error/errorHandler";
 import commonError from "@/apis/error/commonError";
-import {StringMap} from "@/types/common";
+import {DataWithId, StringMap} from "@/types/common";
 import {createDataWithId, isImageFileExtension} from "@/utils/func";
 import reviewError from "@/apis/error/reviewError";
 import StorageClient from "@/apis/client/StorageClient";
@@ -44,7 +44,7 @@ class ReviewService {
     return new ReviewService();
   }
 
-  public createReview = async (reviewCreateRequest: ReviewCreateRequest, images: Array<File>) => {
+  public createReview = async (reviewCreateRequest: ReviewCreateRequest, images: Array<File>): Promise<ReviewResponse> => {
     const fileName = `${reviewCreateRequest.cafe.kakaoPlaceId}_${reviewCreateRequest.writerId}`;
     const path = reviewCreateRequest.cafe.name.split(' ').join('_');
     let storageResponses: Array<StorageResponse> = [];
@@ -61,8 +61,8 @@ class ReviewService {
     } catch (error) {
       console.error(error);
       // TODO: 파일 업로드 URL을 자체 백엔드 서버에 전송해야해서 업로드 후 API 요청을 했다 만약 에러가 생기면 롤백해야해서 여기에서 수행했는데 다른 좋은 방법이 있는지 고민해보기
-      await this.rollbackUploadImages(
-        storageResponses.map(storageResponse => storageResponse.name), path);
+      await this.rollbackUploadImages(path,
+        storageResponses.map(storageResponse => storageResponse.name));
       if (isApiResponse(error)) {
         handleOnApiError(error);
       }
@@ -70,32 +70,32 @@ class ReviewService {
     }
   }
 
-  public getNextSurveyType = (surveyType: string) => {
+  public getNextSurveyType = (surveyType: string): string => {
     const nextIndex = this.surveyTypes.indexOf(surveyType) + 1;
     if (nextIndex >= this.surveyTypes.length) return ReviewService.SURVEY_END;
     else return this.surveyTypes[nextIndex];
   }
 
-  public getBeforeSurveyType = (surveyType: string) => {
+  public getBeforeSurveyType = (surveyType: string): string => {
     const beforeIndex = this.surveyTypes.indexOf(surveyType) - 1;
     if (surveyType === ReviewService.SURVEY_END) return this.surveyTypes[this.surveyTypes.length - 1];
     else if (beforeIndex < 0) return this.surveyTypes[0];
     else return this.surveyTypes[beforeIndex];
   }
 
-  public getFirstSurveyType = () => {
+  public getFirstSurveyType = (): string => {
     return this.surveyTypes[0];
   }
 
-  public isSurveyEnd = (surveyType: string) => {
+  public isSurveyEnd = (surveyType: string): boolean => {
     return surveyType === ReviewService.SURVEY_END;
   }
 
-  public isNeedDirectInput = (surveyType: string) => {
+  public isNeedDirectInput = (surveyType: string): boolean => {
     return this.surveyTypesWithDirectInput.indexOf(surveyType) !== -1
   }
 
-  public createSurveyOptionsWithIdFrom = (data: Array<string> | StringMap<string | number>) => {
+  public createSurveyOptionsWithIdFrom = (data: Array<string> | StringMap<string | number>): Array<DataWithId<string | number>> => {
     if (Array.isArray(data)) {
       return createDataWithId(data);
     } else {
@@ -103,7 +103,7 @@ class ReviewService {
     }
   }
 
-  private async uploadImagesAndGetUrls(images: Array<File>, path: string, fileName: string) {
+  private uploadImagesAndGetUrls = async (images: Array<File>, path: string, fileName: string): Promise<Array<StorageResponse>> => {
     this.ifNumberOfImagesExceededThrow(images);
     this.ifImagesExtensionIsNotValidThrow(images);
 
@@ -122,7 +122,7 @@ class ReviewService {
     }
   }
 
-  private async rollbackUploadImages(fileNames: Array<string>, path: string) {
+  private rollbackUploadImages = async (path: string, fileNames: Array<string>): Promise<void> => {
     try {
       await Promise.all(fileNames.map(
         fileName => this.storageClient.delete({
@@ -137,7 +137,7 @@ class ReviewService {
     }
   }
 
-  private ifImagesExtensionIsNotValidThrow(images: Array<File>) {
+  private ifImagesExtensionIsNotValidThrow = (images: Array<File>): void => {
     for (let image of images) {
       if (!isImageFileExtension(image)) {
         throw new Error(reviewError.image.invalidImageExtension);
@@ -145,7 +145,7 @@ class ReviewService {
     }
   }
 
-  private ifNumberOfImagesExceededThrow(images: Array<File>) {
+  private ifNumberOfImagesExceededThrow = (images: Array<File>): void => {
     if (images.length > 3) {
       throw new Error(reviewError.image.numberOfImageExceeded);
     }

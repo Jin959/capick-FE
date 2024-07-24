@@ -32,7 +32,7 @@ class MapService {
     return new MapService();
   }
 
-  public getCurrentPosition = () => {
+  public getCurrentPosition = (): Promise<Position> => {
     return new Promise((resolve, reject) => {
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
@@ -59,7 +59,7 @@ class MapService {
     });
   }
 
-  public getMap = async (mapDivElement: HTMLDivElement) => {
+  public getMap = async (mapDivElement: HTMLDivElement): Promise<KakaoMap | null> => {
     try {
       if (this.map === null) {
         window.kakao.maps.load(() => {
@@ -85,7 +85,7 @@ class MapService {
     }
   }
 
-  public panMapToCurrentPosition = () => {
+  public panMapToCurrentPosition = (): Promise<"SUCCESS"> => {
     return new Promise((resolve, reject) => {
       window.kakao.maps.load(() => {
         if (this.map !== null) {
@@ -99,7 +99,7 @@ class MapService {
     })
   }
 
-  public getNearbyCafesWithMarker = (router: NextRouter) => {
+  public getNearbyCafesWithMarker = (router: NextRouter): Promise<Array<MapKakaoSearchResponse>> => {
     return new Promise((resolve, reject) => {
       window.kakao.maps.load(() => {
         if (this.map !== null) {
@@ -128,7 +128,7 @@ class MapService {
     });
   }
 
-  public addMapListenerToGetCafesOn = (eventType: MapEvent, router: NextRouter) => {
+  public addMapListenerToGetCafesOn = (eventType: MapEvent, router: NextRouter): Promise<"SUCCESS"> => {
     return new Promise((resolve, reject) => {
       window.kakao.maps.load(() => {
         if (this.map !== null) {
@@ -162,7 +162,7 @@ class MapService {
     });
   }
 
-  private createCafeMarkersAndInfoWindows = (router: NextRouter) => {
+  private createCafeMarkersAndInfoWindows = (router: NextRouter): Promise<"SUCCESS"> => {
     return new Promise((resolve, reject) => {
       const {kakao} = window;
       this.nearbyCafes.map((cafe: MapKakaoSearchResponse) => {
@@ -206,14 +206,14 @@ class MapService {
     });
   }
 
-  private deleteCafeMarkers = () => {
+  private deleteCafeMarkers = (): void => {
     this.markers.map((marker: Marker) => {
       marker.setMap(null);
     });
     this.markers = [];
   }
 
-  private deleteCafeInfoWindows = () => {
+  private deleteCafeInfoWindows = (): void => {
     this.infoWindows.map((infoWindow: InfoWindow) => {
       infoWindow.close();
     });
