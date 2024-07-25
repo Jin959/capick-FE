@@ -82,11 +82,12 @@ const ReviewImageInput = () => {
                   key={preview.id}
                   src={preview.data}
                   alt={`ReviewImage${preview.id}`}
-                  width={150}
-                  height={150}
+                  width={0}
+                  height={0}
                   style={{
                     margin: "0 0.2rem 0 0.2rem",
-                    maxHeight: "10rem",
+                    width: "auto",
+                    height: "10rem",
                     objectFit: "contain"
                   }}
                 />)}
