@@ -30,10 +30,13 @@ const ReviewImageInput = () => {
     setImagePreviews(createDataWithId(
       review.images.map(image => URL.createObjectURL(image))
     ));
+  }, [review.images]);
+
+  useEffect(() => {
     return () => {
       imagePreviews.map(preview => URL.revokeObjectURL(preview.data));
     };
-  }, [review.images]);
+  }, [imagePreviews]);
 
   return (
     <>
