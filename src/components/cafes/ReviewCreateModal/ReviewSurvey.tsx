@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useCallback, useContext} from 'react';
 import {ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader} from "@chakra-ui/modal";
 import reviewConstant from "@/constants/reviewConstant";
 import {Button, Input, Text} from "@chakra-ui/react";
@@ -45,13 +45,13 @@ const ReviewSurvey = ({reviewService}: Props) => {
     });
   }
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     dispatchReview({
       type: "SET_SURVEY_OPTION",
       surveyType: event.target.name,
       option: event.target.value
     });
-  }
+  }, [dispatchReview]);
 
   return (
     <>

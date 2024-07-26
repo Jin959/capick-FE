@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useCallback, useContext} from 'react';
 import {useRouter} from "next/router";
 import {ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader} from "@chakra-ui/modal";
 import {Button, Textarea, Box} from "@chakra-ui/react";
@@ -32,12 +32,12 @@ const ReviewContent = ({reviewService}: Props) => {
     });
   }
 
-  const handleOnChangeTextarea = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleOnChangeTextarea = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
     dispatchReview({
       type: "SET_CONTENT",
       content: event.target.value
     });
-  }
+  }, [dispatchReview]);
 
   const handleOnClickDone = async () => {
     try {

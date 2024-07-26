@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {Button, Flex, Input, InputGroup, Text} from "@chakra-ui/react";
 import Image from "next/image";
 import UploadImageIcon from "@/../public/icons/google-material-add_photo_alternate_FILL0_wght400_GRAD0_opsz24.svg"
@@ -15,9 +15,9 @@ const ReviewImageInput = () => {
   const review = useContext(ReviewContext);
   const dispatchReview = useContext(ReviewDispatchContext);
 
-  const handleOnClick = () => {
+  const handleOnClick = useCallback(() => {
     imageInputRef.current?.click();
-  }
+  }, []);
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatchReview({
