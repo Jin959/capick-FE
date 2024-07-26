@@ -14,10 +14,10 @@ const Login: NextPage = () => {
       <PageFlexContainer>
         <Box p="2"></Box>
         <Heading size="md" textAlign="center">
-          동내 까페 생활의 시작, 까픽
+          동네 카페 생활의 시작, 까픽
         </Heading>
         <Text textAlign="center">
-          커피, 공간 리뷰, 까페의 모든 것
+          커피, 공간 리뷰, 카페의 모든 것
         </Text>
         <Box p="8"></Box>
         <LoginForm/>

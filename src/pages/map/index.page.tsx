@@ -7,7 +7,7 @@ const Map: NextPage = () => {
   return (
     <>
       <Heading size="md" textAlign="center">
-        내 근처 까페
+        내 근처 카페
       </Heading>
       <Box p="2"></Box>
       <KakaoMap/>
