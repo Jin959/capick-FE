@@ -15,6 +15,20 @@ const colors = {
     800: '#472805',
     900: '#1b0c00',
   },
+  subBrand: {
+    main: "#F9D5AC",
+    sub: "#fff2e2",
+    50: '#fef0de',
+    100: '#feefdc',
+    200: '#fdebd4',
+    300: '#fce7cc',
+    400: '#fbe2c3',
+    500: '#fadebd',
+    600: '#fadab5',
+    700: '#fadab4',
+    800: '#fad9b3',
+    900: '#fad7b0',
+  },
   border: {
     layout: "#EEEEEE",
     form: "#D1D3D8"

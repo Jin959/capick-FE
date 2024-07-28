@@ -4,20 +4,38 @@ import {Global} from "@emotion/react";
 import theme from "@/styles/theme";
 import globalStyle from "@/styles/global";
 import Layout from "@/components/common/Layout";
-import MemberProvider from "@/contexts/member";
 import SeoHead from "@/components/common/SeoHead";
+import GlobalProvider from "@/contexts/GlobalProvider";
+import MemberProvider from "@/contexts/member";
+import ModalProvider from "@/contexts/modal";
+import CafeProvider from "@/contexts/cafe";
+import {NextComponentType, NextPage} from "next";
 
-export default function App({Component, pageProps}: AppProps) {
+interface CustomAppProps extends AppProps {
+  Component: NextComponentType & NextPageWithCafeContext
+}
+
+type NextPageWithCafeContext = NextPage & {
+  requireCafeContext: boolean;
+}
+
+export default function App({Component, pageProps}: CustomAppProps) {
+
+  const contexts = [MemberProvider, ModalProvider];
+  if (Component.requireCafeContext) {
+    contexts.push(CafeProvider);
+  }
+
   return (
     <>
       <SeoHead/>
       <ChakraProvider resetCSS={true} theme={theme}>
         <Global styles={globalStyle}/>
-        <MemberProvider>
+        <GlobalProvider contexts={contexts}>
           <Layout>
             <Component {...pageProps} />
           </Layout>
-        </MemberProvider>
+        </GlobalProvider>
       </ChakraProvider>
     </>
   );

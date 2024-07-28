@@ -4,7 +4,7 @@ import Header from "./Header";
 import NavigationBar from "./NavigationBar";
 
 
-type Props = {
+interface Props {
   children: ReactNode
 }
 

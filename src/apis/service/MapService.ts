@@ -1,7 +1,7 @@
-import Position from "@/apis/dto/response/Position";
+import Position from "@/apis/dto/service/response/Position";
 import mapError from "@/apis/error/mapError";
 import {InfoWindow, KakaoMap, MapEvent, MapLevel, MapOption, Marker} from "@/types/kakao/Maps";
-import MapKakaoSearchResponse from "@/apis/dto/response/MapKakaoSearchResponse";
+import MapKakaoSearchResponse from "@/apis/dto/service/response/MapKakaoSearchResponse";
 import {Status} from "@/types/kakao/Services";
 import {NextRouter} from "next/router";
 
@@ -32,7 +32,7 @@ class MapService {
     return new MapService();
   }
 
-  public getCurrentPosition = () => {
+  public getCurrentPosition = (): Promise<Position> => {
     return new Promise((resolve, reject) => {
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
@@ -59,7 +59,7 @@ class MapService {
     });
   }
 
-  public getMap = async (mapDivElement: HTMLDivElement) => {
+  public getMap = async (mapDivElement: HTMLDivElement): Promise<KakaoMap | null> => {
     try {
       if (this.map === null) {
         window.kakao.maps.load(() => {
@@ -85,7 +85,7 @@ class MapService {
     }
   }
 
-  public panMapToCurrentPosition = () => {
+  public panMapToCurrentPosition = (): Promise<"SUCCESS"> => {
     return new Promise((resolve, reject) => {
       window.kakao.maps.load(() => {
         if (this.map !== null) {
@@ -99,7 +99,7 @@ class MapService {
     })
   }
 
-  public getNearbyCafesWithMarker = (router: NextRouter) => {
+  public getNearbyCafesWithMarker = (router: NextRouter): Promise<Array<MapKakaoSearchResponse>> => {
     return new Promise((resolve, reject) => {
       window.kakao.maps.load(() => {
         if (this.map !== null) {
@@ -128,7 +128,7 @@ class MapService {
     });
   }
 
-  public addMapListenerToGetCafesOn = (eventType: MapEvent, router: NextRouter) => {
+  public addMapListenerToGetCafesOn = (eventType: MapEvent, router: NextRouter): Promise<"SUCCESS"> => {
     return new Promise((resolve, reject) => {
       window.kakao.maps.load(() => {
         if (this.map !== null) {
@@ -162,7 +162,7 @@ class MapService {
     });
   }
 
-  private createCafeMarkersAndInfoWindows = (router: NextRouter) => {
+  private createCafeMarkersAndInfoWindows = (router: NextRouter): Promise<"SUCCESS"> => {
     return new Promise((resolve, reject) => {
       const {kakao} = window;
       this.nearbyCafes.map((cafe: MapKakaoSearchResponse) => {
@@ -180,7 +180,6 @@ class MapService {
               query: {
                 kakaoPlaceId: cafe.id,
                 name: cafe.place_name,
-                phone: cafe.phone,
                 address: cafe.address_name,
                 roadAddress: cafe.road_address_name,
                 longitude: cafe.x,
@@ -207,14 +206,14 @@ class MapService {
     });
   }
 
-  private deleteCafeMarkers = () => {
+  private deleteCafeMarkers = (): void => {
     this.markers.map((marker: Marker) => {
       marker.setMap(null);
     });
     this.markers = [];
   }
 
-  private deleteCafeInfoWindows = () => {
+  private deleteCafeInfoWindows = (): void => {
     this.infoWindows.map((infoWindow: InfoWindow) => {
       infoWindow.close();
     });

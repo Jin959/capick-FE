@@ -1,6 +1,6 @@
 import axios, {Axios, AxiosInstance, AxiosResponse} from "axios";
 import ApiClient from "./ApiClient";
-import ApiResponse from "@/apis/dto/ApiResponse";
+import ApiResponse from "@/apis/dto/client/response/ApiResponse";
 
 class AxiosClient implements ApiClient {
 

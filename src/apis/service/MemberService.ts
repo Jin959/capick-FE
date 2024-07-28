@@ -1,13 +1,14 @@
 import ApiConfig from "@/apis/ApiConfig";
 import ApiClient from "@/apis/client/ApiClient";
-import {isApiResponse} from "@/apis/dto/ApiResponse";
+import {isApiResponse} from "@/apis/dto/client/response/ApiResponse";
 import {handleOnApiError} from "@/apis/error/errorHandler";
 import commonError from "@/apis/error/commonError";
-import MemberCreateRequest from "@/apis/dto/request/MemberCreateRequest";
-import MemberResponse from "@/apis/dto/response/MemberResponse";
-import MemberNicknameRequest from "@/apis/dto/request/MemberNicknameRequest";
-import MemberPasswordRequest from "@/apis/dto/request/MemberPasswordRequest";
-import MemberDeleteRequest from "@/apis/dto/request/MemberDeleteRequest";
+import MemberCreateRequest from "@/apis/dto/service/request/MemberCreateRequest";
+import MemberResponse from "@/apis/dto/service/response/MemberResponse";
+import MemberNicknameRequest from "@/apis/dto/service/request/MemberNicknameRequest";
+import MemberPasswordRequest from "@/apis/dto/service/request/MemberPasswordRequest";
+import MemberDeleteRequest from "@/apis/dto/service/request/MemberDeleteRequest";
+import memberError from "@/apis/error/memberError";
 
 class MemberService {
 
@@ -32,7 +33,7 @@ class MemberService {
     return new MemberService();
   }
 
-  public createMember = async (memberCreateRequest: MemberCreateRequest) => {
+  public createMember = async (memberCreateRequest: MemberCreateRequest): Promise<MemberResponse> => {
     try {
       const response = await this.apiClient
         .post<MemberResponse, MemberCreateRequest>("/members/new", memberCreateRequest);
@@ -46,7 +47,7 @@ class MemberService {
     }
   }
 
-  public getMember = async (memberId: string | number) => {
+  public getMember = async (memberId: string | number): Promise<MemberResponse> => {
     try {
       const response = await this.apiClient
         .get<MemberResponse>("/members/" + memberId);
@@ -60,7 +61,7 @@ class MemberService {
     }
   }
 
-  public updateMemberNickname = async (memberNicknameRequest: MemberNicknameRequest) => {
+  public updateMemberNickname = async (memberNicknameRequest: MemberNicknameRequest): Promise<MemberResponse> => {
     try {
       const response = await this.apiClient
         .patch<MemberResponse, MemberNicknameRequest>("/members/me/nickname", memberNicknameRequest);
@@ -74,7 +75,7 @@ class MemberService {
     }
   }
 
-  public updateMemberPassword = async (memberPasswordRequest: MemberPasswordRequest) => {
+  public updateMemberPassword = async (memberPasswordRequest: MemberPasswordRequest): Promise<void> => {
     this.ifPasswordUnchangedThrow(memberPasswordRequest.password, memberPasswordRequest.newPassword);
     try {
       await this.apiClient
@@ -88,7 +89,7 @@ class MemberService {
     }
   }
 
-  public deleteMember = async (memberDeleteRequest: MemberDeleteRequest) => {
+  public deleteMember = async (memberDeleteRequest: MemberDeleteRequest): Promise<void> => {
     this.ifNotAgreeWarningThrow(memberDeleteRequest.agreement);
     try {
       await this.apiClient
@@ -102,58 +103,58 @@ class MemberService {
     }
   }
 
-  public isNotValidMember = (email: string, password: string, nickname: string, confirmPassword: string) => {
+  public isNotValidMember = (email: string, password: string, nickname: string, confirmPassword: string): boolean => {
     return this.isNotValidEmail(email) || this.isNotValidPassword(password)
       || this.isNotValidNickname(nickname) || this.isNotPasswordConfirm(password, confirmPassword);
   }
 
-  public isNotValidPasswordChange = (password: string, newPassword: string, confirmPassword: string) => {
+  public isNotValidPasswordChange = (password: string, newPassword: string, confirmPassword: string): boolean => {
     return password.length === 0
       || this.isNotValidPassword(newPassword)
       || this.isNotPasswordConfirm(newPassword, confirmPassword);
   }
 
-  public isNotValidEmailAndNotEmpty = (email: string) => {
+  public isNotValidEmailAndNotEmpty = (email: string): boolean => {
     return this.isNotValidEmail(email) && email.length > 0;
   }
 
-  public isNotValidEmail(email: string) {
+  public isNotValidEmail(email: string): boolean {
     return !this.emailRegExp.test(email);
   }
 
-  public isNotValidPasswordAndNotEmpty = (password: string) => {
+  public isNotValidPasswordAndNotEmpty = (password: string): boolean => {
     return this.isNotValidPassword(password) && password.length > 0;
   }
 
-  public isNotValidPassword(password: string) {
+  public isNotValidPassword(password: string): boolean {
     return !this.passwordRegExp.test(password);
   }
 
-  public isNotValidNicknameAndNotEmpty = (nickname: string) => {
+  public isNotValidNicknameAndNotEmpty = (nickname: string): boolean => {
     return this.isNotValidNickname(nickname) && nickname.length > 0;
   }
 
-  public isNotValidNickname(nickname: string) {
+  public isNotValidNickname(nickname: string): boolean {
     return !this.nicknameRegExp.test(nickname);
   }
 
-  public isNotPasswordConfirmAndNotEmpty = (password: string, confirmPassword: string) => {
+  public isNotPasswordConfirmAndNotEmpty = (password: string, confirmPassword: string): boolean => {
     return this.isNotPasswordConfirm(password, confirmPassword) && password.length > 0
   }
 
-  public isNotPasswordConfirm(password: string, confirmPassword: string) {
+  public isNotPasswordConfirm(password: string, confirmPassword: string): boolean {
     return password !== confirmPassword;
   }
 
-  private ifPasswordUnchangedThrow(password: string, newPassword: string) {
+  private ifPasswordUnchangedThrow(password: string, newPassword: string): void {
     if (password === newPassword) {
-      throw new Error("기존 비밀번호와 새 비밀번호는 같을 수 없습니다. 새로운 비밀번호를 입력해주세요");
+      throw new Error(memberError.password.duplicate);
     }
   }
 
-  private ifNotAgreeWarningThrow(agreement: boolean) {
+  private ifNotAgreeWarningThrow(agreement: boolean): void {
     if (!agreement) {
-      throw new Error("탈퇴 주의 사항을 확인하고 동의해주세요.");
+      throw new Error(memberError.deleteAccount.notAgreed);
     }
   }
 }

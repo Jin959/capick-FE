@@ -1,5 +1,6 @@
 import React from 'react';
 import {Input, Text} from "@chakra-ui/react";
+import {createDataWithId} from "@/utils/func";
 
 interface Props {
   name?: string;
@@ -14,24 +15,9 @@ interface Props {
   validationErrorMessages: Array<string>;
 }
 
-interface ValidationError {
-  id: number;
-  message: string;
-}
-
-const createValidationErrorsWithId = (validationErrorMessages: Array<string>) => {
-  let id = 1;
-  return validationErrorMessages.map(
-    (validationErrorMessage) => ({
-      id: id++,
-      message: validationErrorMessage
-    })
-  );
-}
-
 const InputWithValidation = (props: Props) => {
 
-  const validationErrors: Array<ValidationError> = createValidationErrorsWithId(props.validationErrorMessages);
+  const validationErrors = createDataWithId(props.validationErrorMessages);
 
   return (
     <>
@@ -52,7 +38,7 @@ const InputWithValidation = (props: Props) => {
             fontSize="sm"
             color="red.500"
           >
-            {validationError.message}
+            {validationError.data}
           </Text>)
       }
     </>
