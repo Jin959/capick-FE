@@ -70,6 +70,20 @@ class ReviewService {
     }
   }
 
+  public getReview = async (reviewId: string | number): Promise<ReviewResponse> => {
+    try {
+      const response = await this.apiClient
+        .get<ReviewResponse>("/reviews/" + reviewId);
+      return response.data ?? this.nullResponse;
+    } catch (error) {
+      console.error(error);
+      if (isApiResponse(error)) {
+        handleOnApiError(error);
+      }
+      throw new Error(commonError.connection);
+    }
+  }
+
   public getNextSurveyType = (surveyType: string): string => {
     const nextIndex = this.surveyTypes.indexOf(surveyType) + 1;
     if (nextIndex >= this.surveyTypes.length) return ReviewService.SURVEY_END;
