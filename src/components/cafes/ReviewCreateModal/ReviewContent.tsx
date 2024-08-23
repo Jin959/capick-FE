@@ -77,7 +77,7 @@ const ReviewContent = ({reviewService}: Props) => {
         surveyType: reviewService.getFirstSurveyType()
       });
 
-      router.push(`/cafes/${cafe.name}/${cafe.kakaoPlaceId}/reviews/${reviewResponse.id}`);
+      router.push(`/reviews/${reviewResponse.id}`);
     } catch (error) {
       window.alert(error);
     }
