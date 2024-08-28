@@ -4,6 +4,8 @@ import PageFlexContainer from "@/components/common/container/PageFlexContainer";
 import {useRouter} from "next/router";
 import useReviewService from "@/hooks/service/useReivewService";
 import {Avatar, Box, Divider, Flex, Tag, Text} from "@chakra-ui/react";
+import Image from "next/image";
+import {createDataWithId} from "@/utils/func";
 
 const ReviewPage = () => {
   const router = useRouter();
@@ -22,6 +24,8 @@ const ReviewPage = () => {
   });
 
   const reviewService = useReviewService();
+
+  const reviewImageUrls = createDataWithId(review.imageUrls);
 
   useEffect(() => {
     if (reviewId === "Not Available") return;
@@ -83,6 +87,30 @@ const ReviewPage = () => {
           </Tag>
         </Box>
         <Divider/>
+        <Flex
+          justifyContent="space-around"
+          alignItems="center"
+          overflow="auto"
+        >
+          {reviewImageUrls.map(
+            imageUrl => <Box
+              key={imageUrl.id}
+              pos="relative"
+              minW="13rem"
+              h="13rem"
+              m="0 0.2rem 0 0.2rem"
+            >
+              <Image
+                src={imageUrl.data}
+                alt={`ReviewImage${imageUrl.id}`}
+                fill
+                style={{
+                  objectFit: "contain"
+                }}
+              />
+            </Box>
+          )}
+        </Flex>
         <Text>
           {review.content}
         </Text>
