@@ -46,7 +46,7 @@ class ReviewService {
 
   public createReview = async (reviewCreateRequest: ReviewCreateRequest, images: Array<File>): Promise<ReviewResponse> => {
     const fileName = `${reviewCreateRequest.cafe.kakaoPlaceId}_${reviewCreateRequest.writerId}`;
-    const path = reviewCreateRequest.cafe.name.split(' ').join('_');
+    const path = "reviews";
     let storageResponses: Array<StorageResponse> = [];
     if (images.length !== 0) {
       storageResponses = await this.uploadImagesAndGetUrls(images, path, fileName);
