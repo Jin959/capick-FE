@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ['page.tsx'],
+  images: {
+    domains: [process.env.STORAGE_BASE_URL],
+  },
   async rewrites() {
     return [
       {
