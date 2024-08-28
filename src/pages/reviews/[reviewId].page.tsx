@@ -7,7 +7,7 @@ import {Avatar, Box, Divider, Flex, Tag, Text} from "@chakra-ui/react";
 
 const ReviewPage = () => {
   const router = useRouter();
-  const reviewId = (router.query.reviewId || "0") as string;
+  const reviewId = (router.query.reviewId ?? "Not Available") as string;
 
   const [writer, setWriter] = useState({
     nickname: "",
@@ -24,6 +24,7 @@ const ReviewPage = () => {
   const reviewService = useReviewService();
 
   useEffect(() => {
+    if (reviewId === "Not Available") return;
     (async () => {
       try {
         const reviewResponse = await reviewService.getReview(reviewId);
