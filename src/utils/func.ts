@@ -42,3 +42,10 @@ export const isImageFileExtension = (image: File): boolean => {
   ];
   return imageExtensions.indexOf(image.type) !== -1;
 }
+
+export const parseDateAndTime = (dateTime: string): string => {
+  const indexOfSeparator = dateTime.indexOf('T');
+  const date = dateTime.substring(0, indexOfSeparator);
+  const time = dateTime.substring(indexOfSeparator + 1, dateTime.indexOf('.'));
+  return date + " " + time;
+}

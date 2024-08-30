@@ -5,7 +5,7 @@ import {useRouter} from "next/router";
 import useReviewService from "@/hooks/service/useReivewService";
 import {Avatar, Box, Divider, Flex, Tag, Text} from "@chakra-ui/react";
 import Image from "next/image";
-import {createDataWithId} from "@/utils/func";
+import {createDataWithId, parseDateAndTime} from "@/utils/func";
 
 const ReviewPage = () => {
   const router = useRouter();
@@ -40,7 +40,7 @@ const ReviewPage = () => {
           visitPurpose: reviewResponse.visitPurpose,
           content: reviewResponse.content,
           menu: reviewResponse.menu,
-          registeredAt: reviewResponse.registeredAt,
+          registeredAt: parseDateAndTime(reviewResponse.registeredAt),
           imageUrls: reviewResponse.imageUrls
         });
       } catch (error) {
