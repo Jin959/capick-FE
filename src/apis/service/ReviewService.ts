@@ -78,6 +78,9 @@ class ReviewService {
     } catch (error) {
       console.error(error);
       if (isApiResponse(error)) {
+        if (error.code == 404) {
+          window.location.href = "/";
+        }
         handleOnApiError(error);
       }
       throw new Error(commonError.connection);
