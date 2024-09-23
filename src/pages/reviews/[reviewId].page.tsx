@@ -27,6 +27,10 @@ const ReviewPage = () => {
 
   const reviewImageUrls = createDataWithId(review.imageUrls);
 
+  const handleOnContextMenu = (event: React.MouseEvent<HTMLImageElement>) => {
+    event.preventDefault();
+  }
+
   useEffect(() => {
     if (reviewId === "Not Available") return;
     (async () => {
@@ -107,6 +111,8 @@ const ReviewPage = () => {
                 style={{
                   objectFit: "contain"
                 }}
+                quality={5}
+                onContextMenu={handleOnContextMenu}
               />
             </Box>
           )}
