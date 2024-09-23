@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import BackButton from "@/components/common/button/BackButton";
 import PageFlexContainer from "@/components/common/container/PageFlexContainer";
 import {useRouter} from "next/router";
@@ -6,6 +6,8 @@ import useReviewService from "@/hooks/service/useReivewService";
 import {Avatar, Box, Divider, Flex, Tag, Text} from "@chakra-ui/react";
 import Image from "next/image";
 import {createDataWithId, parseDateAndTime} from "@/utils/func";
+import ImageModal from "@/components/common/modal/ImageModal";
+import {ModalDispatchContext} from "@/contexts/modal";
 
 const ReviewPage = () => {
   const router = useRouter();
@@ -22,13 +24,24 @@ const ReviewPage = () => {
     registeredAt: "",
     imageUrls: [""]
   });
+  const [imageModalUrl, setImageModalUrl] = useState("");
 
   const reviewService = useReviewService();
+
+  const dispatchModal = useContext(ModalDispatchContext);
 
   const reviewImageUrls = createDataWithId(review.imageUrls);
 
   const handleOnContextMenu = (event: React.MouseEvent<HTMLImageElement>) => {
     event.preventDefault();
+  }
+
+  const handleOnClick = (imageUrl: string) => {
+    dispatchModal({
+      type: "OPEN_MODAL",
+      modal: "imageModal"
+    });
+    setImageModalUrl(imageUrl);
   }
 
   useEffect(() => {
@@ -57,6 +70,9 @@ const ReviewPage = () => {
     <>
       <BackButton/>
       <PageFlexContainer>
+        <ImageModal
+          imageUrl={imageModalUrl}
+        />
         <Flex
           justifyContent="space-between"
           alignItems="center"
@@ -113,6 +129,7 @@ const ReviewPage = () => {
                 }}
                 quality={5}
                 onContextMenu={handleOnContextMenu}
+                onClick={() => handleOnClick(imageUrl.data)}
               />
             </Box>
           )}
