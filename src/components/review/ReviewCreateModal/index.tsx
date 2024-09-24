@@ -2,8 +2,8 @@ import React, {useContext, useEffect} from 'react';
 import {Modal, ModalOverlay} from "@chakra-ui/modal";
 import {Button} from "@chakra-ui/react";
 import ReviewService from "@/apis/service/ReviewService";
-import ReviewSurvey from "@/components/cafes/ReviewCreateModal/ReviewSurvey";
-import ReviewContent from "@/components/cafes/ReviewCreateModal/ReviewContent";
+import ReviewSurvey from "@/components/review/ReviewCreateModal/ReviewSurvey";
+import ReviewContent from "@/components/review/ReviewCreateModal/ReviewContent";
 import {ReviewContext, ReviewDispatchContext} from "@/contexts/review";
 import {ModalContext, ModalDispatchContext} from "@/contexts/modal";
 

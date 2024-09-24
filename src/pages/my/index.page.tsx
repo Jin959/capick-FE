@@ -3,11 +3,11 @@ import {NextPage} from "next";
 import {Box, Button, Heading} from "@chakra-ui/react";
 import PageFlexContainer from "@/components/common/container/PageFlexContainer";
 import BackButton from "@/components/common/button/BackButton";
-import ProfileForm from "@/components/my/ProfileForm";
-import NicknameForm from "@/components/my/NicknameForm";
-import PasswordForm from "@/components/my/PasswordForm";
+import ProfileForm from "@/components/member/ProfileForm";
+import NicknameForm from "@/components/member/NicknameForm";
+import PasswordForm from "@/components/member/PasswordForm";
 import useMemberService from "@/hooks/service/useMemberService";
-import CloseAccountBox from "@/components/my/CloseAccountBox";
+import CloseAccountBox from "@/components/member/CloseAccountBox";
 
 const My: NextPage = () => {
 

@@ -4,7 +4,7 @@ import {Box, Button, Heading, Input, Text} from "@chakra-ui/react";
 import PageFlexContainer from "@/components/common/container/PageFlexContainer";
 import Link from "next/link";
 import BackButton from "@/components/common/button/BackButton";
-import LoginForm from "@/components/login/LoginForm";
+import LoginForm from "@/components/member/LoginForm";
 
 const Login: NextPage = () => {
 

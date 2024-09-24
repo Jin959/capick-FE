@@ -9,7 +9,7 @@ import {StringMap} from "@/types/common";
 import {CafeContext} from "@/contexts/cafe";
 import {MemberContext} from "@/contexts/member";
 import {ModalDispatchContext} from "@/contexts/modal";
-import ReviewImageInput from "@/components/cafes/ReviewCreateModal/ReviewImageInput";
+import ReviewImageInput from "@/components/review/ReviewCreateModal/ReviewImageInput";
 
 interface Props {
   reviewService: ReviewService;
