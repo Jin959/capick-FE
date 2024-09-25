@@ -2,8 +2,8 @@ import React, {useContext, useEffect} from 'react';
 import {Modal, ModalOverlay} from "@chakra-ui/modal";
 import {Button} from "@chakra-ui/react";
 import ReviewService from "@/apis/service/ReviewService";
-import ReviewSurvey from "@/components/review/ReviewCreateModal/ReviewSurvey";
-import ReviewContent from "@/components/review/ReviewCreateModal/ReviewContent";
+import ReviewSurvey from "@/components/review/ReviewSurvey";
+import ReviewCreateContent from "@/components/review/ReviewCreateModal/ReviewCreateContent";
 import {ReviewContext, ReviewDispatchContext} from "@/contexts/review";
 import {ModalContext, ModalDispatchContext} from "@/contexts/modal";
 
@@ -61,7 +61,7 @@ const ReviewCreateModal = ({reviewService}: Props) => {
       >
         <ModalOverlay/>
         {showReviewContent ?
-          <ReviewContent
+          <ReviewCreateContent
             reviewService={reviewService}
           />
           : <ReviewSurvey

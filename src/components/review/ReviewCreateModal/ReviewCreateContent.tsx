@@ -9,13 +9,13 @@ import {StringMap} from "@/types/common";
 import {CafeContext} from "@/contexts/cafe";
 import {MemberContext} from "@/contexts/member";
 import {ModalDispatchContext} from "@/contexts/modal";
-import ReviewImageInput from "@/components/review/ReviewCreateModal/ReviewImageInput";
+import ReviewImageInput from "@/components/review/ReviewImageInput";
 
 interface Props {
   reviewService: ReviewService;
 }
 
-const ReviewContent = ({reviewService}: Props) => {
+const ReviewCreateContent = ({reviewService}: Props) => {
 
   const router = useRouter();
 
@@ -126,4 +126,4 @@ const ReviewContent = ({reviewService}: Props) => {
   );
 };
 
-export default ReviewContent;
+export default ReviewCreateContent;
