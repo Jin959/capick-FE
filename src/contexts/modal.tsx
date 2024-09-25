@@ -1,16 +1,17 @@
 import {createContext, Dispatch, ReactElement, useReducer} from "react";
 
 interface State {
-  reviewCreateModal: boolean;
   imageModal: boolean;
+  reviewCreateModal: boolean;
+  reviewUpdateModal: boolean;
 }
 
 type Action = {
   type: "OPEN_MODAL";
-  modal: "reviewCreateModal" | "imageModal";
+  modal: "imageModal" | "reviewCreateModal" | "reviewUpdateModal";
 } | {
   type: "CLOSE_MODAL";
-  modal: "reviewCreateModal" | "imageModal";
+  modal: "imageModal" | "reviewCreateModal" | "reviewUpdateModal";
 }
 
 interface Props {
@@ -18,8 +19,9 @@ interface Props {
 }
 
 const initialState: State = {
+  imageModal: false,
   reviewCreateModal: false,
-  imageModal: false
+  reviewUpdateModal: false
 }
 
 export const ModalContext = createContext<State>(initialState);

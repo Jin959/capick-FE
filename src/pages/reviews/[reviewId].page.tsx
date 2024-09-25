@@ -8,6 +8,8 @@ import Image from "next/image";
 import {createDataWithId, parseDateAndTime} from "@/utils/func";
 import ImageModal from "@/components/common/modal/ImageModal";
 import {ModalDispatchContext} from "@/contexts/modal";
+import ReviewProvider from "@/contexts/review";
+import ReviewUpdateModal from "@/components/review/ReviewUpdateModal";
 
 const ReviewPage = () => {
   const router = useRouter();
@@ -91,6 +93,23 @@ const ReviewPage = () => {
           </Text>
         </Flex>
         <Divider/>
+        <Flex
+          justifyContent="space-around"
+          alignItems="center"
+        >
+          <ReviewProvider>
+            <ReviewUpdateModal
+              reviewService={reviewService}
+              reviewInfo={{
+                reviewId: reviewId,
+                visitPurpose: review.visitPurpose,
+                content: review.content,
+                menu: review.menu,
+                imageUrls: review.imageUrls
+              }}
+            />
+          </ReviewProvider>
+        </Flex>
         <Box>
           <Tag
             w="fit-content"
