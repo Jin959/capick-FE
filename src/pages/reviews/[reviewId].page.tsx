@@ -4,13 +4,13 @@ import PageFlexContainer from "@/components/common/container/PageFlexContainer";
 import {useRouter} from "next/router";
 import useReviewService from "@/hooks/service/useReivewService";
 import {Avatar, Box, Divider, Flex, Tag, Text} from "@chakra-ui/react";
-import Image from "next/image";
-import {createDataWithId, parseDateAndTime} from "@/utils/func";
+import {parseDateAndTime} from "@/utils/func";
 import ImageModal from "@/components/common/modal/ImageModal";
 import {ModalDispatchContext} from "@/contexts/modal";
 import ReviewProvider from "@/contexts/review";
 import ReviewUpdateModal from "@/components/review/ReviewUpdateModal";
 import {MemberContext} from "@/contexts/member";
+import ImageListDisplay from "@/components/common/data-display/ImageListDisplay";
 
 const ReviewPage = () => {
   const router = useRouter();
@@ -34,8 +34,6 @@ const ReviewPage = () => {
 
   const reviewService = useReviewService();
   const showReviewEditButtons: boolean = reviewService.isReviewWriter(member.nickname, writer.nickname);
-
-  const reviewImageUrls = createDataWithId(review.imageUrls);
 
   const handleOnContextMenu = (event: React.MouseEvent<HTMLImageElement>) => {
     event.preventDefault();
@@ -131,33 +129,14 @@ const ReviewPage = () => {
           </Tag>
         </Box>
         <Divider/>
-        <Flex
-          justifyContent="space-around"
-          alignItems="center"
-          overflow="auto"
-        >
-          {reviewImageUrls.map(
-            imageUrl => <Box
-              key={imageUrl.id}
-              pos="relative"
-              minW="13rem"
-              h="13rem"
-              m="0 0.2rem 0 0.2rem"
-            >
-              <Image
-                src={imageUrl.data}
-                alt={`ReviewImage${imageUrl.id}`}
-                fill
-                style={{
-                  objectFit: "contain"
-                }}
-                quality={5}
-                onContextMenu={handleOnContextMenu}
-                onClick={() => handleOnClick(imageUrl.data)}
-              />
-            </Box>
-          )}
-        </Flex>
+        <ImageListDisplay
+          imageSrcUrls={review.imageUrls}
+          imageMinWidth={"13rem"}
+          imageHeight={"13rem"}
+          imageQuality={5}
+          onClickWithImageUrl={handleOnClick}
+          onContextMenu={handleOnContextMenu}
+        />
         <Text>
           {review.content}
         </Text>

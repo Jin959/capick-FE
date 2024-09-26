@@ -1,16 +1,15 @@
 import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
-import {Button, Flex, Input, InputGroup, Text} from "@chakra-ui/react";
+import {Button, Input, InputGroup, Text} from "@chakra-ui/react";
 import Image from "next/image";
 import UploadImageIcon from "@/../public/icons/google-material-add_photo_alternate_FILL0_wght400_GRAD0_opsz24.svg"
 import {ReviewContext, ReviewDispatchContext} from "@/contexts/review";
-import {createDataWithId} from "@/utils/func";
-import {DataWithId} from "@/types/common";
+import ImageListDisplay from "@/components/common/data-display/ImageListDisplay";
 
 const ReviewImageInput = () => {
 
   const imageInputRef = useRef<HTMLInputElement>(null);
 
-  const [imagePreviews, setImagePreviews] = useState<Array<DataWithId<string>>>([]);
+  const [imagePreviews, setImagePreviews] = useState<Array<string>>([]);
 
   const review = useContext(ReviewContext);
   const dispatchReview = useContext(ReviewDispatchContext);
@@ -27,14 +26,14 @@ const ReviewImageInput = () => {
   }
 
   useEffect(() => {
-    setImagePreviews(createDataWithId(
+    setImagePreviews(
       review.images.map(image => URL.createObjectURL(image))
-    ));
+    );
   }, [review.images]);
 
   useEffect(() => {
     return () => {
-      imagePreviews.map(preview => URL.revokeObjectURL(preview.data));
+      imagePreviews.map(preview => URL.revokeObjectURL(preview));
     };
   }, [imagePreviews]);
 
@@ -43,6 +42,7 @@ const ReviewImageInput = () => {
       <InputGroup
         onClick={handleOnClick}
         minH="15rem"
+        p="1rem"
         display="flex"
         flexDirection="column"
         justifyContent="space-around"
@@ -72,27 +72,18 @@ const ReviewImageInput = () => {
           </>
         ) : (
           <>
-            <Flex
-              justifyContent="space-around"
-              alignItems="center"
-              overflow="auto"
+            <ImageListDisplay
+              imageSrcUrls={imagePreviews}
+              imageHeight="13rem"
+              imageMinWidth="13rem"
+              containerWidth="100%"
+            />
+            <Button
+              size="sm"
+              mt="1rem"
             >
-              {imagePreviews.map(
-                preview => <Image
-                  key={preview.id}
-                  src={preview.data}
-                  alt={`ReviewImage${preview.id}`}
-                  width={0}
-                  height={0}
-                  style={{
-                    margin: "0 0.2rem 0 0.2rem",
-                    width: "auto",
-                    height: "10rem",
-                    objectFit: "contain"
-                  }}
-                />)}
-            </Flex>
-            <Button size="sm">사진 바꾸기</Button>
+              사진 바꾸기
+            </Button>
           </>
         )}
       </InputGroup>
