@@ -8,10 +8,9 @@ import {ModalDispatchContext} from "@/contexts/modal";
 
 interface Props {
   reviewService: ReviewService;
-  reviewId: string;
 }
 
-const ReviewUpdateContent = ({reviewService, reviewId}: Props) => {
+const ReviewUpdateContent = ({reviewService}: Props) => {
 
   const review = useContext(ReviewContext);
   const dispatchReview = useContext(ReviewDispatchContext);

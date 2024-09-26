@@ -34,26 +34,16 @@ const ReviewUpdateModal = ({reviewService, reviewInfo}: Props) => {
     });
 
     dispatchReview({
-      type: "INIT_REVIEW"
+      type: "SET_REVIEW_WITH_INIT",
+      id: Number(reviewInfo.reviewId),
+      visitPurpose: reviewInfo.visitPurpose,
+      menu: reviewInfo.menu,
+      content: reviewInfo.content,
+      preservedImageUrls: reviewInfo.imageUrls
     });
     dispatchReview({
       type: "SET_SURVEY_TYPE",
       surveyType: reviewService.getFirstSurveyType()
-    });
-
-    dispatchReview({
-      type: "SET_SURVEY_OPTION",
-      surveyType: "visitPurpose",
-      option: reviewInfo.visitPurpose
-    });
-    dispatchReview({
-      type: "SET_SURVEY_OPTION",
-      surveyType: "menu",
-      option: reviewInfo.menu
-    });
-    dispatchReview({
-      type: "SET_CONTENT",
-      content: reviewInfo.content
     });
   }
 
@@ -93,7 +83,6 @@ const ReviewUpdateModal = ({reviewService, reviewInfo}: Props) => {
         {showReviewContent ?
           <ReviewUpdateContent
             reviewService={reviewService}
-            reviewId={reviewInfo.reviewId}
           />
           : <ReviewSurvey
             reviewService={reviewService}
