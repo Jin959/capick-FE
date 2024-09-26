@@ -120,6 +120,10 @@ class ReviewService {
     }
   }
 
+  public isReviewWriter = (viewerNickname: string, writerNickname: string): boolean => {
+    return viewerNickname === writerNickname;
+  }
+
   private uploadImagesAndGetUrls = async (images: Array<File>, path: string, fileName: string): Promise<Array<StorageResponse>> => {
     this.ifNumberOfImagesExceededThrow(images);
     this.ifImagesExtensionIsNotValidThrow(images);

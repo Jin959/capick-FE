@@ -10,6 +10,7 @@ import ImageModal from "@/components/common/modal/ImageModal";
 import {ModalDispatchContext} from "@/contexts/modal";
 import ReviewProvider from "@/contexts/review";
 import ReviewUpdateModal from "@/components/review/ReviewUpdateModal";
+import {MemberContext} from "@/contexts/member";
 
 const ReviewPage = () => {
   const router = useRouter();
@@ -28,9 +29,11 @@ const ReviewPage = () => {
   });
   const [imageModalUrl, setImageModalUrl] = useState("");
 
-  const reviewService = useReviewService();
-
+  const member = useContext(MemberContext);
   const dispatchModal = useContext(ModalDispatchContext);
+
+  const reviewService = useReviewService();
+  const showReviewEditButtons: boolean = reviewService.isReviewWriter(member.nickname, writer.nickname);
 
   const reviewImageUrls = createDataWithId(review.imageUrls);
 
@@ -93,23 +96,25 @@ const ReviewPage = () => {
           </Text>
         </Flex>
         <Divider/>
-        <Flex
-          justifyContent="space-around"
-          alignItems="center"
-        >
-          <ReviewProvider>
-            <ReviewUpdateModal
-              reviewService={reviewService}
-              reviewInfo={{
-                reviewId: reviewId,
-                visitPurpose: review.visitPurpose,
-                content: review.content,
-                menu: review.menu,
-                imageUrls: review.imageUrls
-              }}
-            />
-          </ReviewProvider>
-        </Flex>
+        {showReviewEditButtons &&
+          <Flex
+            justifyContent="space-around"
+            alignItems="center"
+          >
+            <ReviewProvider>
+              <ReviewUpdateModal
+                reviewService={reviewService}
+                reviewInfo={{
+                  reviewId: reviewId,
+                  visitPurpose: review.visitPurpose,
+                  content: review.content,
+                  menu: review.menu,
+                  imageUrls: review.imageUrls
+                }}
+              />
+            </ReviewProvider>
+          </Flex>
+        }
         <Box>
           <Tag
             w="fit-content"
