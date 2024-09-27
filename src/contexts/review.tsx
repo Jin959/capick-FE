@@ -38,6 +38,9 @@ type Action = {
 } | {
   type: "SET_IMAGES";
   images: Array<File>;
+} | {
+  type: "SET_PRESERVED_IMAGE_URLS";
+  preservedImageUrls: Array<string>;
 }
 
 interface Props {
@@ -95,6 +98,11 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         images: action.images
+      }
+    case "SET_PRESERVED_IMAGE_URLS":
+      return {
+        ...state,
+        preservedImageUrls: action.preservedImageUrls
       }
     default:
       throw new Error("존재하지 않는 액션입니다.");

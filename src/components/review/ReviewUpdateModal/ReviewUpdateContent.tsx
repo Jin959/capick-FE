@@ -5,6 +5,7 @@ import ReviewImageInput from "@/components/review/ReviewImageInput";
 import {Box, Button, Textarea, Text} from "@chakra-ui/react";
 import {ReviewContext, ReviewDispatchContext} from "@/contexts/review";
 import {ModalDispatchContext} from "@/contexts/modal";
+import ReviewImageDeleteStack from "@/components/review/ReviewImageDeleteStack";
 
 interface Props {
   reviewService: ReviewService;
@@ -15,6 +16,8 @@ const ReviewUpdateContent = ({reviewService}: Props) => {
   const review = useContext(ReviewContext);
   const dispatchReview = useContext(ReviewDispatchContext);
   const dispatchModal = useContext(ModalDispatchContext);
+
+  const countImageNumber: number = review.images.length + review.preservedImageUrls.length;
 
   const handleOnClickBefore = () => {
     dispatchReview({
@@ -44,17 +47,38 @@ const ReviewUpdateContent = ({reviewService}: Props) => {
         <ModalHeader
           m="0 auto"
         >
-          한마디
+          이미지 및 내용 수정
         </ModalHeader>
         <ModalBody>
+          <Text
+            textAlign="center"
+            fontSize="sm"
+          >
+            이미지는 최대 3장까지, <Text as="b">현재 {countImageNumber}개 사용</Text>
+          </Text>
+          <Box p="2"/>
           <Text
             fontWeight="bold"
             textAlign="center"
           >
-            추가할 새 이미지
+            삭제 할 이미지 선택
+          </Text>
+          <ReviewImageDeleteStack/>
+          <Box p="2"/>
+          <Text
+            fontWeight="bold"
+            textAlign="center"
+          >
+            추가할 새 이미지 선택
           </Text>
           <ReviewImageInput/>
           <Box p="2"/>
+          <Text
+            fontWeight="bold"
+            textAlign="center"
+          >
+            리뷰 내용 수정
+          </Text>
           <Textarea
             placeholder="리뷰 내용 입력"
             minH="6rem"

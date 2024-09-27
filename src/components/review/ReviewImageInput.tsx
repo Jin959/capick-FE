@@ -41,7 +41,7 @@ const ReviewImageInput = () => {
     <>
       <InputGroup
         onClick={handleOnClick}
-        minH="15rem"
+        minH="10rem"
         p="1rem"
         display="flex"
         flexDirection="column"
