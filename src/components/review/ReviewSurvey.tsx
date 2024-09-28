@@ -17,7 +17,7 @@ const ReviewSurvey = ({reviewService}: Props) => {
   const surveyOptions = reviewService.createSurveyOptionsWithIdFrom(
     reviewConstant.survey.option[review.surveyType]
   );
-  const showDirectInputPlaceholder: boolean = reviewService.isNeedDirectInput(review.surveyType);
+  const showDirectInputPlaceholder: boolean = reviewService.isSurveyNeedDirectInput(review.surveyType);
 
   const handleOnClickBefore = () => {
     dispatchReview({

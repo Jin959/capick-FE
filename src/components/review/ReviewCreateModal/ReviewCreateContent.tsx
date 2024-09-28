@@ -93,7 +93,9 @@ const ReviewCreateContent = ({reviewService}: Props) => {
           한마디
         </ModalHeader>
         <ModalBody>
-          <ReviewImageInput/>
+          <ReviewImageInput
+            reviewService={reviewService}
+          />
           <Box p="2"/>
           <Textarea
             placeholder="리뷰 내용 입력"

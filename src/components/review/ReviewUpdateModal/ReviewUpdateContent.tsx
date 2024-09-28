@@ -17,7 +17,7 @@ const ReviewUpdateContent = ({reviewService}: Props) => {
   const dispatchReview = useContext(ReviewDispatchContext);
   const dispatchModal = useContext(ModalDispatchContext);
 
-  const countImageNumber: number = review.images.length + review.preservedImageUrls.length;
+  const imageCount: number = reviewService.countAllImagesNumber(review.images, review.preservedImageUrls);
 
   const handleOnClickBefore = () => {
     dispatchReview({
@@ -54,7 +54,7 @@ const ReviewUpdateContent = ({reviewService}: Props) => {
             textAlign="center"
             fontSize="sm"
           >
-            이미지는 최대 3장까지, <Text as="b">현재 {countImageNumber}개 사용</Text>
+            이미지는 최대 3장까지, <Text as="b">현재 {imageCount}개 사용</Text>
           </Text>
           <Box p="2"/>
           <Text
@@ -63,7 +63,9 @@ const ReviewUpdateContent = ({reviewService}: Props) => {
           >
             삭제 할 이미지 선택
           </Text>
-          <ReviewImageDeleteStack/>
+          <ReviewImageDeleteStack
+            reviewService={reviewService}
+          />
           <Box p="2"/>
           <Text
             fontWeight="bold"
@@ -71,7 +73,9 @@ const ReviewUpdateContent = ({reviewService}: Props) => {
           >
             추가할 새 이미지 선택
           </Text>
-          <ReviewImageInput/>
+          <ReviewImageInput
+            reviewService={reviewService}
+          />
           <Box p="2"/>
           <Text
             fontWeight="bold"

@@ -2,15 +2,20 @@ import React, {useContext, useState} from 'react';
 import {ReviewContext, ReviewDispatchContext} from "@/contexts/review";
 import ImageListDisplay from "@/components/common/data-display/ImageListDisplay";
 import {Button, Flex} from "@chakra-ui/react";
+import ReviewService from "@/apis/service/ReviewService";
 
-const ReviewImageDeleteStack = () => {
+interface Props {
+  reviewService: ReviewService;
+}
+
+const ReviewImageDeleteStack = ({reviewService}: Props) => {
 
   const [deprecatedImageUrls, setDeprecatedImageUrls] = useState<Array<string>>([]);
 
   const review = useContext(ReviewContext);
   const dispatchReview = useContext(ReviewDispatchContext);
 
-  const handleOnClick = () => {
+  const handleOnClickButton = () => {
     dispatchReview({
       type: "SET_PRESERVED_IMAGE_URLS",
       preservedImageUrls: [...deprecatedImageUrls, ...review.preservedImageUrls]
@@ -18,13 +23,12 @@ const ReviewImageDeleteStack = () => {
     setDeprecatedImageUrls([]);
   }
 
-  const handleOnClickWithImageUrl = (targetImageUrl: string) => {
-    const restPreservedImageUrls = review.preservedImageUrls.filter(imageUrl => imageUrl !== targetImageUrl);
+  const handleOnClickImage = (imageUrl: string) => {
     dispatchReview({
       type: "SET_PRESERVED_IMAGE_URLS",
-      preservedImageUrls: restPreservedImageUrls
+      preservedImageUrls: reviewService.updateImageUrlsByDeleting(review.preservedImageUrls, imageUrl)
     });
-    setDeprecatedImageUrls([...deprecatedImageUrls, targetImageUrl]);
+    setDeprecatedImageUrls([...deprecatedImageUrls, imageUrl]);
   }
 
   return (
@@ -39,12 +43,12 @@ const ReviewImageDeleteStack = () => {
           imageMinWidth="13rem"
           imageHeight="13rem"
           containerWidth="100%"
-          onClickWithImageUrl={handleOnClickWithImageUrl}
+          onClickWithImageUrl={handleOnClickImage}
         />
         <Button
           size="sm"
           m="0.3rem"
-          onClick={handleOnClick}
+          onClick={handleOnClickButton}
         >
           삭제 선택 초기화
         </Button>

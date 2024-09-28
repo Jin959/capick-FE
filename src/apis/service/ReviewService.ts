@@ -108,7 +108,7 @@ class ReviewService {
     return surveyType === ReviewService.SURVEY_END;
   }
 
-  public isNeedDirectInput = (surveyType: string): boolean => {
+  public isSurveyNeedDirectInput = (surveyType: string): boolean => {
     return this.surveyTypesWithDirectInput.indexOf(surveyType) !== -1
   }
 
@@ -120,8 +120,21 @@ class ReviewService {
     }
   }
 
+  public isEmptyImages = (reviewImages: Array<string | File>):boolean => {
+    return reviewImages.length === 0;
+  }
+
   public isReviewWriter = (viewerNickname: string, writerNickname: string): boolean => {
     return viewerNickname === writerNickname;
+  }
+
+  public countAllImagesNumber = (...allImages: Array<Array<string | File>>): number => {
+    return allImages.reduce(
+      (imageCount, currentImages) => imageCount + currentImages.length, 0);
+  }
+
+  public updateImageUrlsByDeleting = (imageUrls: Array<string >, targetImageUrl: string ): Array<string> => {
+    return imageUrls.filter(image => image !== targetImageUrl);
   }
 
   private uploadImagesAndGetUrls = async (images: Array<File>, path: string, fileName: string): Promise<Array<StorageResponse>> => {

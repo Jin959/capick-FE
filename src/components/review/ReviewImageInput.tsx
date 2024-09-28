@@ -4,8 +4,13 @@ import Image from "next/image";
 import UploadImageIcon from "@/../public/icons/google-material-add_photo_alternate_FILL0_wght400_GRAD0_opsz24.svg"
 import {ReviewContext, ReviewDispatchContext} from "@/contexts/review";
 import ImageListDisplay from "@/components/common/data-display/ImageListDisplay";
+import ReviewService from "@/apis/service/ReviewService";
 
-const ReviewImageInput = () => {
+interface Props {
+  reviewService: ReviewService;
+}
+
+const ReviewImageInput = ({reviewService}: Props) => {
 
   const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -17,6 +22,8 @@ const ReviewImageInput = () => {
   const handleOnClick = useCallback(() => {
     imageInputRef.current?.click();
   }, []);
+
+  const showUploadImageIcon: boolean = reviewService.isEmptyImages(review.images);
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatchReview({
@@ -60,7 +67,7 @@ const ReviewImageInput = () => {
           onChange={handleOnChange}
           display="none"
         />
-        {review.images.length === 0 ? (
+        {showUploadImageIcon ? (
           <>
             <Image
               src={UploadImageIcon}
