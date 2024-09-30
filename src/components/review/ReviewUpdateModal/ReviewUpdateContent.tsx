@@ -6,6 +6,10 @@ import {Box, Button, Textarea, Text} from "@chakra-ui/react";
 import {ReviewContext, ReviewDispatchContext} from "@/contexts/review";
 import {ModalDispatchContext} from "@/contexts/modal";
 import ReviewImageDeleteStack from "@/components/review/ReviewImageDeleteStack";
+import reviewConstant from "@/constants/reviewConstant";
+import {StringMap} from "@/types/common";
+import {MemberContext} from "@/contexts/member";
+import {useRouter} from "next/router";
 
 interface Props {
   reviewService: ReviewService;
@@ -13,6 +17,9 @@ interface Props {
 
 const ReviewUpdateContent = ({reviewService}: Props) => {
 
+  const router = useRouter();
+
+  const member = useContext(MemberContext);
   const review = useContext(ReviewContext);
   const dispatchReview = useContext(ReviewDispatchContext);
   const dispatchModal = useContext(ModalDispatchContext);
@@ -34,10 +41,30 @@ const ReviewUpdateContent = ({reviewService}: Props) => {
   }, [dispatchReview]);
 
   const handleOnClickDone = async () => {
-    dispatchModal({
-      type: "CLOSE_MODAL",
-      modal: "reviewUpdateModal"
-    });
+    try {
+      await reviewService.updateReview(
+        review.id, {
+          writerId: member.id,
+          visitPurpose: review.visitPurpose,
+          content: review.content,
+          menu: review.menu,
+          coffeeIndex: (reviewConstant.survey.option["coffeeIndex"] as StringMap<number>)[review.coffeeIndex],
+          priceIndex: (reviewConstant.survey.option["priceIndex"] as StringMap<number>)[review.priceIndex],
+          spaceIndex: (reviewConstant.survey.option["spaceIndex"] as StringMap<number>)[review.spaceIndex],
+          noiseIndex: (reviewConstant.survey.option["noiseIndex"] as StringMap<number>)[review.noiseIndex],
+          theme: (reviewConstant.survey.option["theme"] as StringMap<string>)[review.theme],
+          imageUrls: review.preservedImageUrls
+        }, review.images);
+
+      dispatchModal({
+        type: "CLOSE_MODAL",
+        modal: "reviewUpdateModal"
+      });
+
+      router.reload();
+    } catch (error) {
+      window.alert(error);
+    }
   }
 
   return (
