@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import ReviewService from "@/apis/service/ReviewService";
 import {ModalContext, ModalDispatchContext} from "@/contexts/modal";
 import {ReviewContext, ReviewDispatchContext} from "@/contexts/review";
@@ -52,18 +52,7 @@ const ReviewUpdateModal = ({reviewService, reviewInfo}: Props) => {
       type: "CLOSE_MODAL",
       modal: "reviewUpdateModal"
     });
-    dispatchReview({
-      type: "SET_SURVEY_TYPE",
-      surveyType: reviewService.getFirstSurveyType()
-    });
   }
-
-  useEffect(() => {
-    dispatchReview({
-      type: "SET_SURVEY_TYPE",
-      surveyType: reviewService.getFirstSurveyType()
-    });
-  }, [reviewService, dispatchReview]);
 
   return (
     <>

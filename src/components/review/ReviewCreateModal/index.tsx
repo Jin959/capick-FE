@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {Modal, ModalOverlay} from "@chakra-ui/modal";
 import {Button} from "@chakra-ui/react";
 import ReviewService from "@/apis/service/ReviewService";
@@ -25,6 +25,10 @@ const ReviewCreateModal = ({reviewService}: Props) => {
       type: "OPEN_MODAL",
       modal: "reviewCreateModal"
     });
+    dispatchReview({
+      type: "SET_SURVEY_TYPE",
+      surveyType: reviewService.getFirstSurveyType()
+    });
   }
 
   const handleOnClose = () => {
@@ -32,18 +36,7 @@ const ReviewCreateModal = ({reviewService}: Props) => {
       type: "CLOSE_MODAL",
       modal: "reviewCreateModal"
     });
-    dispatchReview({
-      type: "SET_SURVEY_TYPE",
-      surveyType: reviewService.getFirstSurveyType()
-    });
   }
-
-  useEffect(() => {
-    dispatchReview({
-      type: "SET_SURVEY_TYPE",
-      surveyType: reviewService.getFirstSurveyType()
-    });
-  }, [reviewService, dispatchReview]);
 
   return (
     <>

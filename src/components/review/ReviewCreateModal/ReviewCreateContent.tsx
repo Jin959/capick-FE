@@ -69,13 +69,6 @@ const ReviewCreateContent = ({reviewService}: Props) => {
         type: "CLOSE_MODAL",
         modal: "reviewCreateModal"
       });
-      dispatchReview({
-        type: "INIT_REVIEW"
-      });
-      dispatchReview({
-        type: "SET_SURVEY_TYPE",
-        surveyType: reviewService.getFirstSurveyType()
-      });
 
       router.push(`/reviews/${reviewResponse.id}`);
     } catch (error) {
