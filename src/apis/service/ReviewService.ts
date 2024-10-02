@@ -128,6 +128,19 @@ class ReviewService {
     }
   }
 
+  public deleteReview = async (reviewId: string | number): Promise<void> => {
+    try {
+      await this.apiClient
+        .delete<void>(`/reviews/${reviewId}`);
+    } catch (error) {
+      console.error(error);
+      if (isApiResponse(error)) {
+        handleOnApiError(error);
+      }
+      throw new Error(commonError.connection);
+    }
+  }
+
   public getNextSurveyType = (surveyType: string): string => {
     const nextIndex = this.surveyTypes.indexOf(surveyType) + 1;
     if (nextIndex >= this.surveyTypes.length) return ReviewService.SURVEY_END;

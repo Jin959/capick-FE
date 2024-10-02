@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button} from "@chakra-ui/react";
 import reviewService from "@/apis/service/ReviewService";
+import {useRouter} from "next/router";
 
 interface Props {
   reviewId: string;
@@ -9,8 +10,15 @@ interface Props {
 
 const ReviewDeleteButton = ({reviewId, reviewService}: Props) => {
 
-  const handleOnClick = () => {
+  const router = useRouter();
 
+  const handleOnClick = async () => {
+    try {
+      await reviewService.deleteReview(reviewId);
+      router.push("/");
+    } catch (error) {
+      window.alert(error);
+    }
   }
 
   return (
