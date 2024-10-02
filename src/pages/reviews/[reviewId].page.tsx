@@ -11,6 +11,7 @@ import ReviewProvider from "@/contexts/review";
 import ReviewUpdateModal from "@/components/review/ReviewUpdateModal";
 import {MemberContext} from "@/contexts/member";
 import ImageListDisplay from "@/components/common/data-display/ImageListDisplay";
+import ReviewDeleteButton from "@/components/review/ReviewDeleteButton";
 
 const ReviewPage = () => {
   const router = useRouter();
@@ -93,26 +94,32 @@ const ReviewPage = () => {
             {review.registeredAt}
           </Text>
         </Flex>
-        <Divider/>
         {showReviewEditButtons &&
           <Flex
             justifyContent="space-around"
             alignItems="center"
           >
             <ReviewProvider>
-              <ReviewUpdateModal
-                reviewService={reviewService}
-                reviewInfo={{
-                  reviewId: reviewId,
-                  visitPurpose: review.visitPurpose,
-                  content: review.content,
-                  menu: review.menu,
-                  imageUrls: review.imageUrls
-                }}
-              />
+              <>
+                <ReviewUpdateModal
+                  reviewService={reviewService}
+                  reviewInfo={{
+                    reviewId: reviewId,
+                    visitPurpose: review.visitPurpose,
+                    content: review.content,
+                    menu: review.menu,
+                    imageUrls: review.imageUrls
+                  }}
+                />
+                <ReviewDeleteButton
+                  reviewId={reviewId}
+                  reviewService={reviewService}
+                />
+              </>
             </ReviewProvider>
           </Flex>
         }
+        <Divider/>
         <Box>
           <Tag
             w="fit-content"
