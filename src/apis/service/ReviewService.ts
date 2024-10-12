@@ -174,6 +174,10 @@ class ReviewService {
     }
   }
 
+  public isSurveyOptionSelected = (selectedOption: string): boolean => {
+    return selectedOption.length > 0;
+  }
+
   public isEmptyImages = (reviewImages: Array<string | File>):boolean => {
     return reviewImages.length === 0;
   }

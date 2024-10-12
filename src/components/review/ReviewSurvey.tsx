@@ -18,6 +18,7 @@ const ReviewSurvey = ({reviewService}: Props) => {
     reviewConstant.survey.option[review.surveyType]
   );
   const showDirectInputPlaceholder: boolean = reviewService.isSurveyNeedDirectInput(review.surveyType);
+  const showSelectMark: boolean = reviewService.isSurveyOptionSelected(review[review.surveyType] as string);
 
   const handleOnClickBefore = () => {
     dispatchReview({
@@ -71,6 +72,7 @@ const ReviewSurvey = ({reviewService}: Props) => {
           <Text
             fontWeight="bold"
           >
+            {showSelectMark && "📌"}
             {review[review.surveyType] as string}
           </Text>
           {
@@ -90,12 +92,14 @@ const ReviewSurvey = ({reviewService}: Props) => {
             <Input
               name={review.surveyType}
               placeholder={reviewConstant.survey.directInputPlaceholder[review.surveyType]}
-              _placeholder={{opacity: 1, color: "black", fontWeight: "bold", textAlign: "center"}}
+              _placeholder={{color: "black"}}
               m="1"
               w="90%"
               bg="subBrand.500"
               variant="filled"
               focusBorderColor="brand.main"
+              fontWeight="bold"
+              textAlign="center"
               maxLength={20}
               onChange={handleOnChange}
             />
