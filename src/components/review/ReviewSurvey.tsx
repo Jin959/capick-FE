@@ -54,6 +54,15 @@ const ReviewSurvey = ({reviewService}: Props) => {
     });
   }, [dispatchReview]);
 
+  const handleOnKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      dispatchReview({
+        type: "SET_SURVEY_TYPE",
+        surveyType: reviewService.getNextSurveyType(review.surveyType)
+      });
+    }
+  }
+
   return (
     <>
       <ModalContent>
@@ -102,6 +111,7 @@ const ReviewSurvey = ({reviewService}: Props) => {
               textAlign="center"
               maxLength={20}
               onChange={handleOnChange}
+              onKeyDown={handleOnKeyDown}
             />
           }
         </ModalBody>
