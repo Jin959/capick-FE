@@ -3,16 +3,17 @@ import {createContext, Dispatch, ReactElement, useReducer} from "react";
 interface State {
   imageModal: boolean;
   alertModal: boolean;
+  loadingSpinnerModal: boolean;
   reviewCreateModal: boolean;
   reviewUpdateModal: boolean;
 }
 
 type Action = {
   type: "OPEN_MODAL";
-  modal: "imageModal" | "alertModal" | "reviewCreateModal" | "reviewUpdateModal";
+  modal: "imageModal" | "alertModal" | "loadingSpinnerModal" | "reviewCreateModal" | "reviewUpdateModal";
 } | {
   type: "CLOSE_MODAL";
-  modal: "imageModal" | "alertModal" | "reviewCreateModal" | "reviewUpdateModal";
+  modal: "imageModal" | "alertModal" | "loadingSpinnerModal" | "reviewCreateModal" | "reviewUpdateModal";
 }
 
 interface Props {
@@ -22,6 +23,7 @@ interface Props {
 const initialState: State = {
   imageModal: false,
   alertModal: false,
+  loadingSpinnerModal: false,
   reviewCreateModal: false,
   reviewUpdateModal: false
 }

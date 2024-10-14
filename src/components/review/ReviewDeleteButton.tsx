@@ -25,10 +25,25 @@ const ReviewDeleteButton = ({reviewId, reviewService}: Props) => {
 
   const handleOnConfirm = async () => {
     try {
+      dispatchModal({
+        type: "OPEN_MODAL",
+        modal: "loadingSpinnerModal"
+      });
+
       await reviewService.deleteReview(reviewId);
+
+      dispatchModal({
+        type: "CLOSE_MODAL",
+        modal: "loadingSpinnerModal"
+      });
+
       router.push("/");
     } catch (error) {
       window.alert(error);
+      dispatchModal({
+        type: "CLOSE_MODAL",
+        modal: "loadingSpinnerModal"
+      });
     }
   }
 

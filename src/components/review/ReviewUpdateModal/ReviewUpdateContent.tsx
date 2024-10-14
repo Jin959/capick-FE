@@ -42,6 +42,11 @@ const ReviewUpdateContent = ({reviewService}: Props) => {
 
   const handleOnClickDone = async () => {
     try {
+      dispatchModal({
+        type: "OPEN_MODAL",
+        modal: "loadingSpinnerModal"
+      });
+
       await reviewService.updateReview(
         review.id, {
           writerId: member.id,
@@ -61,9 +66,18 @@ const ReviewUpdateContent = ({reviewService}: Props) => {
         modal: "reviewUpdateModal"
       });
 
+      dispatchModal({
+        type: "CLOSE_MODAL",
+        modal: "loadingSpinnerModal"
+      });
+
       router.reload();
     } catch (error) {
       window.alert(error);
+      dispatchModal({
+        type: "CLOSE_MODAL",
+        modal: "loadingSpinnerModal"
+      });
     }
   }
 

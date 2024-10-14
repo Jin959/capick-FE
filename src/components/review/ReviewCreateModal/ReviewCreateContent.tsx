@@ -41,6 +41,11 @@ const ReviewCreateContent = ({reviewService}: Props) => {
 
   const handleOnClickDone = async () => {
     try {
+      dispatchModal({
+        type: "OPEN_MODAL",
+        modal: "loadingSpinnerModal"
+      });
+
       const reviewResponse = await reviewService.createReview({
         writerId: member.id,
         cafe: {
@@ -69,10 +74,18 @@ const ReviewCreateContent = ({reviewService}: Props) => {
         type: "CLOSE_MODAL",
         modal: "reviewCreateModal"
       });
+      dispatchModal({
+        type: "CLOSE_MODAL",
+        modal: "loadingSpinnerModal"
+      });
 
       router.push(`/reviews/${reviewResponse.id}`);
     } catch (error) {
       window.alert(error);
+      dispatchModal({
+        type: "CLOSE_MODAL",
+        modal: "loadingSpinnerModal"
+      });
     }
   }
 
