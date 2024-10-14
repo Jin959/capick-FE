@@ -1,14 +1,16 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay} from "@chakra-ui/modal";
 import {ModalContext, ModalDispatchContext} from "@/contexts/modal";
 import Image from "next/image";
-import {Box} from "@chakra-ui/react";
+import {Flex, Spinner} from "@chakra-ui/react";
 
 interface Props {
   imageUrl: string;
 }
 
 const ImageModal = ({imageUrl}: Props) => {
+
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const isOpen = useContext(ModalContext);
   const dispatchModal = useContext(ModalDispatchContext);
@@ -18,10 +20,15 @@ const ImageModal = ({imageUrl}: Props) => {
       type: "CLOSE_MODAL",
       modal: "imageModal"
     });
+    setIsLoaded(false);
   }
 
   const handleOnContextMenu = (event: React.MouseEvent<HTMLImageElement>) => {
     event.preventDefault();
+  }
+
+  const handleOnLoad = () => {
+    setIsLoaded(true);
   }
 
   return (
@@ -36,21 +43,36 @@ const ImageModal = ({imageUrl}: Props) => {
         <ModalContent>
           <ModalCloseButton/>
           <ModalBody>
-            <Box
+            <Flex
+              justifyContent="center"
+              alignItems="center"
               pos="relative"
               h="30rem"
               m="32px 0 32px 0"
             >
+              {!isLoaded &&
+                <Spinner
+                  thickness='4px'
+                  speed='0.5s'
+                  emptyColor='gray.200'
+                  color='brand.main'
+                  size='xl'
+                />
+              }
               <Image
+                hidden={!isLoaded}
                 src={imageUrl}
-                alt={"ReviewImage"}
+                alt={"Image"}
                 fill
+                sizes="75vw"
+                priority
                 style={{
                   objectFit: "contain"
                 }}
                 onContextMenu={handleOnContextMenu}
+                onLoad={handleOnLoad}
               />
-            </Box>
+            </Flex>
           </ModalBody>
         </ModalContent>
       </Modal>

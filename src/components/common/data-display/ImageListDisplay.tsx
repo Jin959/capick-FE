@@ -18,6 +18,8 @@ const ImageListDisplay = (props: Props) => {
 
   const imageUrls = createDataWithId(props.imageSrcUrls);
 
+  const imageBlurData = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mMM3woAAWkBDq+z4RwAAAAASUVORK5CYII=";
+
   const handleOnClick = (event: React.MouseEvent<HTMLImageElement>, imageUrl: string) => {
     props.onClick?.(event);
     props.onClickWithImageUrl?.(imageUrl);
@@ -43,10 +45,14 @@ const ImageListDisplay = (props: Props) => {
               src={imageUrl.data}
               alt={`ReviewImage${imageUrl.id}`}
               fill
+              sizes="50vw"
+              priority
               style={{
                 objectFit: "contain"
               }}
               quality={props.imageQuality}
+              placeholder="blur"
+              blurDataURL={`data:image/png;base64,${imageBlurData}`}
               onClick={(event) => handleOnClick(event, imageUrl.data)}
               onContextMenu={props.onContextMenu}
             />
