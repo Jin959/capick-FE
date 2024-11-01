@@ -9,6 +9,7 @@ import {DataWithId, StringMap} from "@/types/common";
 import {createDataWithId, isImageFileExtension} from "@/utils/func";
 import reviewError from "@/apis/error/reviewError";
 import StorageClient from "@/apis/client/StorageClient";
+import HistoryService from "@/apis/service/support/HistoryService";
 import StorageResponse from "@/apis/dto/client/response/StorageResponse";
 import ReviewUpdateRequest from "@/apis/dto/service/request/ReviewUpdateRequest";
 
@@ -18,6 +19,7 @@ class ReviewService {
 
   private readonly apiClient: ApiClient;
   private readonly storageClient: StorageClient;
+  private readonly historyService: HistoryService;
   private readonly nullResponse: ReviewResponse;
   private readonly surveyTypes: Array<string>;
   private readonly surveyTypesWithDirectInput: Array<string>;
@@ -25,6 +27,7 @@ class ReviewService {
   private constructor() {
     this.apiClient = ApiConfig.apiClient();
     this.storageClient = ApiConfig.storageClient();
+    this.historyService = HistoryService.create();
     this.nullResponse = {
       id: 0,
       writer: {
@@ -65,9 +68,14 @@ class ReviewService {
     } catch (error) {
       console.error(error);
 
-      // TODO: 파일 업로드 URL을 자체 백엔드 서버에 전송해야해서 업로드 후 API 요청을 했다 만약 에러가 생기면 롤백해야해서 여기에서 수행했는데 다른 좋은 방법이 있는지 고민해보기
-      await this.rollbackUploadImages(path,
-        storageResponses.map(storageResponse => storageResponse.name));
+      await this.historyService.createStorageOrphanFileHistories({
+        orphanFiles: storageResponses.map(storageResponse => ({
+          fileName: storageResponse.name,
+          fileType: "images",
+          domain: path,
+          url: storageResponse.url
+        }))
+      });
 
       if (isApiResponse(error)) {
         handleOnApiError(error);
@@ -117,9 +125,14 @@ class ReviewService {
     } catch (error) {
       console.error(error);
 
-      // TODO: 파일 업로드 URL을 자체 백엔드 서버에 전송해야해서 업로드 후 API 요청을 했다 만약 에러가 생기면 롤백해야해서 여기에서 수행했는데 다른 좋은 방법이 있는지 고민해보기
-      await this.rollbackUploadImages(path,
-        storageResponses.map(storageResponse => storageResponse.name));
+      await this.historyService.createStorageOrphanFileHistories({
+        orphanFiles: storageResponses.map(storageResponse => ({
+          fileName: storageResponse.name,
+          fileType: "images",
+          domain: path,
+          url: storageResponse.url
+        }))
+      });
 
       if (isApiResponse(error)) {
         handleOnApiError(error);
@@ -166,7 +179,9 @@ class ReviewService {
     return this.surveyTypesWithDirectInput.indexOf(surveyType) !== -1
   }
 
-  public createSurveyOptionsWithIdFrom = (data: Array<string> | StringMap<string | number>): Array<DataWithId<string | number>> => {
+  public createSurveyOptionsWithIdFrom = (
+    data: Array<string> | StringMap<string | number>): Array<DataWithId<string | number>> => {
+
     if (Array.isArray(data)) {
       return createDataWithId(data);
     } else {
@@ -195,7 +210,9 @@ class ReviewService {
     return imageUrls.filter(image => image !== targetImageUrl);
   }
 
-  private getImageUrlsByUploadOrThrow = async (images: Array<File>, path: string, fileName: string): Promise<Array<StorageResponse>> => {
+  private getImageUrlsByUploadOrThrow = async (
+    images: Array<File>, path: string, fileName: string): Promise<Array<StorageResponse>> => {
+
     this.ifImagesExtensionIsNotValidThrow(images);
 
     try {
