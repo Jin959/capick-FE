@@ -1,13 +1,13 @@
 import React, {useContext} from 'react';
 import {Button, Text} from "@chakra-ui/react";
-import reviewService from "@/apis/service/ReviewService";
+import ReviewService from "@/apis/service/ReviewService";
 import {useRouter} from "next/router";
 import AlertModal from "@/components/common/modal/AlertModal";
 import {ModalDispatchContext} from "@/contexts/modal";
 
 interface Props {
   reviewId: string;
-  reviewService: reviewService;
+  reviewService: ReviewService;
 }
 
 const ReviewDeleteButton = ({reviewId, reviewService}: Props) => {

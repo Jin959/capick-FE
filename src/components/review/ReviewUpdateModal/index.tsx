@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import ReviewService from "@/apis/service/ReviewService";
 import {ModalContext, ModalDispatchContext} from "@/contexts/modal";
 import {ReviewContext, ReviewDispatchContext} from "@/contexts/review";
@@ -8,17 +8,11 @@ import ReviewSurvey from "@/components/review/ReviewSurvey";
 import ReviewUpdateContent from "@/components/review/ReviewUpdateModal/ReviewUpdateContent";
 
 interface Props {
+  reviewId: string;
   reviewService: ReviewService;
-  reviewInfo: {
-    reviewId: string;
-    visitPurpose: string;
-    content: string;
-    menu: string;
-    imageUrls: Array<string>;
-  };
 }
 
-const ReviewUpdateModal = ({reviewService, reviewInfo}: Props) => {
+const ReviewUpdateModal = ({reviewId, reviewService}: Props) => {
 
   const isOpen = useContext(ModalContext);
   const dispatchModal = useContext(ModalDispatchContext);
@@ -32,15 +26,6 @@ const ReviewUpdateModal = ({reviewService, reviewInfo}: Props) => {
       type: "OPEN_MODAL",
       modal: "reviewUpdateModal"
     });
-
-    dispatchReview({
-      type: "SET_REVIEW_WITH_INIT",
-      id: Number(reviewInfo.reviewId),
-      visitPurpose: reviewInfo.visitPurpose,
-      menu: reviewInfo.menu,
-      content: reviewInfo.content,
-      preservedImageUrls: reviewInfo.imageUrls
-    });
     dispatchReview({
       type: "SET_SURVEY_TYPE",
       surveyType: reviewService.getFirstSurveyType()
@@ -53,6 +38,29 @@ const ReviewUpdateModal = ({reviewService, reviewInfo}: Props) => {
       modal: "reviewUpdateModal"
     });
   }
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const reviewResponse = await reviewService.getReviewDetail(reviewId);
+        dispatchReview({
+          type: "SET_REVIEW_WITH_INIT",
+          id: Number(reviewId),
+          visitPurpose: reviewResponse.visitPurpose,
+          menu: reviewResponse.menu,
+          content: reviewResponse.content,
+          coffeeIndex: String(reviewResponse.coffeeIndex),
+          priceIndex: String(reviewResponse.priceIndex),
+          spaceIndex: String(reviewResponse.spaceIndex),
+          noiseIndex: String(reviewResponse.noiseIndex),
+          theme: reviewResponse.theme ?? "etc",
+          preservedImageUrls: reviewResponse.imageUrls
+        });
+      } catch (error) {
+        window.alert(error);
+      }
+    })();
+  }, [reviewService, reviewId, dispatchReview]);
 
   return (
     <>

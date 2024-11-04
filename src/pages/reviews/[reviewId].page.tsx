@@ -102,14 +102,8 @@ const ReviewPage = () => {
             <ReviewProvider>
               <>
                 <ReviewUpdateModal
+                  reviewId={reviewId}
                   reviewService={reviewService}
-                  reviewInfo={{
-                    reviewId: reviewId,
-                    visitPurpose: review.visitPurpose,
-                    content: review.content,
-                    menu: review.menu,
-                    imageUrls: review.imageUrls
-                  }}
                 />
                 <ReviewDeleteButton
                   reviewId={reviewId}

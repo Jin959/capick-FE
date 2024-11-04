@@ -24,6 +24,11 @@ type Action = {
   visitPurpose: string;
   menu: string;
   content: string;
+  coffeeIndex: string;
+  priceIndex: string;
+  spaceIndex: string;
+  noiseIndex: string;
+  theme: string;
   preservedImageUrls: Array<string>;
 } | {
   type: "SET_SURVEY_TYPE";
@@ -77,6 +82,11 @@ const reducer = (state: State, action: Action): State => {
         visitPurpose: action.visitPurpose,
         menu: action.menu,
         content: action.content,
+        coffeeIndex: action.coffeeIndex,
+        priceIndex: action.priceIndex,
+        spaceIndex: action.spaceIndex,
+        noiseIndex: action.noiseIndex,
+        theme: action.theme,
         preservedImageUrls: action.preservedImageUrls
       }
     case "SET_SURVEY_TYPE":
