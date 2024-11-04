@@ -101,6 +101,20 @@ class ReviewService {
     }
   }
 
+  public getReviewDetail = async (reviewId: string | number): Promise<ReviewResponse> => {
+    try {
+      const response = await this.apiClient
+        .get<ReviewResponse>("/reviews/" + reviewId + "/detail");
+      return response.data ?? this.nullResponse;
+    } catch (error) {
+      console.error(error);
+      if (isApiResponse(error)) {
+        handleOnApiError(error);
+      }
+      throw new Error(commonError.connection);
+    }
+  }
+
   // TODO: Cafe 조회 API 가 없어서 fileName 에 CafeKakaoPlaceId 로 하드코딩 했는데 카페 조회 개발 후 수정하기
   public updateReview = async (
     reviewId: string | number, reviewUpdateRequest: ReviewUpdateRequest, images: Array<File>): Promise<ReviewResponse> => {
