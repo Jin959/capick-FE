@@ -230,21 +230,6 @@ class ReviewService {
     }
   }
 
-  private rollbackUploadImages = async (path: string, fileNames: Array<string>): Promise<void> => {
-    try {
-      await Promise.all(fileNames.map(
-        fileName => this.storageClient.delete({
-          fileName: fileName,
-          path: path,
-          fileType: "images"
-        })
-      ));
-    } catch (error) {
-      console.error(error);
-      throw new Error(commonError.storageClient);
-    }
-  }
-
   private ifImagesExtensionIsNotValidThrow = (images: Array<File>): void => {
     for (let image of images) {
       if (!isImageFileExtension(image)) {
