@@ -49,3 +49,14 @@ export const parseDateAndTime = (dateTime: string): string => {
   const time = dateTime.substring(indexOfSeparator + 1, dateTime.indexOf('.'));
   return date + " " + time;
 }
+
+export const getKeyByValue = <T>(data: StringMap<T>, value: T): string => {
+  const targetKey = Object.keys(data).find(key => data[key] === value);
+  if (!targetKey) {
+    const errorMessage = "객체 값으로 데이터 키를 찾는 데 실패했습니다.";
+    console.log(errorMessage);
+    return errorMessage;
+  } else {
+    return targetKey;
+  }
+}

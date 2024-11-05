@@ -6,6 +6,9 @@ import {Button} from "@chakra-ui/react";
 import {Modal, ModalOverlay} from "@chakra-ui/modal";
 import ReviewSurvey from "@/components/review/ReviewSurvey";
 import ReviewUpdateContent from "@/components/review/ReviewUpdateModal/ReviewUpdateContent";
+import reviewConstant from "@/constants/reviewConstant";
+import {getKeyByValue} from "@/utils/func";
+import {StringMap} from "@/types/common";
 
 interface Props {
   reviewId: string;
@@ -49,11 +52,16 @@ const ReviewUpdateModal = ({reviewId, reviewService}: Props) => {
           visitPurpose: reviewResponse.visitPurpose,
           menu: reviewResponse.menu,
           content: reviewResponse.content,
-          coffeeIndex: String(reviewResponse.coffeeIndex),
-          priceIndex: String(reviewResponse.priceIndex),
-          spaceIndex: String(reviewResponse.spaceIndex),
-          noiseIndex: String(reviewResponse.noiseIndex),
-          theme: reviewResponse.theme ?? "etc",
+          coffeeIndex: getKeyByValue(reviewConstant.survey.option["coffeeIndex"] as StringMap<number>,
+            reviewResponse.coffeeIndex),
+          priceIndex: getKeyByValue(reviewConstant.survey.option["priceIndex"] as StringMap<number>,
+            reviewResponse.priceIndex),
+          spaceIndex: getKeyByValue(reviewConstant.survey.option["spaceIndex"] as StringMap<number>,
+            reviewResponse.spaceIndex),
+          noiseIndex: getKeyByValue(reviewConstant.survey.option["noiseIndex"] as StringMap<number>,
+            reviewResponse.noiseIndex),
+          theme: getKeyByValue(reviewConstant.survey.option["theme"] as StringMap<string>,
+            reviewResponse.theme),
           preservedImageUrls: reviewResponse.imageUrls
         });
       } catch (error) {
