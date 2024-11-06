@@ -12,10 +12,14 @@ import ReviewUpdateModal from "@/components/review/ReviewUpdateModal";
 import {MemberContext} from "@/contexts/member";
 import ImageListDisplay from "@/components/common/data-display/ImageListDisplay";
 import ReviewDeleteButton from "@/components/review/ReviewDeleteButton";
+import {GetServerSideProps, InferGetServerSidePropsType} from "next";
+import ReviewResponse from "@/apis/dto/service/response/ReviewResponse";
+import ApiConfig from "@/apis/ApiConfig";
+import {isApiResponse} from "@/apis/dto/client/response/ApiResponse";
 
-const ReviewPage = () => {
+const ReviewPage = ({reviewResponse}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
-  const reviewId = (router.query.reviewId ?? "Not Available") as string;
+  const reviewId = (router.query.reviewId ?? "0") as string;
 
   const [writer, setWriter] = useState({
     nickname: "",
@@ -49,26 +53,18 @@ const ReviewPage = () => {
   }
 
   useEffect(() => {
-    if (reviewId === "Not Available") return;
-    (async () => {
-      try {
-        const reviewResponse = await reviewService.getReview(reviewId);
-        setWriter({
-          nickname: reviewResponse.writer.nickname,
-          profileImageUrl: reviewResponse.writer.profile?.imageUrl ?? ""
-        })
-        setReview({
-          visitPurpose: reviewResponse.visitPurpose,
-          content: reviewResponse.content,
-          menu: reviewResponse.menu,
-          registeredAt: parseDateAndTime(reviewResponse.registeredAt),
-          imageUrls: reviewResponse.imageUrls
-        });
-      } catch (error) {
-        window.alert(error);
-      }
-    })();
-  }, [reviewService, reviewId]);
+    setWriter({
+      nickname: reviewResponse.writer.nickname,
+      profileImageUrl: reviewResponse.writer.profile?.imageUrl ?? ""
+    })
+    setReview({
+      visitPurpose: reviewResponse.visitPurpose,
+      content: reviewResponse.content,
+      menu: reviewResponse.menu,
+      registeredAt: parseDateAndTime(reviewResponse.registeredAt),
+      imageUrls: reviewResponse.imageUrls
+    });
+  }, [reviewResponse]);
 
   return (
     <>
@@ -147,3 +143,47 @@ const ReviewPage = () => {
 };
 
 export default ReviewPage;
+
+export const getServerSideProps: GetServerSideProps<{
+  reviewResponse: ReviewResponse
+}> = async ({params}) => {
+
+  const apiClient = ApiConfig.apiClientForServerSide();
+  const nullResponse: ReviewResponse = {
+    id: 0,
+    writer: {
+      id: 0,
+      nickname: "Not Available"
+    },
+    visitPurpose: "Not Available",
+    content: "Not Available",
+    menu: "Not Available",
+    registeredAt: "Not Available",
+    imageUrls: []
+  };
+
+  try {
+    const response = await apiClient
+      .get<ReviewResponse>("/reviews/" + params?.reviewId as string);
+    const reviewResponse = response.data ?? nullResponse;
+    return {
+      props: {
+        reviewResponse
+      }
+    };
+  } catch (error) {
+    if (isApiResponse(error)) {
+      if (error.code === 404) {
+        return {
+          notFound: true
+        };
+      }
+    }
+    return {
+      redirect: {
+        destination: '/500',
+        permanent: false
+      }
+    };
+  }
+}

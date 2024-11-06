@@ -25,7 +25,7 @@ class ReviewService {
   private readonly surveyTypesWithDirectInput: Array<string>;
 
   private constructor() {
-    this.apiClient = ApiConfig.apiClient();
+    this.apiClient = ApiConfig.apiClientForClientSide();
     this.storageClient = ApiConfig.storageClient();
     this.historyService = HistoryService.create();
     this.nullResponse = {

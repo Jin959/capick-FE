@@ -10,7 +10,7 @@ class HistoryService {
   private readonly apiClient: ApiClient;
 
   private constructor() {
-    this.apiClient = ApiConfig.apiClient();
+    this.apiClient = ApiConfig.apiClientForClientSide();
   }
 
   public static create = (): HistoryService => {
