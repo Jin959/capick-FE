@@ -144,7 +144,7 @@ const ReviewPage = ({reviewResponse}: InferGetServerSidePropsType<typeof getServ
 export default ReviewPage;
 
 export const getServerSideProps: GetServerSideProps<{
-  reviewResponse: ReviewResponse
+  reviewResponse: ReviewResponse;
 }> = async ({params}) => {
   return ReviewServerSideService.create()
     .getReview(params?.reviewId as string);
