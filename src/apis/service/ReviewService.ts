@@ -108,16 +108,16 @@ class ReviewService {
 
   // TODO: Cafe 조회 API 가 없어서 fileName 에 CafeKakaoPlaceId 로 하드코딩 했는데 카페 조회 개발 후 수정하기
   public updateReview = async (
-    reviewId: string | number, reviewUpdateRequest: ReviewUpdateRequest, images: Array<File>): Promise<ReviewResponse> => {
+    reviewId: string | number, reviewUpdateRequest: ReviewUpdateRequest, newImages: Array<File>): Promise<ReviewResponse> => {
 
     const fileName = `CafeKakaoPlaceId_${reviewUpdateRequest.writerId}`;
     const path = "reviews";
     let storageResponses: Array<StorageResponse> = [];
 
-    this.ifNumberOfImagesExceededThrow(images, reviewUpdateRequest.imageUrls ?? []);
+    this.ifNumberOfImagesExceededThrow(newImages, reviewUpdateRequest.imageUrls ?? []);
 
-    if (images.length !== 0) {
-      storageResponses = await this.getImageUrlsByUploadOrThrow(images, path, fileName);
+    if (newImages.length !== 0) {
+      storageResponses = await this.getImageUrlsByUploadOrThrow(newImages, path, fileName);
     }
 
     const newImageUrls = storageResponses.map(storageResponse => storageResponse.url);
