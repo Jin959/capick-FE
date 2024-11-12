@@ -67,16 +67,7 @@ class ReviewService {
       return response.data ?? this.nullResponse;
     } catch (error) {
       console.error(error);
-
-      await this.historyService.createStorageOrphanFileHistories({
-        orphanFiles: storageResponses.map(storageResponse => ({
-          fileName: storageResponse.name,
-          fileType: "images",
-          domain: path,
-          url: storageResponse.url
-        }))
-      });
-
+      await this.ifUploadedCreateStorageOrphanFileHistories(storageResponses, path);
       if (isApiResponse(error)) {
         handleOnApiError(error);
       }
@@ -138,16 +129,7 @@ class ReviewService {
       return response.data ?? this.nullResponse;
     } catch (error) {
       console.error(error);
-
-      await this.historyService.createStorageOrphanFileHistories({
-        orphanFiles: storageResponses.map(storageResponse => ({
-          fileName: storageResponse.name,
-          fileType: "images",
-          domain: path,
-          url: storageResponse.url
-        }))
-      });
-
+      await this.ifUploadedCreateStorageOrphanFileHistories(storageResponses, path);
       if (isApiResponse(error)) {
         handleOnApiError(error);
       }
@@ -241,6 +223,21 @@ class ReviewService {
     } catch (error) {
       console.error(error);
       throw new Error(commonError.storageClient);
+    }
+  }
+
+  private ifUploadedCreateStorageOrphanFileHistories = async (
+    storageResponses: Array<StorageResponse>, domain: "review" | "reviews") => {
+
+    if (storageResponses.length !== 0) {
+      await this.historyService.createStorageOrphanFileHistories({
+        orphanFiles: storageResponses.map(storageResponse => ({
+          fileName: storageResponse.name,
+          fileType: "images",
+          domain: domain,
+          url: storageResponse.url
+        }))
+      });
     }
   }
 
