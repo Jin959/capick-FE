@@ -3,7 +3,7 @@ import {NextPage} from "next";
 import {Heading} from "@chakra-ui/react";
 import PageFlexContainer from "@/components/common/container/PageFlexContainer";
 import BackButton from "@/components/common/button/BackButton";
-import SignupForm from "@/components/signup/SignupForm";
+import SignupForm from "@/components/member/SignupForm";
 
 const Signup: NextPage = () => {
 

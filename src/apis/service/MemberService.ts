@@ -19,7 +19,7 @@ class MemberService {
   private readonly nicknameRegExp: RegExp;
 
   private constructor() {
-    this.apiClient = ApiConfig.apiClient();
+    this.apiClient = ApiConfig.apiClientForClientSide();
     this.nullResponse = {
       id: 0,
       nickname: "Not Available"

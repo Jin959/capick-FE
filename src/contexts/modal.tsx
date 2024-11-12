@@ -1,16 +1,19 @@
 import {createContext, Dispatch, ReactElement, useReducer} from "react";
 
 interface State {
+  imageModal: boolean;
+  alertModal: boolean;
+  loadingSpinnerModal: boolean;
   reviewCreateModal: boolean;
+  reviewUpdateModal: boolean;
 }
 
-// TODO: 모달 이름만 디스패치 할 수 있게 string 이 아니라 모달이 늘어나거나 변경되면 모달 이름을 유니언 타입으로 확장
 type Action = {
   type: "OPEN_MODAL";
-  modal: "reviewCreateModal";
+  modal: "imageModal" | "alertModal" | "loadingSpinnerModal" | "reviewCreateModal" | "reviewUpdateModal";
 } | {
   type: "CLOSE_MODAL";
-  modal: "reviewCreateModal";
+  modal: "imageModal" | "alertModal" | "loadingSpinnerModal" | "reviewCreateModal" | "reviewUpdateModal";
 }
 
 interface Props {
@@ -18,7 +21,11 @@ interface Props {
 }
 
 const initialState: State = {
-  reviewCreateModal: false
+  imageModal: false,
+  alertModal: false,
+  loadingSpinnerModal: false,
+  reviewCreateModal: false,
+  reviewUpdateModal: false
 }
 
 export const ModalContext = createContext<State>(initialState);

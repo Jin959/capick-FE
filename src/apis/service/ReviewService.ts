@@ -9,7 +9,9 @@ import {DataWithId, StringMap} from "@/types/common";
 import {createDataWithId, isImageFileExtension} from "@/utils/func";
 import reviewError from "@/apis/error/reviewError";
 import StorageClient from "@/apis/client/StorageClient";
+import HistoryService from "@/apis/service/support/HistoryService";
 import StorageResponse from "@/apis/dto/client/response/StorageResponse";
+import ReviewUpdateRequest from "@/apis/dto/service/request/ReviewUpdateRequest";
 
 class ReviewService {
 
@@ -17,13 +19,15 @@ class ReviewService {
 
   private readonly apiClient: ApiClient;
   private readonly storageClient: StorageClient;
+  private readonly historyService: HistoryService;
   private readonly nullResponse: ReviewResponse;
   private readonly surveyTypes: Array<string>;
   private readonly surveyTypesWithDirectInput: Array<string>;
 
   private constructor() {
-    this.apiClient = ApiConfig.apiClient();
+    this.apiClient = ApiConfig.apiClientForClientSide();
     this.storageClient = ApiConfig.storageClient();
+    this.historyService = HistoryService.create();
     this.nullResponse = {
       id: 0,
       writer: {
@@ -46,11 +50,14 @@ class ReviewService {
 
   public createReview = async (reviewCreateRequest: ReviewCreateRequest, images: Array<File>): Promise<ReviewResponse> => {
     const fileName = `${reviewCreateRequest.cafe.kakaoPlaceId}_${reviewCreateRequest.writerId}`;
-    const path = reviewCreateRequest.cafe.name.split(' ').join('_');
+    const path = "reviews";
     let storageResponses: Array<StorageResponse> = [];
+
     if (images.length !== 0) {
-      storageResponses = await this.uploadImagesAndGetUrls(images, path, fileName);
+      this.ifNumberOfImagesExceededThrow(images);
+      storageResponses = await this.getImageUrlsByUploadOrThrow(images, path, fileName);
     }
+
     try {
       reviewCreateRequest.imageUrls = storageResponses.map(
         storageResponse => storageResponse.url
@@ -60,9 +67,100 @@ class ReviewService {
       return response.data ?? this.nullResponse;
     } catch (error) {
       console.error(error);
-      // TODO: 파일 업로드 URL을 자체 백엔드 서버에 전송해야해서 업로드 후 API 요청을 했다 만약 에러가 생기면 롤백해야해서 여기에서 수행했는데 다른 좋은 방법이 있는지 고민해보기
-      await this.rollbackUploadImages(path,
-        storageResponses.map(storageResponse => storageResponse.name));
+
+      await this.historyService.createStorageOrphanFileHistories({
+        orphanFiles: storageResponses.map(storageResponse => ({
+          fileName: storageResponse.name,
+          fileType: "images",
+          domain: path,
+          url: storageResponse.url
+        }))
+      });
+
+      if (isApiResponse(error)) {
+        handleOnApiError(error);
+      }
+      throw new Error(commonError.connection);
+    }
+  }
+
+  public getReview = async (reviewId: string | number): Promise<ReviewResponse> => {
+    try {
+      const response = await this.apiClient
+        .get<ReviewResponse>("/reviews/" + reviewId);
+      return response.data ?? this.nullResponse;
+    } catch (error) {
+      console.error(error);
+      if (isApiResponse(error)) {
+        if (error.code == 404) {
+          window.location.href = "/";
+        }
+        handleOnApiError(error);
+      }
+      throw new Error(commonError.connection);
+    }
+  }
+
+  public getReviewDetail = async (reviewId: string | number): Promise<ReviewResponse> => {
+    try {
+      const response = await this.apiClient
+        .get<ReviewResponse>("/reviews/" + reviewId + "/detail");
+      return response.data ?? this.nullResponse;
+    } catch (error) {
+      console.error(error);
+      if (isApiResponse(error)) {
+        handleOnApiError(error);
+      }
+      throw new Error(commonError.connection);
+    }
+  }
+
+  // TODO: Cafe 조회 API 가 없어서 fileName 에 CafeKakaoPlaceId 로 하드코딩 했는데 카페 조회 개발 후 수정하기
+  public updateReview = async (
+    reviewId: string | number, reviewUpdateRequest: ReviewUpdateRequest, images: Array<File>): Promise<ReviewResponse> => {
+
+    const fileName = `CafeKakaoPlaceId_${reviewUpdateRequest.writerId}`;
+    const path = "reviews";
+    let storageResponses: Array<StorageResponse> = [];
+
+    this.ifNumberOfImagesExceededThrow(images, reviewUpdateRequest.imageUrls ?? []);
+
+    if (images.length !== 0) {
+      storageResponses = await this.getImageUrlsByUploadOrThrow(images, path, fileName);
+    }
+
+    const newImageUrls = storageResponses.map(storageResponse => storageResponse.url);
+    reviewUpdateRequest.imageUrls = Array.of(...(reviewUpdateRequest.imageUrls ?? []), ...newImageUrls);
+
+    try {
+      const response = await this.apiClient
+        .patch<ReviewResponse, ReviewUpdateRequest>("/reviews/" + reviewId, reviewUpdateRequest);
+      return response.data ?? this.nullResponse;
+    } catch (error) {
+      console.error(error);
+
+      await this.historyService.createStorageOrphanFileHistories({
+        orphanFiles: storageResponses.map(storageResponse => ({
+          fileName: storageResponse.name,
+          fileType: "images",
+          domain: path,
+          url: storageResponse.url
+        }))
+      });
+
+      if (isApiResponse(error)) {
+        handleOnApiError(error);
+      }
+      throw new Error(commonError.connection);
+    }
+  }
+
+  public deleteReview = async (reviewId: string | number): Promise<void> => {
+    try {
+      await this.apiClient
+        .delete<void>(`/reviews/${reviewId}`);
+    } catch (error) {
+      console.error(error);
       if (isApiResponse(error)) {
         handleOnApiError(error);
       }
@@ -91,11 +189,13 @@ class ReviewService {
     return surveyType === ReviewService.SURVEY_END;
   }
 
-  public isNeedDirectInput = (surveyType: string): boolean => {
+  public isSurveyNeedDirectInput = (surveyType: string): boolean => {
     return this.surveyTypesWithDirectInput.indexOf(surveyType) !== -1
   }
 
-  public createSurveyOptionsWithIdFrom = (data: Array<string> | StringMap<string | number>): Array<DataWithId<string | number>> => {
+  public createSurveyOptionsWithIdFrom = (
+    data: Array<string> | StringMap<string | number>): Array<DataWithId<string | number>> => {
+
     if (Array.isArray(data)) {
       return createDataWithId(data);
     } else {
@@ -103,8 +203,30 @@ class ReviewService {
     }
   }
 
-  private uploadImagesAndGetUrls = async (images: Array<File>, path: string, fileName: string): Promise<Array<StorageResponse>> => {
-    this.ifNumberOfImagesExceededThrow(images);
+  public isSurveyOptionSelected = (selectedOption: string): boolean => {
+    return selectedOption.length > 0;
+  }
+
+  public isEmptyImages = (reviewImages: Array<string | File>):boolean => {
+    return reviewImages.length === 0;
+  }
+
+  public isReviewWriter = (viewerNickname: string, writerNickname: string): boolean => {
+    return viewerNickname === writerNickname;
+  }
+
+  public countAllImagesNumber = (...allImages: Array<Array<string | File>>): number => {
+    return allImages.reduce(
+      (imageCount, currentImages) => imageCount + currentImages.length, 0);
+  }
+
+  public updateImageUrlsByDeleting = (imageUrls: Array<string >, targetImageUrl: string ): Array<string> => {
+    return imageUrls.filter(image => image !== targetImageUrl);
+  }
+
+  private getImageUrlsByUploadOrThrow = async (
+    images: Array<File>, path: string, fileName: string): Promise<Array<StorageResponse>> => {
+
     this.ifImagesExtensionIsNotValidThrow(images);
 
     try {
@@ -122,21 +244,6 @@ class ReviewService {
     }
   }
 
-  private rollbackUploadImages = async (path: string, fileNames: Array<string>): Promise<void> => {
-    try {
-      await Promise.all(fileNames.map(
-        fileName => this.storageClient.delete({
-          fileName: fileName,
-          path: path,
-          fileType: "images"
-        })
-      ));
-    } catch (error) {
-      console.error(error);
-      throw new Error(commonError.storageClient);
-    }
-  }
-
   private ifImagesExtensionIsNotValidThrow = (images: Array<File>): void => {
     for (let image of images) {
       if (!isImageFileExtension(image)) {
@@ -145,8 +252,8 @@ class ReviewService {
     }
   }
 
-  private ifNumberOfImagesExceededThrow = (images: Array<File>): void => {
-    if (images.length > 3) {
+  private ifNumberOfImagesExceededThrow = (...images: Array<Array<string | File>>): void => {
+    if (this.countAllImagesNumber(...images) > 3) {
       throw new Error(reviewError.image.numberOfImageExceeded);
     }
   }

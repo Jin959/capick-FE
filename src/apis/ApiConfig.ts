@@ -5,8 +5,13 @@ import FirebaseStorageClient from "@/apis/client/FirebaseStorageClient";
 
 class ApiConfig {
 
-  public static apiClient(): ApiClient {
+  public static apiClientForClientSide(): ApiClient {
     return AxiosClient.of(process.env.NEXT_PUBLIC_CAPICK_API_URL, 3000);
+  }
+
+  public static apiClientForServerSide(): ApiClient {
+    return AxiosClient.of(
+      `${process.env.NEXT_PUBLIC_APP_DOMAIN}${process.env.NEXT_PUBLIC_CAPICK_API_URL}`, 3000);
   }
 
   public static storageClient(): StorageClient {

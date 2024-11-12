@@ -9,13 +9,13 @@ import {StringMap} from "@/types/common";
 import {CafeContext} from "@/contexts/cafe";
 import {MemberContext} from "@/contexts/member";
 import {ModalDispatchContext} from "@/contexts/modal";
-import ReviewImageInput from "@/components/cafes/ReviewCreateModal/ReviewImageInput";
+import ReviewImageInput from "@/components/review/ReviewImageInput";
 
 interface Props {
   reviewService: ReviewService;
 }
 
-const ReviewContent = ({reviewService}: Props) => {
+const ReviewCreateContent = ({reviewService}: Props) => {
 
   const router = useRouter();
 
@@ -41,6 +41,11 @@ const ReviewContent = ({reviewService}: Props) => {
 
   const handleOnClickDone = async () => {
     try {
+      dispatchModal({
+        type: "OPEN_MODAL",
+        modal: "loadingSpinnerModal"
+      });
+
       const reviewResponse = await reviewService.createReview({
         writerId: member.id,
         cafe: {
@@ -69,17 +74,18 @@ const ReviewContent = ({reviewService}: Props) => {
         type: "CLOSE_MODAL",
         modal: "reviewCreateModal"
       });
-      dispatchReview({
-        type: "INIT_REVIEW"
-      });
-      dispatchReview({
-        type: "SET_SURVEY_TYPE",
-        surveyType: reviewService.getFirstSurveyType()
+      dispatchModal({
+        type: "CLOSE_MODAL",
+        modal: "loadingSpinnerModal"
       });
 
-      router.push(`/cafes/${cafe.name}/${cafe.kakaoPlaceId}/reviews/${reviewResponse.id}`);
+      router.push(`/reviews/${reviewResponse.id}`);
     } catch (error) {
       window.alert(error);
+      dispatchModal({
+        type: "CLOSE_MODAL",
+        modal: "loadingSpinnerModal"
+      });
     }
   }
 
@@ -93,7 +99,9 @@ const ReviewContent = ({reviewService}: Props) => {
           한마디
         </ModalHeader>
         <ModalBody>
-          <ReviewImageInput/>
+          <ReviewImageInput
+            reviewService={reviewService}
+          />
           <Box p="2"/>
           <Textarea
             placeholder="리뷰 내용 입력"
@@ -126,4 +134,4 @@ const ReviewContent = ({reviewService}: Props) => {
   );
 };
 
-export default ReviewContent;
+export default ReviewCreateContent;

@@ -4,11 +4,11 @@ import {useRouter} from "next/router";
 import BackButton from "@/components/common/button/BackButton";
 import PageFlexContainer from "@/components/common/container/PageFlexContainer";
 import {Card, Heading, Stack} from "@chakra-ui/react";
-import ReviewCreateModal from "@/components/cafes/ReviewCreateModal";
+import ReviewCreateModal from "@/components/review/ReviewCreateModal";
 import useReviewService from "@/hooks/service/useReivewService";
 import ReviewProvider from "@/contexts/review";
 import {CafeDispatchContext} from "@/contexts/cafe";
-import CafeDetail from "@/components/cafes/CafeDetail";
+import CafeDetail from "@/components/cafe/CafeDetail";
 
 type NextPageWithCafeContext = NextPage & {
   requireCafeContext: boolean;

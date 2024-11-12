@@ -10,6 +10,7 @@ import MemberProvider from "@/contexts/member";
 import ModalProvider from "@/contexts/modal";
 import CafeProvider from "@/contexts/cafe";
 import {NextComponentType, NextPage} from "next";
+import LoadingSpinnerModal from "@/components/common/modal/LoadingSpinnerModal";
 
 interface CustomAppProps extends AppProps {
   Component: NextComponentType & NextPageWithCafeContext
@@ -33,6 +34,7 @@ export default function App({Component, pageProps}: CustomAppProps) {
         <Global styles={globalStyle}/>
         <GlobalProvider contexts={contexts}>
           <Layout>
+            <LoadingSpinnerModal/>
             <Component {...pageProps} />
           </Layout>
         </GlobalProvider>
