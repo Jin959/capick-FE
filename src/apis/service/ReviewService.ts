@@ -67,16 +67,7 @@ class ReviewService {
       return response.data ?? this.nullResponse;
     } catch (error) {
       console.error(error);
-
-      await this.historyService.createStorageOrphanFileHistories({
-        orphanFiles: storageResponses.map(storageResponse => ({
-          fileName: storageResponse.name,
-          fileType: "images",
-          domain: path,
-          url: storageResponse.url
-        }))
-      });
-
+      await this.ifUploadedCreateStorageOrphanFileHistories(storageResponses, path);
       if (isApiResponse(error)) {
         handleOnApiError(error);
       }
@@ -117,16 +108,16 @@ class ReviewService {
 
   // TODO: Cafe 조회 API 가 없어서 fileName 에 CafeKakaoPlaceId 로 하드코딩 했는데 카페 조회 개발 후 수정하기
   public updateReview = async (
-    reviewId: string | number, reviewUpdateRequest: ReviewUpdateRequest, images: Array<File>): Promise<ReviewResponse> => {
+    reviewId: string | number, reviewUpdateRequest: ReviewUpdateRequest, newImages: Array<File>): Promise<ReviewResponse> => {
 
     const fileName = `CafeKakaoPlaceId_${reviewUpdateRequest.writerId}`;
     const path = "reviews";
     let storageResponses: Array<StorageResponse> = [];
 
-    this.ifNumberOfImagesExceededThrow(images, reviewUpdateRequest.imageUrls ?? []);
+    this.ifNumberOfImagesExceededThrow(newImages, reviewUpdateRequest.imageUrls ?? []);
 
-    if (images.length !== 0) {
-      storageResponses = await this.getImageUrlsByUploadOrThrow(images, path, fileName);
+    if (newImages.length !== 0) {
+      storageResponses = await this.getImageUrlsByUploadOrThrow(newImages, path, fileName);
     }
 
     const newImageUrls = storageResponses.map(storageResponse => storageResponse.url);
@@ -138,16 +129,7 @@ class ReviewService {
       return response.data ?? this.nullResponse;
     } catch (error) {
       console.error(error);
-
-      await this.historyService.createStorageOrphanFileHistories({
-        orphanFiles: storageResponses.map(storageResponse => ({
-          fileName: storageResponse.name,
-          fileType: "images",
-          domain: path,
-          url: storageResponse.url
-        }))
-      });
-
+      await this.ifUploadedCreateStorageOrphanFileHistories(storageResponses, path);
       if (isApiResponse(error)) {
         handleOnApiError(error);
       }
@@ -241,6 +223,21 @@ class ReviewService {
     } catch (error) {
       console.error(error);
       throw new Error(commonError.storageClient);
+    }
+  }
+
+  private ifUploadedCreateStorageOrphanFileHistories = async (
+    storageResponses: Array<StorageResponse>, domain: "review" | "reviews") => {
+
+    if (storageResponses.length !== 0) {
+      await this.historyService.createStorageOrphanFileHistories({
+        orphanFiles: storageResponses.map(storageResponse => ({
+          fileName: storageResponse.name,
+          fileType: "images",
+          domain: domain,
+          url: storageResponse.url
+        }))
+      });
     }
   }
 
